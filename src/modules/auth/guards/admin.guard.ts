@@ -12,7 +12,7 @@ export class AdminGuard implements CanActivate {
   constructor(
     @Inject('AUTH_SERVICE_TIENNT') private readonly AuthService: AuthService,
   ) {}
-k
+  
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
       const request = context.switchToHttp().getRequest();

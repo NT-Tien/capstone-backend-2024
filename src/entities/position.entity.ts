@@ -1,5 +1,5 @@
 import { BaseEntity } from "src/common/base/entity.base";
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
+import { Column, Entity, ManyToOne, OneToOne } from "typeorm";
 import { AreaEntity } from "./area.entity";
 import { DeviceEntity } from "./device.entity";
 

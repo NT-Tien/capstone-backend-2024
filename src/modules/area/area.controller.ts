@@ -59,7 +59,7 @@ export class AreaController {
   @ApiBearerAuth()
   @Get(':id')
   async getOneFor(@Param('id') id: string) {
-    return await this.areaService.getOne(id);
+    return await this.areaService.getOneAreaById(id);
   }
 
   @UseGuards(AdminGuard)

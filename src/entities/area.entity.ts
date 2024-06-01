@@ -1,6 +1,5 @@
 import { BaseEntity } from 'src/common/base/entity.base';
 import { Column, Entity, OneToMany } from 'typeorm';
-import { DeviceEntity } from './device.entity';
 import { PositionEntity } from './position.entity';
 
 @Entity({

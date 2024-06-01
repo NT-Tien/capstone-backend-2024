@@ -12,4 +12,8 @@ export class AreaService extends BaseService<AreaEntity> {
   ) {
     super(areaRepository);
   }
+
+  async getOneAreaById(id: string): Promise<AreaEntity> {
+    return this.areaRepository.findOne({where: {id}, relations: ['positions', 'positions.device']});
+  }
 }
