@@ -29,7 +29,7 @@ export class PositionController {
   })
   @Get()
   async getAll() {
-    return await this.positionService.getAll();
+    return await this.positionService.getAllWithRelations();
   }
 
   // @ApiResponse({

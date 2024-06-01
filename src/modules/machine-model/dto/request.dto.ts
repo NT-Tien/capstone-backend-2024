@@ -16,10 +16,6 @@ export namespace MachineModelRequestDto {
 
     @ApiProperty()
     @Expose()
-    origin: string;
-
-    @ApiProperty()
-    @Expose()
     manufacturer: string;
 
     @ApiProperty()
@@ -45,11 +41,6 @@ export namespace MachineModelRequestDto {
     @ValidateIf(o => o.description !== undefined)
     @Expose()
     description: string;
-
-    @ApiProperty()
-    @ValidateIf(o => o.origin !== undefined)
-    @Expose()
-    origin: string;
 
     @ApiProperty()
     @ValidateIf(o => o.manufacturer !== undefined)

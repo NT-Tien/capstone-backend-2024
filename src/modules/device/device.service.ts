@@ -12,4 +12,11 @@ export class DeviceService extends BaseService<DeviceEntity> {
   ) {
     super(deviceRepository);
   }
+
+  // get all with relations
+  async getAllWithRelations(): Promise<DeviceEntity[]> {
+    return this.deviceRepository.find({
+      relations: ['position', 'position.area', 'machineModel'],
+    });
+  }
 }

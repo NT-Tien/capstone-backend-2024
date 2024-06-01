@@ -7,11 +7,11 @@ import { MachineModelEntity } from "./machine-model.entity";
     name: 'DEVICE',
 })
 export class DeviceEntity extends BaseEntity{
-    @OneToOne(() => PositionEntity, position => position.device)
+    @OneToOne(() => PositionEntity, position => position.id)
     @JoinColumn({name: "postion_id"})
     position: PositionEntity;
 
-    @ManyToOne(() => MachineModelEntity, machineModel => machineModel.devices)
+    @ManyToOne(() => MachineModelEntity, machineModel => machineModel.id)
     machineModel: MachineModelEntity;
 
     @Column({
@@ -19,13 +19,6 @@ export class DeviceEntity extends BaseEntity{
         type: 'text',
     })
     description: string;
-
-    @Column({
-        name: 'status',
-        type: 'boolean',
-        default: true,
-    })
-    status: boolean;
 
     @Column({
         name: 'operation_info',

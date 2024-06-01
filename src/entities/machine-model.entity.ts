@@ -3,7 +3,7 @@ import { Column, Entity, OneToMany, Unique } from "typeorm";
 import { SparePartEntity } from "./spare-part.entity";
 import { DeviceEntity } from "./device.entity";
 
-@Unique(['name', 'manufacturer', 'yearOfProduction'])
+@Unique(['name', 'manufacturer', 'yearOfProduction', 'dateOfReceipt', 'warrantyTerm'])
 @Entity({
     name: 'MACHINE_MODEL',
 })
@@ -28,13 +28,6 @@ export class MachineModelEntity extends BaseEntity {
         nullable: true,
     })
     description: string;
-
-    @Column({
-        name: 'origin',
-        type: 'text',
-        nullable: true,
-    })
-    origin: string;
 
     @Column({
         name: 'manufacturer',

@@ -23,11 +23,6 @@ export namespace DeviceRequestDto {
     @ApiProperty()
     @IsNotEmpty()
     @Expose()
-    status: boolean;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @Expose()
     operationStatus: number;
   }
 
@@ -46,11 +41,6 @@ export namespace DeviceRequestDto {
     @ValidateIf((o) => o.description)
     @Expose()
     description: string;
-
-    @ApiProperty()
-    @ValidateIf((o) => o.status)
-    @Expose()
-    status: boolean;
 
     @ApiProperty()
     @ValidateIf((o) => o.operationStatus)

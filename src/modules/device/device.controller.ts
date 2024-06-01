@@ -29,7 +29,7 @@ export class DeviceController {
   })
   @Get()
   async getAll() {
-    return await this.deviceService.getAll();
+    return await this.deviceService.getAllWithRelations();
   }
 
   // @ApiResponse({

@@ -13,4 +13,11 @@ export class PositionService extends BaseService<PositionEntity> {
   ) {
     super(positionRepository);
   }
+
+  // get all with relations
+  async getAllWithRelations(): Promise<PositionEntity[]> {
+    return this.positionRepository.find({
+      relations: ['area', 'device'],
+    });
+  }
 }
