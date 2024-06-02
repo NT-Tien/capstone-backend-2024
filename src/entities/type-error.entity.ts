@@ -16,6 +16,12 @@ export class TypeErrorEntity extends BaseEntity{
     name: string;
 
     @Column({
+        name: 'duration',
+        type: 'int',
+    })
+    duration: number;
+
+    @Column({
         name: 'description',
         type: 'text',
     })

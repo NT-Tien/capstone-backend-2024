@@ -1,9 +1,20 @@
 import { BaseEntity } from "src/common/base/entity.base";
-import { Entity, JoinColumn, OneToMany, OneToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from "typeorm";
 import { RequestEntity } from "./request.entity";
-import { TypeErrorEntity } from "./type-error.entity";
 import { TaskItemEntity } from "./task-item.entity";
+import { AccountEntity } from "./account.entity";
 
+export enum TaskStatus {
+    PENDING = 'PENDING',
+    IN_PROGRESS = 'IN_PROGRESS',
+    COMPLETED = 'COMPLETED',
+    CANCELLED = 'CANCELLED',
+}
+
+export enum FixType {
+    REPLACE = 'REPLACE',
+    REPAIR = 'REPAIR',
+}
 @Entity({
     name: 'TASK',
 })
@@ -14,4 +25,68 @@ export class TaskEntity extends BaseEntity{
 
     @OneToMany(() => TaskItemEntity, taskItem => taskItem.id)
     taskItems: TaskItemEntity[];
+
+    @ManyToOne(() => AccountEntity, account => account.id)
+    @JoinColumn({name: "fixer_id"})
+    fixer: AccountEntity;
+
+    @Column({
+        name: 'fixer_note',
+        type: 'text'
+    })
+    fixerNote: string;
+
+    @Column({
+        name: 'description',
+        type: 'text'
+    })
+    description: string;
+
+    @Column({
+        name: 'status',
+        type: 'enum',
+        enum: TaskStatus,
+        default: TaskStatus.PENDING
+    })
+    status: TaskStatus;
+
+    @Column({
+        name: 'fix_type',
+        type: 'enum',
+        enum: FixType
+    })
+    fixType: FixType;
+
+    @Column({
+        name: 'priority',
+        type: 'boolean',
+    })
+    priority: boolean;
+
+    @Column({
+        name: 'operator',
+        type: 'float'
+    })
+    operator: number;
+
+    @Column({
+        name: 'total_time',
+        type: 'int'
+    })
+    totalTime: number;
+
+    @Column({
+        name: 'image_verify',
+        type: 'text'
+    })
+    imageVerify: string;
+
+    @Column({
+        name: 'completed_at',
+        type: 'timestamp',
+        nullable: true
+    })
+    completedAt: Date;
+
+
 }
