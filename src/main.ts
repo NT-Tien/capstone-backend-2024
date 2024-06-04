@@ -12,6 +12,7 @@ import * as multipart from '@fastify/multipart';
 import { writeFileSync } from 'fs';
 import * as dotenv from 'dotenv';
 import { join } from 'path';
+import { AllExceptionsFilter } from './common/exceptions/catch.exception';
 // import helmet from '@fastify/helmet'
 dotenv.config();
 
@@ -52,6 +53,7 @@ async function bootstrap() {
   // -----------------------------------------------
 
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   // set up swagger --------------------------------
   const config = new DocumentBuilder()
