@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TYPE_ORM_CONFIG } from './config/orm.config';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { MyMiddlewareModule } from './middlewares/middleware.module';
 import { QUEUE_CONFIG } from './config/queue.config';
@@ -15,6 +15,7 @@ import { PositionModule } from './modules/position/position.module';
 import { MachineModelModule } from './modules/machine-model/machine-model.module';
 import { DeviceModule } from './modules/device/device.module';
 import { SparePartModule } from './modules/spare-part/spare-part.module';
+import { AllExceptionsFilter } from './common/exceptions/catch.exception';
 
 @Module({
   imports: [
@@ -37,6 +38,10 @@ import { SparePartModule } from './modules/spare-part/spare-part.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
     },
   ],
 })
