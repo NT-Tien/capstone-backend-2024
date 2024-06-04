@@ -16,6 +16,7 @@ import { MachineModelModule } from './modules/machine-model/machine-model.module
 import { DeviceModule } from './modules/device/device.module';
 import { SparePartModule } from './modules/spare-part/spare-part.module';
 import { AllExceptionsFilter } from './common/exceptions/catch.exception';
+import { TypeErrorModule } from './modules/type-error/type-error.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { AllExceptionsFilter } from './common/exceptions/catch.exception';
     MachineModelModule,
     DeviceModule,
     SparePartModule,
+    TypeErrorModule,
   ],
   providers: [
     {

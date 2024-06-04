@@ -68,6 +68,7 @@ export class AreaController {
     type: AreaResponseDto.AreaCreate,
     status: 201,
     description: 'Create a Area',
+    
   })
   @Post()
   async create(@Body() body: AreaRequestDto.AreaCreateDto) {
