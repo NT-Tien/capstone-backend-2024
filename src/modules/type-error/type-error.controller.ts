@@ -15,8 +15,8 @@ import { TypeErrorService } from './type-error.service';
 import { TypeErrorRequestDto } from './dto/request.dto';
 import { TypeErrorResponseDto } from './dto/response.dto';
 
-@ApiTags('TypeError')
-@Controller('TypeError')
+@ApiTags('type-error')
+@Controller('type-error')
 export class TypeErrorController {
   constructor(private readonly typeErrorService: TypeErrorService) {}
 
