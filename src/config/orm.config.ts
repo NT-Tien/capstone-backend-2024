@@ -10,5 +10,6 @@ export const TYPE_ORM_CONFIG = {
   database: process.env.DB_DATABASE,
   synchronize: process.env.ENV === 'main' ? true : false,
   entities: ['dist/**/*.entity.js'],
+  subscribers: ['dist/**/*.subscriber.js'],
   ssl: process.env.ENV === 'production' ? { ca: process.env.DB_SSL_CA } : false,
 };

@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Get,
   HttpException,
   Param,
@@ -23,9 +24,9 @@ dotenv.config();
 const url = process.env.FILE_PATH_STORAGE;
 const api_key = process.env.FILE_API_KEY;
 
-@ApiTags('file-image')
-@Controller('file-image')
-export class ImageController {
+@ApiTags('file-video')
+@Controller('file-video')
+export class VideoController {
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -47,26 +48,25 @@ export class ImageController {
       const fileBlob = new Blob([file.buffer], { type: file.mimetype });
       const dataForm = new FormData();
       dataForm.append('file', fileBlob);
-      console.log(!file.mimetype.includes('image'));
-
-      // check if the file is image
-      if (!file.mimetype.includes('image')) {
-        throw new HttpException('File is not image', 400);
-      } else if (file.size > 1 * 1024 * 1024) {
-        throw new HttpException('File is too large (1MB)', 400);
-      } else {
-        const response = await fetch(url + 'file/upload', {
-          method: 'POST',
-          headers: {
-            'Api-Key': api_key,
-          },
-          body: dataForm,
-        });
-        const data = await response.json();
-        return data.data;
+      // check if the file is video
+      if (!file.mimetype.includes('video')) {
+        throw new HttpException('File is not video', 400);
       }
+      // check if the file is larger than 50MB
+      if (file.size > 50 * 1024 * 1024) {
+        throw new HttpException('File is too large (50MB)', 400);
+      } 
+      const response = await fetch(url + 'file/upload', {
+        method: 'POST',
+        headers: {
+          'Api-Key': api_key,
+        },
+        body: dataForm,
+      });
+      const data = await response.json();
+      return data.data;
     } catch (error) {
-       throw new HttpException(error.message, error.status);
+      throw new HttpException(error.message, error.status);
     }
   }
 
@@ -83,10 +83,11 @@ export class ImageController {
       });
       const buffer = await response.arrayBuffer();
       const image = Buffer.from(buffer);
-      res.header('Content-Type', 'image/png');
+      // video type
+      res.header('Content-Type', 'video/mp4');
       res.send(image);
     } catch (error) {
-      throw new HttpException(error, error.status);
+      throw new HttpException(error.message, error.status);
     }
   }
 }

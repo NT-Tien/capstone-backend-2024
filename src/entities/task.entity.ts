@@ -11,10 +11,11 @@ export enum TaskStatus {
     CANCELLED = 'CANCELLED',
 }
 
-export enum FixType {
-    REPLACE = 'REPLACE',
-    REPAIR = 'REPAIR',
+export enum TaskType {
+    FIX = 'FIX',
+    MAINTENANCE = 'MAINTENANCE',
 }
+
 @Entity({
     name: 'TASK',
 })
@@ -37,10 +38,10 @@ export class TaskEntity extends BaseEntity{
     fixerNote: string;
 
     @Column({
-        name: 'description',
+        name: 'name',
         type: 'text'
     })
-    description: string;
+    name: string;
 
     @Column({
         name: 'status',
@@ -49,13 +50,6 @@ export class TaskEntity extends BaseEntity{
         default: TaskStatus.PENDING
     })
     status: TaskStatus;
-
-    @Column({
-        name: 'fix_type',
-        type: 'enum',
-        enum: FixType
-    })
-    fixType: FixType;
 
     @Column({
         name: 'priority',
@@ -76,17 +70,44 @@ export class TaskEntity extends BaseEntity{
     totalTime: number;
 
     @Column({
-        name: 'image_verify',
-        type: 'text'
-    })
-    imageVerify: string;
-
-    @Column({
         name: 'completed_at',
         type: 'timestamp',
         nullable: true
     })
     completedAt: Date;
 
+    @Column({
+        name: 'images_verify',
+        type: 'text',
+        array: true,
+        nullable: true,
+        default: []
+    })
+    private _imagesVerify: string[];
+
+    get imagesVerify(): string[] {
+        return this._imagesVerify;
+    }
+
+    set imagesVerify(images: string[]) {
+        const maxLength = 3;
+        if (images.length > maxLength) {
+            throw new Error(`Độ dài của mảng không thể vượt quá ${maxLength}`);
+        }
+        this._imagesVerify = images;
+    }
+
+    @Column({
+        name: 'videos_verify',
+        type: 'text',
+    })
+    videosVerify: string;
+
+    @Column({
+        name: 'type',
+        type: 'enum',
+        enum: TaskType,
+    })
+    type: TaskType;
 
 }

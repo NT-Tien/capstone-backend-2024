@@ -17,6 +17,7 @@ import { DeviceModule } from './modules/device/device.module';
 import { SparePartModule } from './modules/spare-part/spare-part.module';
 import { AllExceptionsFilter } from './common/exceptions/catch.exception';
 import { TypeErrorModule } from './modules/type-error/type-error.module';
+import { VideoModule } from './modules/upload/video/video.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { TypeErrorModule } from './modules/type-error/type-error.module';
     MyMiddlewareModule,
     AuthModule,
     ImageModule,
+    VideoModule,
     AreaModule,
     PositionModule,
     MachineModelModule,
