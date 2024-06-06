@@ -9,7 +9,9 @@ export namespace DeviceResponseDto {
           createdAt: '2024-05-09T23:17:51.118Z',
           updatedAt: '2024-05-09T23:17:51.118Z',
           deletedAt: null,
-          position: 'string',
+          area: 'string',
+          positionX: 0,
+          positionY: 0,
           machineModel: 'string',
           description: 'string',
           status: true,
@@ -30,7 +32,9 @@ export namespace DeviceResponseDto {
         createdAt: '2024-05-09T23:17:51.118Z',
         updatedAt: '2024-05-09T23:17:51.118Z',
         deletedAt: null,
-        position: 'string',
+        area: 'string',
+        positionX: 0,
+        positionY: 0,
         machineModel: 'string',
         description: 'string',
         status: true,
@@ -46,7 +50,9 @@ export namespace DeviceResponseDto {
   export class DeviceCreate {
     @ApiProperty({
       example: {
-        position: 'string',
+        area: 'string',
+        positionX: 0,
+        positionY: 0,
         machineModel: 'string',
         description: 'string',
         status: true,
@@ -66,7 +72,9 @@ export namespace DeviceResponseDto {
   export class DeviceUpdate {
     @ApiProperty({
       example: {
-        position: 'string',
+        area: 'string',
+        positionX: 0,
+        positionY: 0,
         machineModel: 'string',
         description: 'string',
         status: true,

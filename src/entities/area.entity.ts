@@ -1,6 +1,6 @@
 import { BaseEntity } from 'src/common/base/entity.base';
 import { Column, Entity, OneToMany } from 'typeorm';
-import { PositionEntity } from './position.entity';
+import { DeviceEntity } from './device.entity';
 
 @Entity({
     name: 'AREA',
@@ -34,7 +34,7 @@ export class AreaEntity extends BaseEntity {
     })
     height: number;
 
-    @OneToMany(() => PositionEntity, position => position.area)
-    positions: PositionEntity[]; // for query relations
+    @OneToMany(() => DeviceEntity, device => device.area)
+    devices: DeviceEntity[];
 
 }

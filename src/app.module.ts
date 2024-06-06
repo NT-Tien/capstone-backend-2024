@@ -11,7 +11,6 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from './modules/auth/auth.module';
 import { ImageModule } from './modules/upload/image/image.module';
 import { AreaModule } from './modules/area/area.module';
-import { PositionModule } from './modules/position/position.module';
 import { MachineModelModule } from './modules/machine-model/machine-model.module';
 import { DeviceModule } from './modules/device/device.module';
 import { SparePartModule } from './modules/spare-part/spare-part.module';
@@ -32,7 +31,6 @@ import { VideoModule } from './modules/upload/video/video.module';
     ImageModule,
     VideoModule,
     AreaModule,
-    PositionModule,
     MachineModelModule,
     DeviceModule,
     SparePartModule,

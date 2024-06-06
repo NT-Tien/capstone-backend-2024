@@ -1,15 +1,27 @@
 import { BaseEntity } from "src/common/base/entity.base";
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
-import { PositionEntity } from "./position.entity";
+import { Column, Entity, ManyToOne } from "typeorm";
 import { MachineModelEntity } from "./machine-model.entity";
+import { AreaEntity } from "./area.entity";
 
 @Entity({
     name: 'DEVICE',
 })
 export class DeviceEntity extends BaseEntity{
-    @OneToOne(() => PositionEntity, position => position.id)
-    @JoinColumn({name: "postion_id"})
-    position: PositionEntity;
+
+    @ManyToOne(() => AreaEntity, area => area.id)
+    area: AreaEntity;
+
+    @Column({
+        name: 'position_x',
+        type: 'int',
+    })
+    positionX: number;
+
+    @Column({
+        name: 'position_y',
+        type: 'int',
+    })
+    positionY: number;
 
     @ManyToOne(() => MachineModelEntity, machineModel => machineModel.id)
     machineModel: MachineModelEntity;

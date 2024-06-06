@@ -8,7 +8,17 @@ export namespace DeviceRequestDto {
     @ApiProperty()
     @IsNotEmpty()
     @Expose()
-    position: string;
+    area: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    positionX: number;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    positionY: number;
 
     @ApiProperty()
     @IsNotEmpty()
@@ -28,9 +38,19 @@ export namespace DeviceRequestDto {
 
   export class DeviceUpdateDto extends BaseDTO {
     @ApiProperty()
-    @ValidateIf((o) => o.position)
+    @ValidateIf((o) => o.area)
     @Expose()
-    position: string;
+    area: string;
+
+    @ApiProperty()
+    @ValidateIf((o) => o.positionX)
+    @Expose()
+    positionX: number;
+
+    @ApiProperty()
+    @ValidateIf((o) => o.positionY)
+    @Expose()
+    positionY: number;
 
     @ApiProperty()
     @ValidateIf((o) => o.machineModel)
