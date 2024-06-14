@@ -62,5 +62,4 @@ export namespace AuthRequestDto {
     @Expose()
     password: string;
   }
-
 }

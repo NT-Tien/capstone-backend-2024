@@ -42,7 +42,11 @@ export class VideoController {
   @UseGuards(AdminGuard)
   @ApiBearerAuth()
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', {
+    limits: {
+      fileSize: 50 * 1024 * 1024,
+    },
+  }))
   async uploadFile(@UploadedFile() file: MemoryStorageFile) {
     try {
       const fileBlob = new Blob([file.buffer], { type: file.mimetype });
@@ -55,7 +59,7 @@ export class VideoController {
       // check if the file is larger than 50MB
       if (file.size > 50 * 1024 * 1024) {
         throw new HttpException('File is too large (50MB)', 400);
-      } 
+      }
       const response = await fetch(url + 'file/upload', {
         method: 'POST',
         headers: {

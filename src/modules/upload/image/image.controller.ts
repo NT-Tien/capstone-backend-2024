@@ -41,7 +41,11 @@ export class ImageController {
   @UseGuards(AdminGuard)
   @ApiBearerAuth()
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', {
+    limits: {
+      fileSize: 1 * 1024 * 1024,
+    },
+  }))
   async uploadFile(@UploadedFile() file: MemoryStorageFile) {
     try {
       const fileBlob = new Blob([file.buffer], { type: file.mimetype });
@@ -66,7 +70,7 @@ export class ImageController {
         return data.data;
       }
     } catch (error) {
-       throw new HttpException(error.message, error.status);
+      throw new HttpException(error.message, error.status);
     }
   }
 

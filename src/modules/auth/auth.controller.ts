@@ -40,7 +40,7 @@ export class AuthController {
       AuthRequestDto.RegisterDataDto.plainToClass(data),
     );
   }
-  
+
   @ApiResponse({ status: 200, type: AuthResponseDto.LoginResponseDto })
   @Post('login')
   @HttpCode(HttpStatus.OK)
@@ -81,7 +81,14 @@ export class AuthController {
   @ApiResponse({ status: 200, type: AuthResponseDto.GetAccountResponseDto })
   @Get('get-account')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(StaffGuard, AdminGuard, HeadGuard, HeadStaffGuard, StockkeeperGuard, ManagerGuard)
+  @UseGuards(
+    StaffGuard,
+    AdminGuard,
+    HeadGuard,
+    HeadStaffGuard,
+    StockkeeperGuard,
+    ManagerGuard,
+  )
   @ApiBearerAuth()
   async getAccount(@Req() req: FastifyRequest['raw']) {
     const decoded = await this.authService.decodeToken(
@@ -93,7 +100,14 @@ export class AuthController {
   @ApiResponse({ status: 200, type: AuthResponseDto.UpdateAccountResponseDto })
   @Post('change-password')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(StaffGuard, AdminGuard, HeadGuard, HeadStaffGuard, StockkeeperGuard, ManagerGuard)
+  @UseGuards(
+    StaffGuard,
+    AdminGuard,
+    HeadGuard,
+    HeadStaffGuard,
+    StockkeeperGuard,
+    ManagerGuard,
+  )
   @ApiBearerAuth()
   async changePassword(
     @Req() req: FastifyRequest['raw'],
@@ -104,11 +118,18 @@ export class AuthController {
     );
     return this.authService.changePassword(decoded.id, password);
   }
-  
+
   @ApiResponse({ status: 200, type: AuthResponseDto.UpdateAccountResponseDto })
   @Post('update-phone')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(StaffGuard, AdminGuard, HeadGuard, HeadStaffGuard, StockkeeperGuard, ManagerGuard)
+  @UseGuards(
+    StaffGuard,
+    AdminGuard,
+    HeadGuard,
+    HeadStaffGuard,
+    StockkeeperGuard,
+    ManagerGuard,
+  )
   @ApiBearerAuth()
   async changePhoneNumber(
     @Req() req: FastifyRequest['raw'],
@@ -120,4 +141,14 @@ export class AuthController {
     return this.authService.changePhoneNumber(decoded.id, phone);
   }
 
+  // ! apis for head staffs
+
+  @ApiResponse({ status: 200, type: AuthResponseDto.GetAccountResponseDto })
+  @Get('head-staff/all-staff-accounts')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AdminGuard, HeadStaffGuard)
+  @ApiBearerAuth()
+  getAllStaffAccounts() {
+    return this.authService.getAllStaffs();
+  }
 }

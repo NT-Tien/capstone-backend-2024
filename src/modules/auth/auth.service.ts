@@ -64,7 +64,10 @@ export class AuthService {
       const account = await this.repositoryAccount.findOne({
         where: { username: decodedToken.username },
       });
-      if (account.username === decodedToken.username && account.deletedAt == null) {
+      if (
+        account.username === decodedToken.username &&
+        account.deletedAt == null
+      ) {
         return true;
       }
     }
@@ -235,6 +238,23 @@ export class AuthService {
   ): Promise<any> {
     return this.repositoryAccount.update(id, {
       phone: newPhone.value,
+    });
+  }
+
+  // ! features for head staffs
+
+  async getAllStaffs(): Promise<any> {
+    return this.repositoryAccount.find({
+      where: { role: Role.staff },
+      select: [
+        'id',
+        'createdAt',
+        'updatedAt',
+        'deletedAt',
+        'username',
+        'phone',
+        'role',
+      ],
     });
   }
 }

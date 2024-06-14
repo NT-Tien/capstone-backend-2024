@@ -10,13 +10,15 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from './modules/auth/auth.module';
 import { ImageModule } from './modules/upload/image/image.module';
-import { AreaModule } from './modules/area/area.module';
-import { MachineModelModule } from './modules/machine-model/machine-model.module';
-import { DeviceModule } from './modules/device/device.module';
-import { SparePartModule } from './modules/spare-part/spare-part.module';
-import { AllExceptionsFilter } from './common/exceptions/catch.exception';
-import { TypeErrorModule } from './modules/type-error/type-error.module';
 import { VideoModule } from './modules/upload/video/video.module';
+import { NotifyModule } from './modules/notify/notify.module';
+import { AllExceptionsFilter } from './common/exceptions/catch.exception';
+import { AdminModule } from './modules/_admin/admin.module';
+import { ManagerModule } from './modules/_manager/manager.module';
+import { HeadModule } from './modules/_head/head.module';
+import { HeadstaffModule } from './modules/_headstaff/headstaff.module';
+import { StaffModule } from './modules/_staff/staff.module';
+import { StockkeeperModule } from './modules/_stockkeeper/stockkeeper.module';
 
 @Module({
   imports: [
@@ -30,11 +32,13 @@ import { VideoModule } from './modules/upload/video/video.module';
     AuthModule,
     ImageModule,
     VideoModule,
-    AreaModule,
-    MachineModelModule,
-    DeviceModule,
-    SparePartModule,
-    TypeErrorModule,
+    NotifyModule,
+    AdminModule,
+    ManagerModule,
+    HeadModule,
+    HeadstaffModule,
+    StaffModule,
+    StockkeeperModule,
   ],
   providers: [
     {
