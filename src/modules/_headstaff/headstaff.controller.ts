@@ -12,14 +12,14 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 // import { CacheTTL } from '@nestjs/cache-manager';
-import { RequestService } from './request.service';
+import { RequestService } from './headstaff.service';
 import { RequestResponseDto } from './dto/response.dto';
 import { RequestRequestDto } from './dto/request.dto';
-import { HeadStaffGuard } from 'src/modules/auth/guards/headstaff.guard';
+import { HeadGuard } from 'src/modules/auth/guards/head.guard';
 
-@ApiTags('head staff: request')
-@UseGuards(HeadStaffGuard)
-@Controller('head-staff/request')
+@ApiTags('head: request')
+@UseGuards(HeadGuard)
+@Controller('head/request')
 export class RequestController {
   constructor(private readonly requestService: RequestService) { }
 

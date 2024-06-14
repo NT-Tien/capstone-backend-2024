@@ -1,6 +1,9 @@
 import { Module } from "@nestjs/common";
+import { RequestModule } from "./request/request.module";
 
 @Module({
-    imports: [],
+    imports: [
+        RequestModule,
+    ],
 })
 export class HeadModule {}

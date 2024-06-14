@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from 'src/common/base/service.base';
-import { RequestEntity } from 'src/entities/request.entity';
+import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
 import { Repository } from 'typeorm';
 import { RequestRequestDto } from './dto/request.dto';
 import { AccountEntity, Role } from 'src/entities/account.entity';
@@ -20,12 +20,32 @@ export class RequestService extends BaseService<RequestEntity> {
     super(requestRepository);
   }
 
+  async customHeadGetAllRequest(userId: string): Promise<RequestEntity[]> {
+    var account = await this.accountRepository.findOne({
+      where: { id: userId },
+    });
+    if (!account || account.deletedAt || account.role !== Role.head) {
+      throw new HttpException('Account is not valid', HttpStatus.BAD_REQUEST);
+    }
+    return this.requestRepository.find({
+      where: { 
+        requester: account,
+        createdAt: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
+       },
+      relations: ['device'],
+      order: { createdAt: 'DESC' },
+      // skip: (page - 1) * limit,
+      // take: limit,
+    });
+  }
+
   async customHeadCreateRequest(
+    userId: string,
     data: RequestRequestDto.RequestCreateDto,
   ): Promise<RequestEntity> {
     // find account
     var account = await this.accountRepository.findOne({
-      where: { id: data.requester },
+      where: { id: userId },
     });
     if (!account || account.deletedAt || account.role !== Role.head) {
       throw new Error('Account is not valid');
@@ -36,6 +56,13 @@ export class RequestService extends BaseService<RequestEntity> {
     });
     if (!device || device.deletedAt) {
       throw new Error('Device is not valid');
+    }
+    // check request duplicate
+    var request = await this.requestRepository.findOne({
+      where: { requester: account, device: device, status: RequestStatus.PENDING },
+    });
+    if (request) {
+      throw new Error('Request is duplicate');
     }
     var request = new RequestEntity();
     request.requester = account;

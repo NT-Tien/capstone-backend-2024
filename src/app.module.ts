@@ -19,6 +19,7 @@ import { HeadModule } from './modules/_head/head.module';
 import { HeadstaffModule } from './modules/_headstaff/headstaff.module';
 import { StaffModule } from './modules/_staff/staff.module';
 import { StockkeeperModule } from './modules/_stockkeeper/stockkeeper.module';
+import { RequestInterceptor } from './common/interceptors/request.interceptor';
 
 @Module({
   imports: [
@@ -41,6 +42,10 @@ import { StockkeeperModule } from './modules/_stockkeeper/stockkeeper.module';
     StockkeeperModule,
   ],
   providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RequestInterceptor,
+    },
     {
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor,

@@ -14,11 +14,6 @@ export namespace RequestRequestDto {
     @ApiProperty()
     @IsNotEmpty()
     @Expose()
-    requester: string;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @Expose()
     requester_note: string;
   }
 
