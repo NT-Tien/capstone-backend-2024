@@ -1,14 +1,13 @@
 import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { RequestEntity } from "src/entities/request.entity";
-import { AccountEntity } from "src/entities/account.entity";
-import { AuthModule } from "../auth/auth.module";
-import { TaskEntity } from "src/entities/task.entity";
+import { RequestModule } from "./request/request.module";
+import { TaskModule } from "./task/task.module";
+import { AccountModule } from "./account/account.module";
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([RequestEntity, TaskEntity, AccountEntity]),
-        AuthModule,
-      ],
+  imports: [
+    RequestModule,
+    TaskModule,
+    AccountModule,
+  ],
 })
-export class HeadstaffModule {}
+export class HeadstaffModule { }

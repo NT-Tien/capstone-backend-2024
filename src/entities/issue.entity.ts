@@ -12,6 +12,12 @@ export enum FixItemType {
     REPAIR = 'REPAIR',
 }
 
+export enum IssueStatus {
+    PENDING = 'PENDING',
+    FAILED = 'FAILED',
+    RESOLVED = 'RESOLVED',
+}
+
 @Entity({
     name: 'ISSUE',
 })
@@ -34,4 +40,12 @@ export class IssueEntity extends BaseEntity {
         enum: FixItemType,
     })
     fixType: FixItemType;
+
+    @Column({
+        name: 'status',
+        type: 'enum',
+        enum: IssueStatus,
+        default: IssueStatus.PENDING,
+    })
+    status: IssueStatus;
 }

@@ -17,9 +17,9 @@ import { RequestResponseDto } from './dto/response.dto';
 import { RequestRequestDto } from './dto/request.dto';
 import { HeadStaffGuard } from 'src/modules/auth/guards/headstaff.guard';
 
-@ApiTags('head staff: request')
+@ApiTags('head: request')
 @UseGuards(HeadStaffGuard)
-@Controller('head-staff/request')
+@Controller('head/request')
 export class RequestController {
   constructor(private readonly requestService: RequestService) { }
 
