@@ -20,19 +20,20 @@ export class RequestService extends BaseService<RequestEntity> {
     super(requestRepository);
   }
 
-  async customHeadStaffGetAllRequest(userId: string, page: number, limit: number): Promise<RequestEntity[]> {
+  async customHeadStaffGetAllRequest(userId: string, page: number, limit: number, status: RequestStatus): Promise<[RequestEntity[], number]> {
     var account = await this.accountRepository.findOne({
       where: { id: userId },
     });
     if (!account || account.deletedAt || account.role !== Role.head) {
       throw new HttpException('Account is not valid', HttpStatus.BAD_REQUEST);
     }
-    return this.requestRepository.find({
+    return this.requestRepository.findAndCount({
       where: {
         requester: account,
+        status,
         // createdAt: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
       },
-      relations: ['device'],
+      relations: ['device', 'device.area', 'tasks', 'task.fixer', 'requester'],
       order: { createdAt: 'DESC' },
       skip: (page - 1) * limit,
       take: limit,

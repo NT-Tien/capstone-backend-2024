@@ -30,13 +30,14 @@ export class RequestController {
     status: 200,
     description: 'Get all Requests',
   })
-  @Get()
+  @Get(':page/:limit/:status')
   async getAll(
     @Headers('user') user: any,
     @Param('page') page: number,
     @Param('limit') limit: number,
+    @Param('status') status: RequestStatus,
   ) {
-    return await this.requestService.customHeadStaffGetAllRequest(user?.id, page, limit);
+    return await this.requestService.customHeadStaffGetAllRequest(user?.id, page, limit, status);
   }
 
   // @ApiResponse({
