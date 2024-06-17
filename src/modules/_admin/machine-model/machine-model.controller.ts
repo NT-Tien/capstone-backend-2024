@@ -16,7 +16,7 @@ import { AdminGuard } from 'src/modules/auth/guards/admin.guard';
 // import { CacheTTL } from '@nestjs/cache-manager';
 
 @ApiTags('admin: machine-model')
-@UseGuards(AdminGuard)
+// @UseGuards(AdminGuard)
 @Controller('admin/machine-model')
 export class MachineModelController {
   constructor(private readonly machineModelService: MachineModelService) {}

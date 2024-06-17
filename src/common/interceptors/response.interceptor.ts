@@ -4,8 +4,8 @@ import {
   ExecutionContext,
   CallHandler,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 class ApiResponse<T> {
   constructor(
@@ -29,6 +29,9 @@ export class ResponseInterceptor<T>
           .switchToHttp()
           .getResponse().statusCode;
         return new ApiResponse<T>(data, 'Success', responseStatusCode);
+      }),
+      catchError(error => {
+        return throwError(() => error);
       }),
     );
   }
