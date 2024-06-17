@@ -14,10 +14,11 @@ import { TypeErrorService } from './type-error.service';
 import { TypeErrorRequestDto } from './dto/request.dto';
 import { TypeErrorResponseDto } from './dto/response.dto';
 import { AdminGuard } from 'src/modules/auth/guards/admin.guard';
+import { HeadStaffGuard } from 'src/modules/auth/guards/headstaff.guard';
 
-@ApiTags('admin: type-error')
-@UseGuards(AdminGuard)
-@Controller('admin/type-error')
+@ApiTags('head staff: type-error')
+@UseGuards(HeadStaffGuard)
+@Controller('head-staff/type-error')
 export class TypeErrorController {
   constructor(private readonly typeErrorService: TypeErrorService) {}
 
@@ -43,83 +44,83 @@ export class TypeErrorController {
   //   return await this.typeErrorService.getAll();
   // }
 
-  @ApiBearerAuth()
-  @Get('include-deleted')
-  async getAllWithDeleted() {
-    return await this.typeErrorService.getAllWithDeleted();
-  }
+  // @ApiBearerAuth()
+  // @Get('include-deleted')
+  // async getAllWithDeleted() {
+  //   return await this.typeErrorService.getAllWithDeleted();
+  // }
 
-  @ApiResponse({
-    type: TypeErrorResponseDto.TypeErrorGetOne,
-    status: 200,
-    description: 'Get one TypeError',
-  })
-  @ApiBearerAuth()
-  @Get(':id')
-  async getOneFor(@Param('id') id: string) {
-    return await this.typeErrorService.getOne(id);
-  }
+  // @ApiResponse({
+  //   type: TypeErrorResponseDto.TypeErrorGetOne,
+  //   status: 200,
+  //   description: 'Get one TypeError',
+  // })
+  // @ApiBearerAuth()
+  // @Get(':id')
+  // async getOneFor(@Param('id') id: string) {
+  //   return await this.typeErrorService.getOne(id);
+  // }
 
-  @ApiBearerAuth()
-  @ApiResponse({
-    type: TypeErrorResponseDto.TypeErrorCreate,
-    status: 201,
-    description: 'Create a TypeError',
-  })
-  @Post()
-  async create(@Body() body: TypeErrorRequestDto.TypeErrorCreateDto) {
-    return await this.typeErrorService.create(
-      TypeErrorRequestDto.TypeErrorCreateDto.plainToClass(body),
-    );
-  }
+  // @ApiBearerAuth()
+  // @ApiResponse({
+  //   type: TypeErrorResponseDto.TypeErrorCreate,
+  //   status: 201,
+  //   description: 'Create a TypeError',
+  // })
+  // @Post()
+  // async create(@Body() body: TypeErrorRequestDto.TypeErrorCreateDto) {
+  //   return await this.typeErrorService.create(
+  //     TypeErrorRequestDto.TypeErrorCreateDto.plainToClass(body),
+  //   );
+  // }
 
-  @ApiBearerAuth()
-  @ApiResponse({
-    type: TypeErrorResponseDto.TypeErrorUpdate,
-    status: 200,
-    description: 'Update a TypeError',
-  })
-  @Put(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() body: TypeErrorRequestDto.TypeErrorUpdateDto,
-  ) {
-    return await this.typeErrorService.update(
-      id,
-      TypeErrorRequestDto.TypeErrorUpdateDto.plainToClass(body),
-    );
-  }
+  // @ApiBearerAuth()
+  // @ApiResponse({
+  //   type: TypeErrorResponseDto.TypeErrorUpdate,
+  //   status: 200,
+  //   description: 'Update a TypeError',
+  // })
+  // @Put(':id')
+  // async update(
+  //   @Param('id') id: string,
+  //   @Body() body: TypeErrorRequestDto.TypeErrorUpdateDto,
+  // ) {
+  //   return await this.typeErrorService.update(
+  //     id,
+  //     TypeErrorRequestDto.TypeErrorUpdateDto.plainToClass(body),
+  //   );
+  // }
 
-  @ApiBearerAuth()
-  @ApiResponse({
-    type: TypeErrorResponseDto.TypeErrorDelete,
-    status: 200,
-    description: 'Hard delete a TypeError',
-  })
-  @Delete(':id')
-  async deleteHard(@Param('id') id: string) {
-    return await this.typeErrorService.delete(id);
-  }
+  // @ApiBearerAuth()
+  // @ApiResponse({
+  //   type: TypeErrorResponseDto.TypeErrorDelete,
+  //   status: 200,
+  //   description: 'Hard delete a TypeError',
+  // })
+  // @Delete(':id')
+  // async deleteHard(@Param('id') id: string) {
+  //   return await this.typeErrorService.delete(id);
+  // }
 
-  @ApiBearerAuth()
-  @ApiResponse({
-    type: TypeErrorResponseDto.TypeErrorDelete,
-    status: 200,
-    description: 'Soft delete a TypeError',
-  })
-  @Delete('soft-delete/:id')
-  async delete(@Param('id') id: string) {
-    return await this.typeErrorService.softDelete(id);
-  }
+  // @ApiBearerAuth()
+  // @ApiResponse({
+  //   type: TypeErrorResponseDto.TypeErrorDelete,
+  //   status: 200,
+  //   description: 'Soft delete a TypeError',
+  // })
+  // @Delete('soft-delete/:id')
+  // async delete(@Param('id') id: string) {
+  //   return await this.typeErrorService.softDelete(id);
+  // }
 
-  @ApiBearerAuth()
-  @ApiResponse({
-    type: TypeErrorResponseDto.TypeErrorRestore,
-    status: 200,
-    description: 'Restore a TypeError',
-  })
-  @Put('restore/:id')
-  async restore(@Param('id') id: string) {
-    return await this.typeErrorService.restore(id);
-  }
+  // @ApiBearerAuth()
+  // @ApiResponse({
+  //   type: TypeErrorResponseDto.TypeErrorRestore,
+  //   status: 200,
+  //   description: 'Restore a TypeError',
+  // })
+  // @Put('restore/:id')
+  // async restore(@Param('id') id: string) {
+  //   return await this.typeErrorService.restore(id);
+  // }
 }
