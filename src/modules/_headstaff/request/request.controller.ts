@@ -93,11 +93,13 @@ export class RequestController {
   })
   @Put(':id/:status')
   async update(
+    @Headers('user') user: any,
     @Param('id') id: string,
     @Param('status') status: RequestStatus,
   ) {
     // create task for request before update status
     return await this.requestService.updateStatus(
+      user.id,
       id,
       status
     );

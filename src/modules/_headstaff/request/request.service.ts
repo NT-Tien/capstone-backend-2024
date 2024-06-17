@@ -40,7 +40,8 @@ export class RequestService extends BaseService<RequestEntity> {
     });
   }
 
-  updateStatus(id: string, status: RequestStatus): Promise<RequestEntity> {
-    return this.requestRepository.save({ id, status });
+  async updateStatus(userId: string, id: string, status: RequestStatus): Promise<RequestEntity> {
+    const account = await this.accountRepository.findOne({where: {id: userId}});
+    return await this.requestRepository.save({ id, status, checker: account });
   }
 }
