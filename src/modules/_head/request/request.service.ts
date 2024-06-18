@@ -34,7 +34,7 @@ export class RequestService extends BaseService<RequestEntity> {
     return this.requestRepository.find({
       where: { 
         requester: account,
-        createdAt: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
+        createdAt: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
        },
       relations: ['device'],
       order: { createdAt: 'DESC' },

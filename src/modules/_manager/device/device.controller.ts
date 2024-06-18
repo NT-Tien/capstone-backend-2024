@@ -13,12 +13,15 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeviceResponseDto } from './dto/response.dto';
 import { DeviceService } from './device.service';
 import { DeviceRequestDto } from './dto/request.dto';
+import { AdminGuard } from 'src/modules/auth/guards/admin.guard';
+import { HeadGuard } from 'src/modules/auth/guards/head.guard';
 import { HeadStaffGuard } from 'src/modules/auth/guards/headstaff.guard';
+import { StaffGuard } from 'src/modules/auth/guards/staff.guard';
 // import { CacheTTL } from '@nestjs/cache-manager';
 
-@ApiTags('head staff: device')
-@UseGuards(HeadStaffGuard)
-@Controller('head-staff/device')
+@ApiTags('admin: device')
+@UseGuards(AdminGuard)
+@Controller('admin/device')
 export class DeviceController {
   constructor(private readonly deviceService: DeviceService) {}
 
