@@ -92,6 +92,23 @@ export class TaskController {
 
   @ApiBearerAuth()
   @ApiResponse({
+    type: TaskResponseDto.TaskUpdate,
+    status: 200,
+    description: 'Update a Task',
+  })
+  @Put('assign-fixer/:id')
+  async assignFixer(
+    @Param('id') id: string,
+    @Body() body: TaskRequestDto.TaskAssignFixerDto,
+  ) {
+    return await this.taskService.assignFixer(
+      id,
+      TaskRequestDto.TaskAssignFixerDto.plainToClass(body),
+    );
+  }
+
+  @ApiBearerAuth()
+  @ApiResponse({
     type: TaskResponseDto.TaskDelete,
     status: 200,
     description: 'Hard delete a Task',

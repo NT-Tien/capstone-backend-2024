@@ -74,4 +74,11 @@ export namespace TaskRequestDto {
     @Expose()
     totalTime?: number;
   }
+
+  export class TaskAssignFixerDto extends BaseDTO {
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    fixer: string; // account id
+  }
 }
