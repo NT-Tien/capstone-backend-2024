@@ -13,7 +13,7 @@ import { NotifyEntity } from 'src/entities/notify.entity';
   imports: [ TypeOrmModule.forFeature([NotifyEntity]),AuthModule],
   controllers: [NotifyController],
   providers: [HeadStaffGateway, HeadGateway, StaffGateway, StockKeeperGateway, NotifyService],
-  exports: [HeadStaffGateway, HeadGateway, StaffGateway, StockKeeperGateway],
+  exports: [HeadStaffGateway, HeadGateway, StaffGateway, StockKeeperGateway, NotifyService],
 })
 export class NotifyModule {}
 // this.zalopayGateway.server.emit('new-payment', { message: req.body });

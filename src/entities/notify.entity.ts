@@ -1,14 +1,23 @@
 import { Column, Entity, ManyToOne, Unique } from "typeorm";
-import { AccountEntity } from "./account.entity";
+import { AccountEntity, Role } from "./account.entity";
 import { BaseEntity } from "src/common/base/entity.base";
 
 @Entity()
 export class NotifyEntity extends BaseEntity {
+
    @ManyToOne(() => AccountEntity, (acc) => acc.id, {
-        nullable: false,
+        nullable: true,
         eager: true,
     })
     receiver: AccountEntity;
+
+    @Column({
+        name: 'role_receiver',
+        type: 'enum',
+        enum: Role,
+        nullable: true,
+    })
+    roleReceiver: Role;
 
     @Column({
         name: 'task_id',
