@@ -44,7 +44,7 @@ export class HeadStaffGateway
   // }
 
   afterInit(server: any) {
-    console.log('init socket stock-keeper');
+    console.log('init socket head-staff');
     ('init');
   }
 

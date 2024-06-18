@@ -10,9 +10,10 @@ export namespace TaskResponseDto {
           updatedAt: '2024-05-09T23:17:51.118Z',
           deletedAt: null,
           name: 'string',
-          instruction: 'string',
-          width: 0,
-          height: 0,
+          status: 'string',
+          priority: true,
+          operator: 0,
+          totalTime: 0,
         },
       ],
     })
@@ -30,9 +31,10 @@ export namespace TaskResponseDto {
         updatedAt: '2024-05-09T23:17:51.118Z',
         deletedAt: null,
         name: 'string',
-        instruction: 'string',
-        width: 0,
-        height: 0,
+        status: 'string',
+        priority: true,
+        operator: 0,
+        totalTime: 0,
       },
     })
     data: object;
@@ -44,10 +46,11 @@ export namespace TaskResponseDto {
   export class TaskCreate {
     @ApiProperty({
       example: {
-        name: 'string',
-        instruction: 'string',
-        width: 0,
-        height: 0,
+               name: 'string',
+        status: 'string',
+        priority: true,
+        operator: 0,
+        totalTime: 0,
         deletedAt: null,
         id: 'b7ac4bf9-3830-4bb4-8618-58ff02be0a7e',
         createdAt: '2024-05-09T23:17:51.118Z',
@@ -63,10 +66,11 @@ export namespace TaskResponseDto {
   export class TaskUpdate {
     @ApiProperty({
       example: {
-        name: 'string',
-        instruction: 'string',
-        width: 0,
-        height: 0,
+               name: 'string',
+        status: 'string',
+        priority: true,
+        operator: 0,
+        totalTime: 0,
         deletedAt: null,
         id: 'b7ac4bf9-3830-4bb4-8618-58ff02be0a7e',
         createdAt: '2024-05-09T23:17:51.118Z',

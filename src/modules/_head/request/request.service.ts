@@ -6,6 +6,8 @@ import { Repository } from 'typeorm';
 import { RequestRequestDto } from './dto/request.dto';
 import { AccountEntity, Role } from 'src/entities/account.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
+import { HeadStaffGateway } from 'src/modules/notify/roles/notify.head-staff';
+import { NotifyService } from 'src/modules/notify/notify.service';
 
 @Injectable()
 export class RequestService extends BaseService<RequestEntity> {
@@ -16,12 +18,14 @@ export class RequestService extends BaseService<RequestEntity> {
     private readonly accountRepository: Repository<AccountEntity>,
     @InjectRepository(DeviceEntity)
     private readonly deviceRepository: Repository<DeviceEntity>,
+    private readonly headStaffGateWay: HeadStaffGateway,
+    private readonly notifyService: NotifyService,
   ) {
     super(requestRepository);
   }
 
   async customHeadGetAllRequest(userId: string): Promise<RequestEntity[]> {
-    var account = await this.accountRepository.findOne({
+    let account = await this.accountRepository.findOne({
       where: { id: userId },
     });
     if (!account || account.deletedAt || account.role !== Role.head) {
@@ -44,30 +48,39 @@ export class RequestService extends BaseService<RequestEntity> {
     data: RequestRequestDto.RequestCreateDto,
   ): Promise<RequestEntity> {
     // find account
-    var account = await this.accountRepository.findOne({
+    let account = await this.accountRepository.findOne({
       where: { id: userId },
     });
     if (!account || account.deletedAt || account.role !== Role.head) {
       throw new Error('Account is not valid');
     }
     // find device
-    var device = await this.deviceRepository.findOne({
+    let device = await this.deviceRepository.findOne({
       where: { id: data.device },
     });
     if (!device || device.deletedAt) {
       throw new Error('Device is not valid');
     }
     // check request duplicate
-    var request = await this.requestRepository.findOne({
+    let request = await this.requestRepository.findOne({
       where: { requester: account, device: device, status: RequestStatus.PENDING },
     });
     if (request) {
       throw new Error('Request is duplicate');
     }
-    var request = new RequestEntity();
+    let newRequest = new RequestEntity();
     request.requester = account;
     request.device = device;
     request.requester_note = data.requester_note;
-    return this.requestRepository.save(request);
+
+    // create new notify
+    let result = await this.notifyService.create({
+      roleReceiver: Role.head,
+      requestId: newRequest.id,
+    });
+    // push notify to head-staff
+    this.headStaffGateWay.server.emit('new-request', result);
+
+    return this.requestRepository.save(newRequest);
   }
 }

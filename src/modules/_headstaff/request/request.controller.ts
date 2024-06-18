@@ -30,13 +30,14 @@ export class RequestController {
     status: 200,
     description: 'Get all Requests',
   })
-  @Get()
+  @Get(':page/:limit/:status')
   async getAll(
     @Headers('user') user: any,
     @Param('page') page: number,
     @Param('limit') limit: number,
+    @Param('status') status: RequestStatus,
   ) {
-    return await this.requestService.customHeadStaffGetAllRequest(user?.id, page, limit);
+    return await this.requestService.customHeadStaffGetAllRequest(user?.id, page, limit, status);
   }
 
   // @ApiResponse({
@@ -56,16 +57,19 @@ export class RequestController {
   //   return await this.requestService.getAllWithDeleted();
   // }
 
-  // @ApiResponse({
-  //   type: RequestResponseDto.RequestGetOne,
-  //   status: 200,
-  //   description: 'Get one Request',
-  // })
-  // @ApiBearerAuth()
-  // @Get(':id')
-  // async getOneFor(@Param('id') id: string) {
-  //   return await this.requestService.getOne(id);
-  // }
+  @ApiResponse({
+    type: RequestResponseDto.RequestGetOne,
+    status: 200,
+    description: 'Get one Request',
+  })
+  @ApiBearerAuth()
+  @Get(':id')
+  async getOne(
+    @Headers('user') user: any,
+    @Param('id') id: string,
+  ) {
+    return await this.requestService.customHeadStaffGetOneRequest(user?.id, id);
+  }
 
   // @ApiBearerAuth()
   // @ApiResponse({
@@ -92,11 +96,13 @@ export class RequestController {
   })
   @Put(':id/:status')
   async update(
+    @Headers('user') user: any,
     @Param('id') id: string,
     @Param('status') status: RequestStatus,
   ) {
     // create task for request before update status
     return await this.requestService.updateStatus(
+      user.id,
       id,
       status
     );
