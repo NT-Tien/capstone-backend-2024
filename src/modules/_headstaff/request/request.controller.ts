@@ -12,14 +12,15 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 // import { CacheTTL } from '@nestjs/cache-manager';
-import { RequestService } from './headstaff.service';
+import { RequestService } from './request.service';
 import { RequestResponseDto } from './dto/response.dto';
 import { RequestRequestDto } from './dto/request.dto';
-import { HeadGuard } from 'src/modules/auth/guards/head.guard';
+import { HeadStaffGuard } from 'src/modules/auth/guards/headstaff.guard';
+import { RequestStatus } from 'src/entities/request.entity';
 
-@ApiTags('head: request')
-@UseGuards(HeadGuard)
-@Controller('head/request')
+@ApiTags('head staff: request')
+@UseGuards(HeadStaffGuard)
+@Controller('head-staff/request')
 export class RequestController {
   constructor(private readonly requestService: RequestService) { }
 
@@ -32,8 +33,10 @@ export class RequestController {
   @Get()
   async getAll(
     @Headers('user') user: any,
+    @Param('page') page: number,
+    @Param('limit') limit: number,
   ) {
-    return await this.requestService.customHeadGetAllRequest(user?.id);
+    return await this.requestService.customHeadStaffGetAllRequest(user?.id, page, limit);
   }
 
   // @ApiResponse({
@@ -64,39 +67,40 @@ export class RequestController {
   //   return await this.requestService.getOne(id);
   // }
 
-  @ApiBearerAuth()
-  @ApiResponse({
-    type: RequestResponseDto.RequestCreate,
-    status: 201,
-    description: 'Create a Request',
-  })
-  @Post()
-  async create(
-    @Headers('user') user: any,
-    @Body() body: RequestRequestDto.RequestCreateDto
-  ) {
-    return await this.requestService.customHeadCreateRequest(
-      user.id,
-      RequestRequestDto.RequestCreateDto.plainToClass(body),
-    );
-  }
-
   // @ApiBearerAuth()
   // @ApiResponse({
-  //   type: RequestResponseDto.RequestUpdate,
-  //   status: 200,
-  //   description: 'Update a Request',
+  //   type: RequestResponseDto.RequestCreate,
+  //   status: 201,
+  //   description: 'Create a Request',
   // })
-  // @Put(':id')
-  // async update(
-  //   @Param('id') id: string,
-  //   @Body() body: RequestRequestDto.RequestUpdateDto,
+  // @Post()
+  // async create(
+  //   @Headers('user') user: any,
+  //   @Body() body: RequestRequestDto.RequestCreateDto
   // ) {
-  //   return await this.requestService.update(
-  //     id,
-  //     RequestRequestDto.RequestUpdateDto.plainToClass(body),
+  //   return await this.requestService.customHeadCreateRequest(
+  //     user.id,
+  //     RequestRequestDto.RequestCreateDto.plainToClass(body),
   //   );
   // }
+
+  @ApiBearerAuth()
+  @ApiResponse({
+    type: RequestResponseDto.RequestUpdate,
+    status: 200,
+    description: 'Update a Request',
+  })
+  @Put(':id/:status')
+  async update(
+    @Param('id') id: string,
+    @Param('status') status: RequestStatus,
+  ) {
+    // create task for request before update status
+    return await this.requestService.updateStatus(
+      id,
+      status
+    );
+  }
 
   // @ApiBearerAuth()
   // @ApiResponse({
