@@ -22,16 +22,16 @@ import { HeadStaffGuard } from 'src/modules/auth/guards/headstaff.guard';
 export class DeviceController {
   constructor(private readonly deviceService: DeviceService) {}
 
-  @ApiBearerAuth()
-  @ApiResponse({
-    type: DeviceResponseDto.DeviceGetAll,
-    status: 200,
-    description: 'Get all Devices',
-  })
-  @Get()
-  async getAll() {
-    return await this.deviceService.getAllWithRelations();
-  }
+  // @ApiBearerAuth()
+  // @ApiResponse({
+  //   type: DeviceResponseDto.DeviceGetAll,
+  //   status: 200,
+  //   description: 'Get all Devices',
+  // })
+  // @Get()
+  // async getAll() {
+  //   return await this.deviceService.getAllWithRelations();
+  // }
 
   // @ApiResponse({
   //   type: DeviceResponseDto.DeviceGetAll,
@@ -44,11 +44,11 @@ export class DeviceController {
   //   return await this.deviceService.getAll();
   // }
 
-  @ApiBearerAuth()
-  @Get('include-deleted')
-  async getAllWithDeleted() {
-    return await this.deviceService.getAllWithDeleted();
-  }
+  // @ApiBearerAuth()
+  // @Get('include-deleted')
+  // async getAllWithDeleted() {
+  //   return await this.deviceService.getAllWithDeleted();
+  // }
 
   @ApiResponse({
     type: DeviceResponseDto.DeviceGetOne,
@@ -61,66 +61,66 @@ export class DeviceController {
     return await this.deviceService.getOneWithRelations(id);
   }
 
-  @ApiBearerAuth()
-  @ApiResponse({
-    type: DeviceResponseDto.DeviceCreate,
-    status: 201,
-    description: 'Create a Device',
-  })
-  @Post()
-  async create(@Body() body: DeviceRequestDto.DeviceCreateDto) {
-    return await this.deviceService.create(
-      DeviceRequestDto.DeviceCreateDto.plainToClass(body),
-    );
-  }
+  // @ApiBearerAuth()
+  // @ApiResponse({
+  //   type: DeviceResponseDto.DeviceCreate,
+  //   status: 201,
+  //   description: 'Create a Device',
+  // })
+  // @Post()
+  // async create(@Body() body: DeviceRequestDto.DeviceCreateDto) {
+  //   return await this.deviceService.create(
+  //     DeviceRequestDto.DeviceCreateDto.plainToClass(body),
+  //   );
+  // }
 
-  @ApiBearerAuth()
-  @ApiResponse({
-    type: DeviceResponseDto.DeviceUpdate,
-    status: 200,
-    description: 'Update a Device',
-  })
-  @Put(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() body: DeviceRequestDto.DeviceUpdateDto,
-  ) {
-    return await this.deviceService.update(
-      id,
-      DeviceRequestDto.DeviceUpdateDto.plainToClass(body),
-    );
-  }
+  // @ApiBearerAuth()
+  // @ApiResponse({
+  //   type: DeviceResponseDto.DeviceUpdate,
+  //   status: 200,
+  //   description: 'Update a Device',
+  // })
+  // @Put(':id')
+  // async update(
+  //   @Param('id') id: string,
+  //   @Body() body: DeviceRequestDto.DeviceUpdateDto,
+  // ) {
+  //   return await this.deviceService.update(
+  //     id,
+  //     DeviceRequestDto.DeviceUpdateDto.plainToClass(body),
+  //   );
+  // }
 
-  @ApiBearerAuth()
-  @ApiResponse({
-    type: DeviceResponseDto.DeviceDelete,
-    status: 200,
-    description: 'Hard delete a Device',
-  })
-  @Delete(':id')
-  async deleteHard(@Param('id') id: string) {
-    return await this.deviceService.delete(id);
-  }
+  // @ApiBearerAuth()
+  // @ApiResponse({
+  //   type: DeviceResponseDto.DeviceDelete,
+  //   status: 200,
+  //   description: 'Hard delete a Device',
+  // })
+  // @Delete(':id')
+  // async deleteHard(@Param('id') id: string) {
+  //   return await this.deviceService.delete(id);
+  // }
 
-  @ApiBearerAuth()
-  @ApiResponse({
-    type: DeviceResponseDto.DeviceDelete,
-    status: 200,
-    description: 'Soft delete a Device',
-  })
-  @Delete('soft-delete/:id')
-  async delete(@Param('id') id: string) {
-    return await this.deviceService.softDelete(id);
-  }
+  // @ApiBearerAuth()
+  // @ApiResponse({
+  //   type: DeviceResponseDto.DeviceDelete,
+  //   status: 200,
+  //   description: 'Soft delete a Device',
+  // })
+  // @Delete('soft-delete/:id')
+  // async delete(@Param('id') id: string) {
+  //   return await this.deviceService.softDelete(id);
+  // }
 
-  @ApiBearerAuth()
-  @ApiResponse({
-    type: DeviceResponseDto.DeviceRestore,
-    status: 200,
-    description: 'Restore a Device',
-  })
-  @Put('restore/:id')
-  async restore(@Param('id') id: string) {
-    return await this.deviceService.restore(id);
-  }
+  // @ApiBearerAuth()
+  // @ApiResponse({
+  //   type: DeviceResponseDto.DeviceRestore,
+  //   status: 200,
+  //   description: 'Restore a Device',
+  // })
+  // @Put('restore/:id')
+  // async restore(@Param('id') id: string) {
+  //   return await this.deviceService.restore(id);
+  // }
 }
