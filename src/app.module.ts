@@ -21,14 +21,19 @@ import { StaffModule } from './modules/_staff/staff.module';
 import { StockkeeperModule } from './modules/_stockkeeper/stockkeeper.module';
 import { RequestInterceptor } from './common/interceptors/request.interceptor';
 import { PredictiveModule } from './modules/predictive-maintenance/predictive.module';
+import { redisStore } from 'cache-manager-redis-yet';
+import { CACHE_REDIS_CONFIG } from './config/redis.client';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(TYPE_ORM_CONFIG),
     BullModule.forRoot(QUEUE_CONFIG),
     ScheduleModule.forRoot(),
-    CacheModule.register({
+    CacheModule.registerAsync({
       isGlobal: true,
+      useFactory: async () => ({
+        store: await redisStore(CACHE_REDIS_CONFIG),
+      }),
     }),
     MyMiddlewareModule,
     AuthModule,
@@ -58,4 +63,4 @@ import { PredictiveModule } from './modules/predictive-maintenance/predictive.mo
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }
