@@ -68,10 +68,13 @@ export class RequestService extends BaseService<RequestEntity> {
     if (request) {
       throw new Error('Request is duplicate');
     }
-    let newRequest = new RequestEntity();
-    request.requester = account;
-    request.device = device;
-    request.requester_note = data.requester_note;
+
+    // create new request
+    let newRequest = await this.requestRepository.save({
+      requester: account,
+      device: device,
+      requester_note: data.requester_note
+    });
 
     // create new notify
     let result = await this.notifyService.create({
@@ -80,7 +83,6 @@ export class RequestService extends BaseService<RequestEntity> {
     });
     // push notify to head-staff
     this.headStaffGateWay.server.emit('new-request', result);
-
-    return this.requestRepository.save(newRequest);
+    return this.requestRepository.create(newRequest);
   }
 }

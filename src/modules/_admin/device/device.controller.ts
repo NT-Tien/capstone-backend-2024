@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
   Param,
   Post,
   Put,
@@ -14,9 +13,6 @@ import { DeviceResponseDto } from './dto/response.dto';
 import { DeviceService } from './device.service';
 import { DeviceRequestDto } from './dto/request.dto';
 import { AdminGuard } from 'src/modules/auth/guards/admin.guard';
-import { HeadGuard } from 'src/modules/auth/guards/head.guard';
-import { HeadStaffGuard } from 'src/modules/auth/guards/headstaff.guard';
-import { StaffGuard } from 'src/modules/auth/guards/staff.guard';
 // import { CacheTTL } from '@nestjs/cache-manager';
 
 @ApiTags('admin: device')
