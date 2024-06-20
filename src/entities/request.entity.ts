@@ -10,9 +10,15 @@ export enum RequestStatus {
   REJECTED = 'REJECTED',
 }
 
-export enum TaskType {
+export enum RequestType {
   FIX = 'FIX',
   MAINTENANCE = 'MAINTENANCE',
+}
+
+export enum RequestLevel {  // only for MAINTENANCE type
+  LOW = 'LOW', // rate of failure is 10% - 30%
+  MEDIUM = 'MEDIUM', // rate of failure is 30% - 70%
+  HIGH = 'HIGH', // rate of failure is 70% - 100%
 }
 @Entity({
   name: 'REQUEST',
@@ -66,7 +72,16 @@ export class RequestEntity extends BaseEntity {
   @Column({
     name: 'type',
     type: 'enum',
-    enum: TaskType,
+    enum: RequestType,
+    default: RequestType.FIX,
   })
-  type: TaskType;
+  type: RequestType;
+
+  @Column({
+    name: 'level',
+    type: 'enum',
+    enum: RequestLevel,
+    nullable: true,
+  })
+  level: RequestLevel;
 }

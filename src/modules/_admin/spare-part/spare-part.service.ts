@@ -12,4 +12,17 @@ export class SparePartService extends BaseService<SparePartEntity> {
   ) {
     super(sparePartRepository);
   }
+
+  async customGetAllSparePart(page: number, limit: number, searchName: string): Promise<[SparePartEntity[], number]> {
+    return this.sparePartRepository.findAndCount({
+      where: { 
+        name: searchName.trim() !== '' ? searchName : null,
+        deletedAt: null 
+      },
+      order: { createdAt: 'DESC' },
+      relations: ['machineModel'],
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+  }
 }

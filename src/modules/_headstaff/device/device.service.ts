@@ -16,7 +16,7 @@ export class DeviceService extends BaseService<DeviceEntity> {
   // get all with relations
   async getAllWithRelations(): Promise<DeviceEntity[]> {
     return this.deviceRepository.find({
-      relations: ['area', 'machineModel'],
+      relations: ['area', 'machineModel', 'machineModel.spareParts'],
     });
   }
 
@@ -24,7 +24,7 @@ export class DeviceService extends BaseService<DeviceEntity> {
   async getOneWithRelations(id: string): Promise<DeviceEntity> {
     return this.deviceRepository.findOne({
       where: { id },
-      relations: ['area', 'machineModel'],
+      relations: ['area', 'machineModel', 'machineModel.spareParts'],
     });
   }
 }

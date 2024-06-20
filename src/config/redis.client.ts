@@ -7,3 +7,11 @@ export const redisClientLocal = new Redis({
   host: process.env.REDIS_HOST,
   password: process.env.REDIS_PASSWORD,
 });
+
+export const CACHE_REDIS_CONFIG = {
+  socket: {
+    host: process.env.REDIS_HOST,
+    port: parseInt(process.env.REDIS_PORT),
+  },
+  password: process.env.REDIS_PASSWORD,
+};

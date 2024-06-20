@@ -15,10 +15,10 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RequestService } from './request.service';
 import { RequestResponseDto } from './dto/response.dto';
 import { RequestRequestDto } from './dto/request.dto';
-import { HeadStaffGuard } from 'src/modules/auth/guards/headstaff.guard';
+import { HeadGuard } from 'src/modules/auth/guards/head.guard';
 
 @ApiTags('head: request')
-@UseGuards(HeadStaffGuard)
+@UseGuards(HeadGuard)
 @Controller('head/request')
 export class RequestController {
   constructor(private readonly requestService: RequestService) { }
