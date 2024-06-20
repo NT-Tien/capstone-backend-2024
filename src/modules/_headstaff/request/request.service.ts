@@ -55,7 +55,7 @@ export class RequestService extends BaseService<RequestEntity> {
       status: true,
     });
     return this.requestRepository.findOne({
-      where: { id, requester: account },
+      where: { id },
       relations: ['device', 'device.area', 'tasks', 'tasks.fixer', 'requester'],
     });
   }
