@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, ValidateIf } from 'class-validator';
+import { IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
 
 export namespace TypeErrorRequestDto {
@@ -19,22 +19,33 @@ export namespace TypeErrorRequestDto {
     @IsNotEmpty()
     @Expose()
     description: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    machineModel: string;
   }
 
   export class TypeErrorUpdateDto extends BaseDTO {
     @ApiProperty()
-    @ValidateIf((o) => o.name !== undefined)
+    @IsOptional()
     @Expose()
-    name: string;
+    name?: string;
 
     @ApiProperty()
-    @ValidateIf((o) => o.duration !== undefined)
+    @IsOptional()
     @Expose()
-    duration: number;
+    duration?: number;
 
     @ApiProperty()
-    @ValidateIf((o) => o.description !== undefined)
+    @IsOptional()
     @Expose()
-    description: string;
+    description?: string;
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
+    machineModel?: string;
+
   }
 }
