@@ -38,13 +38,17 @@ export class TaskController {
   @UseGuards(StaffGuard)
   @ApiBearerAuth()
   @ApiResponse({
-    type: TaskResponseDto.TaskGetAll,
+    type: TaskResponseDto.TaskGetOne,
     status: 200,
-    description: 'Get all Tasks',
+    description: 'Get curent Tasks',
   })
   @Get("curenttask")
   async getcurrentTask( @Param('userId') userId: string) {
+    try{
     return await this.taskService.getCurrentTask(userId);
+    }catch(error){
+      return null;
+    }
   }
 
   @UseGuards(StaffGuard)

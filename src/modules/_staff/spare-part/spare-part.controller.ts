@@ -14,8 +14,8 @@ import { SparePartResponseDto } from './dto/response.dto';
 
 import { StaffGuard } from 'src/modules/auth/guards/staff.guard';
 
-@ApiTags('admin: spare-part')
-@Controller('admin/spare-part')
+@ApiTags('staff: spare-part')
+@Controller('staff/spare-part')
 export class SparePartController {
   constructor(private readonly sparePartService: SparePartService) {}
 
