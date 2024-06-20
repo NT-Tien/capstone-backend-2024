@@ -3,9 +3,33 @@ import { Expose } from 'class-transformer';
 import { IsNotEmpty, ValidateIf } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
 
+// export class SparePartEntity extends BaseEntity{
+//   @ManyToOne(() => MachineModelEntity, machineModel => machineModel.id)
+//   machineModel: MachineModelEntity;
 
-export namespace TaskRequestDto {
-  export class TaskCreateDto extends BaseDTO {
+//   @Column({
+//       name: 'name',
+//       type: 'varchar',
+//       length: 100,
+//       nullable: false,
+//   })
+//   name: string;
+
+//   @Column({
+//       name: 'quantity',
+//       type: 'int',
+//   })
+//   quantity: number;
+
+//   @Column({
+//       name: 'Expiration_date',
+//       type: 'date',
+//   })
+//   expirationDate: Date;
+// }
+
+export namespace SparePartRequestDto {
+  export class SparePartCreateDto extends BaseDTO {
     @ApiProperty()
     @IsNotEmpty()
     @Expose()
@@ -27,7 +51,7 @@ export namespace TaskRequestDto {
     expirationDate: Date;
   }
 
-  export class TaskUpdateDto extends BaseDTO {
+  export class SparePartUpdateDto extends BaseDTO {
     @ApiProperty()
     @ValidateIf((object, value) => value !== undefined)
     @Expose()

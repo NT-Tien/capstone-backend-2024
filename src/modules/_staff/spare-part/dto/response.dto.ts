@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export namespace TaskResponseDto {
-  export class TaskGetAll {
+export namespace SparePartResponseDto {
+  export class SparePartGetAll {
     @ApiProperty({
       example: [
         {
@@ -22,7 +22,7 @@ export namespace TaskResponseDto {
     @ApiProperty({ example: 200 })
     statusCode: number;
   }
-  export class TaskGetOne {
+  export class SparePartGetOne {
     @ApiProperty({
       example: {
         id: 'b7ac4bf9-3830-4bb4-8618-58ff02be0a7e',
@@ -41,7 +41,7 @@ export namespace TaskResponseDto {
     @ApiProperty({ example: 200 })
     statusCode: number;
   }
-  export class TaskCreate {
+  export class SparePartCreate {
     @ApiProperty({
       example: {
         name: 'string',
@@ -60,7 +60,7 @@ export namespace TaskResponseDto {
     @ApiProperty({ example: 201 })
     statusCode: number;
   }
-  export class TaskUpdate {
+  export class SparePartUpdate {
     @ApiProperty({
       example: {
         name: 'string',
@@ -79,7 +79,7 @@ export namespace TaskResponseDto {
     @ApiProperty({ example: 200 })
     statusCode: number;
   }
-  export class TaskDelete {
+  export class SparePartDelete {
     @ApiProperty({
       example: {
         generatedMaps: [],
@@ -93,7 +93,7 @@ export namespace TaskResponseDto {
     @ApiProperty({ example: 200 })
     statusCode: number;
   }
-  export class TaskRestore {
+  export class SparePartRestore {
     @ApiProperty({
       example: {
         generatedMaps: [],
