@@ -55,7 +55,6 @@ export class TaskEntity extends BaseEntity {
   issues: IssueEntity[];
 
   @ManyToOne(() => AccountEntity, (account) => account.id)
-  @JoinColumn({ name: 'fixer_id' })
   fixer: AccountEntity;
 
   @Column({
