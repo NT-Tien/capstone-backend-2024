@@ -24,7 +24,7 @@ export class TaskService extends BaseService<TaskEntity> {
       where: {
         status: status ? status : undefined,
       },
-      relations: ['request', 'fixer', 'request.requester'],
+      relations: ['request', 'fixer', 'request.requester', 'device'],
       order: {createdAt: 'DESC'},
       skip: (page - 1) * limit,
       take: limit,
