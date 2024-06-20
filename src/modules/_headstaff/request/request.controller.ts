@@ -68,6 +68,8 @@ export class RequestController {
     @Headers('user') user: any,
     @Param('id') id: string,
   ) {
+    console.log(user?.id, id);
+    
     return await this.requestService.customHeadStaffGetOneRequest(user?.id, id);
   }
 
