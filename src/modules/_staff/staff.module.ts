@@ -4,28 +4,14 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { AccountEntity } from "src/entities/account.entity";
 import { AuthController } from "../auth/auth.controller";
 import { AuthService } from "../auth/auth.service";
-import { StaffService } from "./staff.service";
+import { AuthModule } from "../auth/auth.module";
+import { TaskEntity } from "src/entities/task.entity";
+import { TaskModule } from "../_staff/task/task.module";
 
 @Module({
-    imports: [
-        JwtModule.register({
-          secret: process.env.JWT_SECRET_KEY,
-          signOptions: { expiresIn: '4h', algorithm: 'HS256' },
-        }),
-        TypeOrmModule.forFeature([AccountEntity]),
-      ],
-      controllers: [AuthController],
-      providers: [
-        {
-          provide: 'STAFF_SERVICE_MAIDTS',
-          useClass: StaffService,
-        },
-      ],
-      exports: [
-        {
-          provide: 'STAFF_SERVICE_MAIDTS',
-          useClass: StaffService,
-        },
-      ],
+  imports: [
+    TaskModule,
+    
+  ],
 })
 export class StaffModule {}
