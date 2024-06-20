@@ -18,6 +18,8 @@ export class TaskService extends BaseService<TaskEntity> {
   }
 
   async customGetAllTask(page: number, limit: number, status: TaskStatus): Promise<[TaskEntity[], number]> {
+    console.log(typeof page, typeof limit, status);
+    
     return this.taskRepository.findAndCount({
       where: {
         status: status ? status : undefined,

@@ -29,13 +29,13 @@ export class TaskController {
     status: 200,
     description: 'Get all Tasks',
   })
-  @Get()
-  async getAll(
+  @Get(':page/:limit/:status')
+  getAll(
     @Param('page') page: number,
     @Param('limit') limit: number,
     @Param('status') status: TaskStatus,
   ) {
-    return await this.taskService.customGetAllTask(page, limit, status);
+    return this.taskService.customGetAllTask(page, limit, status);
   }
 
   // @ApiResponse({
