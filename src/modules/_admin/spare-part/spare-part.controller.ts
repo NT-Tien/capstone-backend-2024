@@ -27,9 +27,13 @@ export class SparePartController {
     status: 200,
     description: 'Get all SpareParts',
   })
-  @Get()
-  async getAll() {
-    return await this.sparePartService.getAll();
+  @Get(':page/:limit/:searchName')
+  async getAll(
+    @Param('page') page: number,
+    @Param('limit') limit: number,
+    @Param('searchName') searchName: string,
+  ) {
+    return await this.sparePartService.customGetAllSparePart(page, limit, searchName);
   }
 
   // @ApiResponse({
