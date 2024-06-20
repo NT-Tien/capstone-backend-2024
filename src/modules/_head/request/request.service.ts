@@ -38,7 +38,6 @@ export class RequestService extends BaseService<RequestEntity> {
       .leftJoinAndSelect('request.checker', 'checker')
       .where('requester.deletedAt is null')
       .andWhere('requester.id = :id', { id: userId })
-      // between last 30 days to now
       .andWhere('request.createdAt BETWEEN :start AND :end', {
         start: new Date(new Date().setDate(new Date().getDate() - 30)),
         end: new Date(),

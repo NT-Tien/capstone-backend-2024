@@ -45,14 +45,13 @@ export enum TaskStatus {
 export class TaskEntity extends BaseEntity {
   @ManyToOne(() => DeviceEntity, (device) => device.id, {
     nullable: false,
-    eager: true,
   })
   device: DeviceEntity;
 
   @ManyToOne(() => RequestEntity, (request) => request.id, { nullable: false })
   request: RequestEntity;
 
-  @OneToMany(() => IssueEntity, (issue) => issue.id, { eager: true })
+  @OneToMany(() => IssueEntity, (issue) => issue.id)
   issues: IssueEntity[];
 
   @ManyToOne(() => AccountEntity, (account) => account.id)
