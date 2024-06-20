@@ -17,19 +17,9 @@ export namespace TaskRequestDto {
     request: string;
 
     @ApiProperty()
-    @IsOptional()
-    @Expose()
-    fixer?: string; // account id
-
-    @ApiProperty()
     @IsNotEmpty()
     @Expose()
     name: string;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @Expose()
-    status: RequestStatus;
 
     @ApiProperty()
     @IsNotEmpty()
@@ -57,11 +47,6 @@ export namespace TaskRequestDto {
     @ApiProperty()
     @IsOptional()
     @Expose()
-    status?: RequestStatus;
-
-    @ApiProperty()
-    @IsOptional()
-    @Expose()
     priority?: boolean;
 
     @ApiProperty()
@@ -73,6 +58,12 @@ export namespace TaskRequestDto {
     @IsOptional()
     @Expose()
     totalTime?: number;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    status: RequestStatus;
+
   }
 
   export class TaskAssignFixerDto extends BaseDTO {

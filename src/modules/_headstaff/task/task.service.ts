@@ -17,6 +17,18 @@ export class TaskService extends BaseService<TaskEntity> {
     super(taskRepository);
   }
 
+  async customGetAllTask(page: number, limit: number, status: TaskStatus): Promise<[TaskEntity[], number]> {
+    return this.taskRepository.findAndCount({
+      where: {
+        status: status ? status : undefined,
+      },
+      relations: ['request', 'fixer', 'request.requester'],
+      order: {createdAt: 'DESC'},
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+  }
+
   async assignFixer(taskId: string, data: TaskRequestDto.TaskAssignFixerDto) {
     const task = await this.taskRepository.findOne({where: {id: taskId}});
     if (!task || task.status !== TaskStatus.AWAITING_FIXER || task.fixer) {

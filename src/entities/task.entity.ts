@@ -61,6 +61,7 @@ export class TaskEntity extends BaseEntity {
   @Column({
     name: 'fixer_note',
     type: 'text',
+    nullable: true,
   })
   fixerNote: string;
 
