@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, ValidateIf } from 'class-validator';
+import { IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
 
 export namespace IssueRequestDto {
@@ -8,47 +8,80 @@ export namespace IssueRequestDto {
     @ApiProperty()
     @IsNotEmpty()
     @Expose()
-    name: string;
+    task: string;
 
     @ApiProperty()
     @IsNotEmpty()
     @Expose()
-    instruction: string;
+    typeError: string;
 
     @ApiProperty()
     @IsNotEmpty()
     @Expose()
-    width: number;
+    description: string;
 
     @ApiProperty()
     @IsNotEmpty()
     @Expose()
-    height: number;
+    fixType: string;
+
   }
 
   export class IssueUpdateDto extends BaseDTO {
     @ApiProperty()
-    @IsNotEmpty()
-    @ValidateIf((object, value) => value !== undefined)
+    @IsOptional()
     @Expose()
-    name?: string;
+    task: string;
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
+    typeError: string;
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
+    description: string;
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
+    fixType: string;
+  }
+}
+
+export namespace IssueSparePartRequestDto {
+  export class IssueSparePartCreateDto extends BaseDTO {
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    issue: string;
 
     @ApiProperty()
     @IsNotEmpty()
-    @ValidateIf((object, value) => value !== undefined)
     @Expose()
-    instruction?: string;
+    sparePart: string;
 
     @ApiProperty()
     @IsNotEmpty()
-    @ValidateIf((object, value) => value !== undefined)
     @Expose()
-    width?: number;
+    quantity: number;
+  }
+
+  export class IssueSparePartUpdateDto extends BaseDTO {
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
+    issue: string;
 
     @ApiProperty()
-    @IsNotEmpty()
-    @ValidateIf((object, value) => value !== undefined)
+    @IsOptional()
     @Expose()
-    height?: number;
+    sparePart: string;
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
+    quantity: number;
   }
 }

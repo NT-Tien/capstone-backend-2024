@@ -21,16 +21,37 @@ export class TaskService extends BaseService<TaskEntity> {
   }
 
   async customGetAllTask(page: number, limit: number, status: TaskStatus): Promise<[TaskEntity[], number]> {
-    console.log(typeof page, typeof limit, status);
-
     return this.taskRepository.findAndCount({
       where: {
         status: status ? status : undefined,
       },
-      relations: ['request', 'fixer', 'request.requester', 'device'],
+      relations: [
+        'request',
+        'fixer',
+        'request.requester',
+        'device',
+        'device.machineModel',
+        'device.machineModel.spareParts',
+        'device.machineModel.typeErrors',
+      ],
       order: { createdAt: 'DESC' },
       skip: (page - 1) * limit,
       take: limit,
+    });
+  }
+
+  async getOneTask(id: string) {
+    return await this.taskRepository.findOne({
+      where: { id },
+      relations: [
+        'request',
+        'fixer',
+        'request.requester',
+        'device',
+        'device.machineModel',
+        'device.machineModel.spareParts',
+        'device.machineModel.typeErrors',
+      ]
     });
   }
 

@@ -21,16 +21,16 @@ import { HeadStaffGuard } from 'src/modules/auth/guards/headstaff.guard';
 export class IssueController {
   constructor(private readonly issueService: IssueService) {}
 
-  @ApiBearerAuth()
-  @ApiResponse({
-    type: IssueResponseDto.IssueGetAll,
-    status: 200,
-    description: 'Get all Issues',
-  })
-  @Get()
-  async getAll() {
-    return await this.issueService.getAll();
-  }
+  // @ApiBearerAuth()
+  // @ApiResponse({
+  //   type: IssueResponseDto.IssueGetAll,
+  //   status: 200,
+  //   description: 'Get all Issues',
+  // })
+  // @Get()
+  // async getAll() {
+  //   return await this.issueService.getAll();
+  // }
 
   // @ApiResponse({
   //   type: IssueResponseDto.IssueGetAll,
@@ -43,11 +43,11 @@ export class IssueController {
   //   return await this.issueService.getAll();
   // }
 
-  @ApiBearerAuth()
-  @Get('include-deleted')
-  async getAllWithDeleted() {
-    return await this.issueService.getAllWithDeleted();
-  }
+  // @ApiBearerAuth()
+  // @Get('include-deleted')
+  // async getAllWithDeleted() {
+  //   return await this.issueService.getAllWithDeleted();
+  // }
 
   @ApiResponse({
     type: IssueResponseDto.IssueGetOne,
@@ -101,25 +101,25 @@ export class IssueController {
     return await this.issueService.delete(id);
   }
 
-  @ApiBearerAuth()
-  @ApiResponse({
-    type: IssueResponseDto.IssueDelete,
-    status: 200,
-    description: 'Soft delete a Issue',
-  })
-  @Delete('soft-delete/:id')
-  async delete(@Param('id') id: string) {
-    return await this.issueService.softDelete(id);
-  }
+  // @ApiBearerAuth()
+  // @ApiResponse({
+  //   type: IssueResponseDto.IssueDelete,
+  //   status: 200,
+  //   description: 'Soft delete a Issue',
+  // })
+  // @Delete('soft-delete/:id')
+  // async delete(@Param('id') id: string) {
+  //   return await this.issueService.softDelete(id);
+  // }
 
-  @ApiBearerAuth()
-  @ApiResponse({
-    type: IssueResponseDto.IssueRestore,
-    status: 200,
-    description: 'Restore a Issue',
-  })
-  @Put('restore/:id')
-  async restore(@Param('id') id: string) {
-    return await this.issueService.restore(id);
-  }
+  // @ApiBearerAuth()
+  // @ApiResponse({
+  //   type: IssueResponseDto.IssueRestore,
+  //   status: 200,
+  //   description: 'Restore a Issue',
+  // })
+  // @Put('restore/:id')
+  // async restore(@Param('id') id: string) {
+  //   return await this.issueService.restore(id);
+  // }
 }

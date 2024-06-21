@@ -63,7 +63,7 @@ export class TaskController {
   @ApiBearerAuth()
   @Get(':id')
   async getOneFor(@Param('id') id: string) {
-    return await this.taskService.getOne(id);
+    return await this.taskService.getOneTask(id);
   }
 
   @ApiBearerAuth()
