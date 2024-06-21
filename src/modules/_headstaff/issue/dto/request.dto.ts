@@ -28,25 +28,21 @@ export namespace IssueRequestDto {
   }
 
   export class IssueUpdateDto extends BaseDTO {
-    @ApiProperty()
-    @IsOptional()
-    @Expose()
-    task: string;
 
     @ApiProperty()
     @IsOptional()
     @Expose()
-    typeError: string;
+    typeError?: string;
 
     @ApiProperty()
     @IsOptional()
     @Expose()
-    description: string;
+    description?: string;
 
     @ApiProperty()
     @IsOptional()
     @Expose()
-    fixType: string;
+    fixType?: string;
   }
 }
 
@@ -72,16 +68,16 @@ export namespace IssueSparePartRequestDto {
     @ApiProperty()
     @IsOptional()
     @Expose()
-    issue: string;
+    issue?: string;
 
     @ApiProperty()
     @IsOptional()
     @Expose()
-    sparePart: string;
+    sparePart?: string;
 
     @ApiProperty()
     @IsOptional()
     @Expose()
-    quantity: number;
+    quantity?: number;
   }
 }

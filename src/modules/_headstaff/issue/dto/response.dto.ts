@@ -9,10 +9,9 @@ export namespace IssueResponseDto {
           createdAt: '2024-05-09T23:17:51.118Z',
           updatedAt: '2024-05-09T23:17:51.118Z',
           deletedAt: null,
-          name: 'string',
-          instruction: 'string',
-          width: 0,
-          height: 0,
+          description: 'string',
+          fixType: 'string',
+          status: 'string',
         },
       ],
     })
@@ -29,10 +28,9 @@ export namespace IssueResponseDto {
         createdAt: '2024-05-09T23:17:51.118Z',
         updatedAt: '2024-05-09T23:17:51.118Z',
         deletedAt: null,
-        name: 'string',
-        instruction: 'string',
-        width: 0,
-        height: 0,
+        description: 'string',
+        fixType: 'string',
+        status: 'string',
       },
     })
     data: object;
@@ -44,10 +42,9 @@ export namespace IssueResponseDto {
   export class IssueCreate {
     @ApiProperty({
       example: {
-        name: 'string',
-        instruction: 'string',
-        width: 0,
-        height: 0,
+        description: 'string',
+        fixType: 'string',
+        status: 'string',
         deletedAt: null,
         id: 'b7ac4bf9-3830-4bb4-8618-58ff02be0a7e',
         createdAt: '2024-05-09T23:17:51.118Z',
@@ -63,10 +60,9 @@ export namespace IssueResponseDto {
   export class IssueUpdate {
     @ApiProperty({
       example: {
-        name: 'string',
-        instruction: 'string',
-        width: 0,
-        height: 0,
+        description: 'string',
+        fixType: 'string',
+        status: 'string',
         deletedAt: null,
         id: 'b7ac4bf9-3830-4bb4-8618-58ff02be0a7e',
         createdAt: '2024-05-09T23:17:51.118Z',
