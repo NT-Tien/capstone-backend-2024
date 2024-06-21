@@ -6,10 +6,6 @@ import { RequestStatus } from 'src/entities/request.entity';
 
 export namespace TaskRequestDto {
   export class TaskCreateDto extends BaseDTO {
-    @ApiProperty()
-    @IsNotEmpty()
-    @Expose()
-    device: string;
 
     @ApiProperty()
     @IsNotEmpty()
@@ -30,11 +26,6 @@ export namespace TaskRequestDto {
     @IsNotEmpty()
     @Expose()
     operator: number;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @Expose()
-    totalTime: number;
 
   }
 
