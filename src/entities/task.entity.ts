@@ -91,7 +91,7 @@ export class TaskEntity extends BaseEntity {
   operator: number;
 
   @Column({
-    name: 'total_time',
+    name: 'totalTime',
     type: 'int',
   })
   totalTime: number;
