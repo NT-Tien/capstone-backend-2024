@@ -27,6 +27,11 @@ export namespace TaskRequestDto {
     @Expose()
     operator: number;
 
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
+    totalTime?: number;
+
   }
 
   export class TaskUpdateDto extends BaseDTO {
