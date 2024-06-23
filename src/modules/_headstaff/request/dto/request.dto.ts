@@ -14,7 +14,7 @@ export namespace RequestRequestDto {
     @ApiProperty()
     @IsNotEmpty()
     @Expose()
-    requester_note: string;
+    checker_note: string;
   }
 
   export class RequestUpdateDto extends BaseDTO {
@@ -26,7 +26,7 @@ export namespace RequestRequestDto {
     @ApiProperty()
     @ValidateIf((o) => o.requester_note)
     @Expose()
-    requester_note?: string;
+    checker_note?: string;
 
     @ApiProperty()
     @ValidateIf((o) => o.status)
