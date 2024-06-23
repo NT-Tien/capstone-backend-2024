@@ -74,7 +74,7 @@ export class TaskController {
   })
   @Post()
   async create(@Body() body: TaskRequestDto.TaskCreateDto) {
-    return await this.taskService.create(
+    return await this.taskService.customCreateTask(
       TaskRequestDto.TaskCreateDto.plainToClass(body),
     );
   }
