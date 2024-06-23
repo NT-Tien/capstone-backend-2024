@@ -32,13 +32,11 @@ export class RequestEntity extends BaseEntity {
 
   @ManyToOne(() => DeviceEntity, (device) => device.id, {
     nullable: false,
-    eager: true,
   })
   device: DeviceEntity;
 
   @ManyToOne(() => AccountEntity, (acc) => acc.id, {
     nullable: false,
-    eager: true,
   })
   requester: AccountEntity;
 
@@ -50,7 +48,6 @@ export class RequestEntity extends BaseEntity {
 
   @ManyToOne(() => AccountEntity, (acc) => acc.id, {
     nullable: true,
-    eager: true,
   })
   checker: AccountEntity;
 

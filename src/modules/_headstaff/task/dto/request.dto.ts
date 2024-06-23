@@ -6,10 +6,6 @@ import { RequestStatus } from 'src/entities/request.entity';
 
 export namespace TaskRequestDto {
   export class TaskCreateDto extends BaseDTO {
-    @ApiProperty()
-    @IsNotEmpty()
-    @Expose()
-    device: string;
 
     @ApiProperty()
     @IsNotEmpty()
@@ -17,19 +13,9 @@ export namespace TaskRequestDto {
     request: string;
 
     @ApiProperty()
-    @IsOptional()
-    @Expose()
-    fixer?: string; // account id
-
-    @ApiProperty()
     @IsNotEmpty()
     @Expose()
     name: string;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @Expose()
-    status: RequestStatus;
 
     @ApiProperty()
     @IsNotEmpty()
@@ -41,11 +27,6 @@ export namespace TaskRequestDto {
     @Expose()
     operator: number;
 
-    @ApiProperty()
-    @IsNotEmpty()
-    @Expose()
-    totalTime: number;
-
   }
 
   export class TaskUpdateDto extends BaseDTO {
@@ -53,11 +34,6 @@ export namespace TaskRequestDto {
     @IsOptional()
     @Expose()
     name?: string;
-
-    @ApiProperty()
-    @IsOptional()
-    @Expose()
-    status?: RequestStatus;
 
     @ApiProperty()
     @IsOptional()
@@ -73,6 +49,12 @@ export namespace TaskRequestDto {
     @IsOptional()
     @Expose()
     totalTime?: number;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    status: RequestStatus;
+
   }
 
   export class TaskAssignFixerDto extends BaseDTO {

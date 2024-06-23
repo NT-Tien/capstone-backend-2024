@@ -8,14 +8,12 @@ import { AccountEntity } from './account.entity';
 })
 export class FeedbackEntity extends BaseEntity {
   @OneToOne(() => TaskEntity, (task) => task.id, {
-    eager: true,
     nullable: false,
   })
   @JoinColumn({ name: 'task_id' })
   task: TaskEntity;
 
   @ManyToOne(() => AccountEntity, (account) => account.id, {
-    eager: true,
     nullable: false,
   })
   requester: AccountEntity;

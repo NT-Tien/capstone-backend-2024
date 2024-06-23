@@ -8,7 +8,7 @@ import { RequestEntity } from './request.entity';
   name: 'DEVICE',
 })
 export class DeviceEntity extends BaseEntity {
-  @ManyToOne(() => AreaEntity, (area) => area.id, { eager: true })
+  @ManyToOne(() => AreaEntity, (area) => area.id)
   area: AreaEntity;
 
   @OneToMany(() => RequestEntity, (request) => request.device)
@@ -28,7 +28,6 @@ export class DeviceEntity extends BaseEntity {
 
   @ManyToOne(() => MachineModelEntity, (machineModel) => machineModel.id, {
     nullable: false,
-    eager: true,
   })
   machineModel: MachineModelEntity;
 

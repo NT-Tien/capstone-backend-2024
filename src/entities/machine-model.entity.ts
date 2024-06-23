@@ -2,6 +2,7 @@ import { BaseEntity } from 'src/common/base/entity.base';
 import { Column, Entity, OneToMany, Unique } from 'typeorm';
 import { SparePartEntity } from './spare-part.entity';
 import { DeviceEntity } from './device.entity';
+import { TypeErrorEntity } from './type-error.entity';
 
 @Unique([
   'name',
@@ -19,6 +20,9 @@ export class MachineModelEntity extends BaseEntity {
 
   @OneToMany(() => SparePartEntity, (sparePart) => sparePart.machineModel)
   spareParts: SparePartEntity[];
+
+  @OneToMany(() => TypeErrorEntity, (typeError) => typeError.machineModel)
+  typeErrors: TypeError[];
 
   @Column({
     name: 'name',

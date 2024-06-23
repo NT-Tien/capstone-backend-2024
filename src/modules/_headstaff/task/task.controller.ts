@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   Param,
   Post,
   Put,
@@ -14,6 +15,7 @@ import { TaskService } from './task.service';
 import { HeadStaffGuard } from 'src/modules/auth/guards/headstaff.guard';
 import { TaskResponseDto } from './dto/response.dto';
 import { TaskRequestDto } from './dto/request.dto';
+import { TaskStatus } from 'src/entities/task.entity';
 
 @ApiTags('head staff: task')
 @UseGuards(HeadStaffGuard)
@@ -27,9 +29,13 @@ export class TaskController {
     status: 200,
     description: 'Get all Tasks',
   })
-  @Get()
-  async getAll() {
-    return await this.taskService.getAll();
+  @Get(':page/:limit/:status')
+  getAll(
+    @Param('page') page: number,
+    @Param('limit') limit: number,
+    @Param('status') status: TaskStatus,
+  ) {
+    return this.taskService.customGetAllTask(page, limit, status);
   }
 
   // @ApiResponse({
@@ -57,7 +63,7 @@ export class TaskController {
   @ApiBearerAuth()
   @Get(':id')
   async getOneFor(@Param('id') id: string) {
-    return await this.taskService.getOne(id);
+    return await this.taskService.getOneTask(id);
   }
 
   @ApiBearerAuth()

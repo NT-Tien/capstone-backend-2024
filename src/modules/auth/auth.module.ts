@@ -12,7 +12,7 @@ dotenv.config();
   imports: [
     JwtModule.register({
       secret: process.env.JWT_SECRET_KEY,
-      signOptions: { expiresIn: '4h', algorithm: 'HS256' },
+      signOptions: { expiresIn: '24h', algorithm: 'HS256' },
     }),
     TypeOrmModule.forFeature([AccountEntity]),
   ],

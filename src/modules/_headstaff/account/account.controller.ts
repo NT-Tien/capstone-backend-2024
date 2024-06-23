@@ -10,12 +10,12 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 // import { CacheTTL } from '@nestjs/cache-manager';
-import { AdminGuard } from 'src/modules/auth/guards/admin.guard';
 import { AccountService } from './account.service';
 import { AccountResponseDto } from './dto/response.dto';
+import { HeadStaffGuard } from 'src/modules/auth/guards/headstaff.guard';
 
 @ApiTags('head staff: account')
-@UseGuards(AdminGuard)
+@UseGuards(HeadStaffGuard)
 @Controller('head-staff/account')
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}

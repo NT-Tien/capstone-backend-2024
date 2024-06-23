@@ -45,25 +45,24 @@ export enum TaskStatus {
 export class TaskEntity extends BaseEntity {
   @ManyToOne(() => DeviceEntity, (device) => device.id, {
     nullable: false,
-    eager: true,
   })
   device: DeviceEntity;
 
   @ManyToOne(() => RequestEntity, (request) => request.id, { nullable: false })
   request: RequestEntity;
 
-  @OneToMany(() => IssueEntity, (issue) => issue.id, { eager: true })
-  issues: IssueEntity[];
+  @OneToMany(() => IssueEntity, (issue) => issue.id)
+  issues?: IssueEntity[];
 
   @ManyToOne(() => AccountEntity, (account) => account.id)
-  @JoinColumn({ name: 'fixer_id' })
-  fixer: AccountEntity;
+  fixer?: AccountEntity;
 
   @Column({
     name: 'fixer_note',
     type: 'text',
+    nullable: true,
   })
-  fixerNote: string;
+  fixerNote?: string;
 
   @Column({
     name: 'name',
@@ -102,7 +101,7 @@ export class TaskEntity extends BaseEntity {
     type: 'timestamp',
     nullable: true,
   })
-  completedAt: Date;
+  completedAt?: Date;
 
   @Column({
     name: 'images_verify',
@@ -111,7 +110,7 @@ export class TaskEntity extends BaseEntity {
     nullable: true,
     default: [],
   })
-  imagesVerify: string[];
+  imagesVerify?: string[];
 
   // get imagesVerify(): string[] {
   //     return this._imagesVerify;
@@ -130,5 +129,5 @@ export class TaskEntity extends BaseEntity {
     type: 'text',
     nullable: true,
   })
-  videosVerify: string;
+  videosVerify?: string;
 }

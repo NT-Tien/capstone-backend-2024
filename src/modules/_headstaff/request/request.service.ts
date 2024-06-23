@@ -27,16 +27,14 @@ export class RequestService extends BaseService<RequestEntity> {
     var account = await this.accountRepository.findOne({
       where: { id: userId },
     });
-    if (!account || account.deletedAt || account.role !== Role.head) {
+    if (!account || account.deletedAt || account.role !== Role.headstaff) {
       throw new HttpException('Account is not valid', HttpStatus.BAD_REQUEST);
     }
     return this.requestRepository.findAndCount({
       where: {
-        requester: account,
-        status,
-        // createdAt: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
+        status: status ? status : undefined,
       },
-      relations: ['device', 'device.area', 'tasks', 'task.fixer', 'requester'],
+      relations: ['device', 'device.area', 'tasks', 'tasks.fixer', 'requester'],
       order: { createdAt: 'DESC' },
       skip: (page - 1) * limit,
       take: limit,
@@ -47,10 +45,9 @@ export class RequestService extends BaseService<RequestEntity> {
     var account = await this.accountRepository.findOne({
       where: { id: userId },
     });
-    if (!account || account.deletedAt || account.role !== Role.head) {
+    if (!account || account.deletedAt || account.role !== Role.headstaff) {
       throw new HttpException('Account is not valid', HttpStatus.BAD_REQUEST);
     }
-
     // update status notify
     await this.notifyRepository.update({
       requestId: id,
@@ -58,13 +55,13 @@ export class RequestService extends BaseService<RequestEntity> {
       status: true,
     });
     return this.requestRepository.findOne({
-      where: { id, requester: account },
-      relations: ['device', 'device.area', 'tasks', 'task.fixer', 'requester'],
+      where: { id },
+      relations: ['device', 'device.area', 'device.machineModel', 'tasks', 'tasks.fixer', 'requester'],
     });
   }
 
-  async updateStatus(userId: string, id: string, status: RequestStatus): Promise<RequestEntity> {
+  async updateStatus(userId: string, id: string, data: RequestRequestDto.RequestUpdateDto): Promise<RequestEntity> {
     const account = await this.accountRepository.findOne({where: {id: userId}});
-    return await this.requestRepository.save({ id, status, checker: account });
+    return await this.requestRepository.save({ id, ...data, checker: account });
   }
 }

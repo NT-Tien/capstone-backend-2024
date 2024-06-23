@@ -68,6 +68,8 @@ export class RequestController {
     @Headers('user') user: any,
     @Param('id') id: string,
   ) {
+    console.log(user?.id, id);
+    
     return await this.requestService.customHeadStaffGetOneRequest(user?.id, id);
   }
 
@@ -98,13 +100,13 @@ export class RequestController {
   async update(
     @Headers('user') user: any,
     @Param('id') id: string,
-    @Param('status') status: RequestStatus,
+   @Body() data: RequestRequestDto.RequestUpdateDto,
   ) {
     // create task for request before update status
     return await this.requestService.updateStatus(
       user.id,
       id,
-      status
+      data
     );
   }
 

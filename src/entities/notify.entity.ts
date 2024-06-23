@@ -7,7 +7,6 @@ export class NotifyEntity extends BaseEntity {
 
    @ManyToOne(() => AccountEntity, (acc) => acc.id, {
         nullable: true,
-        eager: true,
     })
     receiver: AccountEntity;
 

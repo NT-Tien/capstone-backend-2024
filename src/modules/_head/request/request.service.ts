@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from 'src/common/base/service.base';
 import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { RequestRequestDto } from './dto/request.dto';
 import { AccountEntity, Role } from 'src/entities/account.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
@@ -31,16 +31,18 @@ export class RequestService extends BaseService<RequestEntity> {
     if (!account || account.deletedAt || account.role !== Role.head) {
       throw new HttpException('Account is not valid', HttpStatus.BAD_REQUEST);
     }
-    return this.requestRepository.find({
-      where: { 
-        requester: account,
-        createdAt: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
-       },
-      relations: ['device'],
-      order: { createdAt: 'DESC' },
-      // skip: (page - 1) * limit,
-      // take: limit,
-    });
+    return this.requestRepository.createQueryBuilder('request')
+      .leftJoinAndSelect('request.requester', 'requester')
+      .leftJoinAndSelect('request.device', 'device')
+      .leftJoinAndSelect('request.tasks', 'tasks')
+      .leftJoinAndSelect('request.checker', 'checker')
+      .where('requester.deletedAt is null')
+      .andWhere('requester.id = :id', { id: userId })
+      .andWhere('request.createdAt BETWEEN :start AND :end', {
+        start: new Date(new Date().setDate(new Date().getDate() - 30)),
+        end: new Date(),
+      })
+      .getMany();
   }
 
   async customHeadCreateRequest(

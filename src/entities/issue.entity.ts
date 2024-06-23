@@ -3,9 +3,11 @@ import {
     Column,
     Entity,
     ManyToOne,
+    OneToMany,
 } from 'typeorm';
 import { TaskEntity } from './task.entity';
 import { TypeErrorEntity } from './type-error.entity';
+import { IssueSparePartEntity } from './issue-spare-part.entity';
 
 export enum FixItemType {
     REPLACE = 'REPLACE',
@@ -27,6 +29,9 @@ export class IssueEntity extends BaseEntity {
 
     @ManyToOne(() => TypeErrorEntity, (typeError) => typeError.id)
     typeError: TypeErrorEntity;
+
+    @OneToMany(() => IssueSparePartEntity, (issueSparePart) => issueSparePart.issue)
+    issueSpareParts: IssueSparePartEntity[];
 
     @Column({
         name: 'description',
