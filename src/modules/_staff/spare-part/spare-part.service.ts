@@ -51,8 +51,4 @@ export class SparePartService extends BaseService<IssueSparePartEntity> {
     }
   }
 
-
-
-
-
 }

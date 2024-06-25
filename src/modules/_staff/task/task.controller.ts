@@ -12,9 +12,9 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 // import { CacheTTL } from '@nestjs/cache-manager';
 import { TaskService } from './task.service';
 import { TaskResponseDto } from './dto/response.dto';
-import { TaskRequestDto } from './dto/request.dto';
 import { StaffGuard } from 'src/modules/auth/guards/staff.guard';
-import { TaskEntity } from 'src/entities/task.entity';
+import { TaskEntity, TaskStatus } from 'src/entities/task.entity';
+import { UUID } from 'crypto';
 
 @ApiTags('staff: task')
 @Controller('staff/task')
@@ -28,11 +28,15 @@ export class TaskController {
     status: 200,
     description: 'Get all staff task order by priority and time',
   })
-  @Get()
-  async getStaffTask( @Param('userId') userId: string) {
-    return await this.taskService.getStaffTask(userId);
+  @Get(':userid/:page/:limit/:status')
+  getAll(
+    @Param('userid') userid: UUID,
+    @Param('page') page: number,
+    @Param('limit') limit: number,
+    @Param('status') status: TaskStatus,
+  ) {
+    return this.taskService.staffGetAllTask(userid,page, limit, status);
   }
-
 
 
   @UseGuards(StaffGuard)
@@ -51,28 +55,33 @@ export class TaskController {
     }
   }
 
-  @UseGuards(StaffGuard)
+  //@UseGuards(StaffGuard)
   @ApiBearerAuth()
   @ApiResponse({
     type: TaskResponseDto.TaskGetAll,
     status: 200,
     description: 'Get all Tasks',
   })
-  @Get("status")
-  async getTaskbyStatus( @Param('userId') userId: string,@Param('status') status: string) {
+  @Get(":userid/:status")
+  async getTaskbyStatus( 
+    @Param('userid') userId: string,
+    @Param('status') status: string) {
     return await this.taskService.getTaskByStatus(userId, status);
   }
 
-  @UseGuards(StaffGuard)
+  //@UseGuards(StaffGuard)
   @ApiBearerAuth()
   @ApiResponse({
-    type: TaskEntity,
+    type: TaskResponseDto.TaskGetOne,
     status: 200,
     description: 'Get all Tasks',
   })
-  @Get("{id}")
-  async getTaskbyId( @Param('id') id : string) {
-    return await this.taskService.getbyid(id);
+  @Get("detail")
+  async getTaskbyId( 
+    @Param('fixerid') fixerid : UUID,
+    @Param('taskid') taskid : UUID
+  ) {
+    return await this.taskService.getbyid(taskid, fixerid);
   }
 
 

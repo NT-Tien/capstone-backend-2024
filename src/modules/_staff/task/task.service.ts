@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { log } from 'console';
 import { UUID } from 'crypto';
 import { BaseService } from 'src/common/base/service.base';
-import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { TaskEntity, TaskStatus } from 'src/entities/task.entity';
 import { Repository } from 'typeorm';
 
@@ -17,25 +17,48 @@ export class TaskService extends BaseService<TaskEntity> {
     super(taskRepository);
   }
 
-  async getStaffTask(userId: string): Promise<TaskEntity[]> {
-    // Fetch the tasks based on the userId
-    const tasks = await this.taskRepository.find({ where: { fixer: { id: userId } } 
-    , order: {
-      priority: 'DESC', // Adjust 'priority' column ordering
-      createdAt: 'DESC', // Adjust 'time' column ordering
-    }
+  
+  async staffGetAllTask(userId: string,page: number, limit: number, 
+      status: TaskStatus): Promise<[TaskEntity[], number]> {
+    return this.taskRepository.findAndCount({
+      where: {
+        status: status ? status : undefined,
+        fixer: { id: userId }
+      },
+      relations: [
+        'request',
+        'fixer',
+        'request.requester',
+        'device',
+        'device.machineModel',
+        'device.machineModel.spareParts',
+        'device.machineModel.typeErrors',
+      ],
+      order: {
+        priority: 'DESC', // Adjust 'priority' column ordering
+        createdAt: 'DESC', // Adjust 'time' column ordering
+      },
+      skip: (page - 1) * limit,
+      take: limit,
     });
-    return tasks;
   }
 
   async getCurrentTask(userId: string): Promise<TaskEntity> {
-    // Fetch the tasks based on the userId
-    const tasks = await this.taskRepository.findOne(
-      { where: 
-        { fixer: { id: userId }, status: TaskStatus.IN_PROGRESS }, 
-        relations: ['device', 'request', 'issues', 'fixer'], 
-      });
-    return tasks;
+    return await this.taskRepository.findOne({
+      where: {
+        fixer: { id: userId },
+        status: TaskStatus.IN_PROGRESS
+      },
+      relations: [
+        'request',
+        'fixer',
+        'request.requester',
+        'device',
+        'device.machineModel',
+        'device.machineModel.spareParts',
+        'device.machineModel.typeErrors',
+      ],
+    });
   }
 
   async getTaskByStatus(userId: string, status: string): Promise<TaskEntity[]> {
@@ -43,7 +66,6 @@ export class TaskService extends BaseService<TaskEntity> {
     if (parsedStatus === undefined) {
       throw new Error(`Invalid status: ${status}`);
     }
-
     const tasks = await this.taskRepository.find(
       { where: 
         { fixer: { id: userId }, status: parsedStatus }    
@@ -51,12 +73,22 @@ export class TaskService extends BaseService<TaskEntity> {
     return tasks;
   }
 
-  async getbyid(id: string): Promise<TaskEntity> {
-    const tasks = await this.taskRepository.findOne({
-      where:{ id : id},
-      relations: ['device', 'request', 'issues', 'fixer'],
+  async getbyid(taskid: UUID, userid: UUID) {
+    return await this.taskRepository.findOneOrFail({
+      where: {
+        id: taskid,
+        fixer: { id: userid },
+      },
+      relations: [
+        'request',
+        'fixer',
+        'request.requester',
+        'device',
+        'device.machineModel',
+        'device.machineModel.spareParts',
+        'device.machineModel.typeErrors',
+      ],
     });
-    return tasks;
   }
 
   private parseTaskStatus(statusString: string): TaskStatus | undefined {
