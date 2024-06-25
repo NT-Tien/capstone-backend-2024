@@ -54,6 +54,7 @@ export class TaskService extends BaseService<TaskEntity> {
         'issues',
         'issues.typeError',
         'issues.issueSpareParts',
+        'issues.issueSpareParts.sparePart',
       ]
     });
   }
