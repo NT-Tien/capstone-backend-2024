@@ -13,6 +13,8 @@ import { SparePartService } from './spare-part.service';
 import { SparePartResponseDto } from './dto/response.dto';
 
 import { StaffGuard } from 'src/modules/auth/guards/staff.guard';
+import { log } from 'console';
+import { UUID } from 'crypto';
 
 @ApiTags('staff: spare-part')
 @Controller('staff/spare-part')
@@ -25,22 +27,24 @@ export class SparePartController {
     type: SparePartResponseDto.SparePartGetAll,
     status: 200,
   })
-  @Post("receipt")
-  async receipt (@Param('listId') listId: string[]) {
+  @Post('receipt')
+  async receipt(@Body('listId') listId: string[]) {
+    console.log(listId); // Đảm bảo in ra để kiểm tra listId
+    log(listId);
     return await this.sparePartService.checkReceipt(listId);
   }
 
 
-  @UseGuards(StaffGuard)
+  //@UseGuards(StaffGuard)
   @ApiBearerAuth()
   @ApiResponse({
-    type: SparePartResponseDto.SparePartGetAll,
+    type: SparePartResponseDto.SparePartUpdate,
     status: 200,
   })
-  @Post("return")
-  async return(@Param('listId') listId: string[]) {
+  @Post('return')
+  async returnSpareParts(@Body('listId') listId: UUID[]) {
+    console.log(listId); // Log để kiểm tra dữ liệu nhận được
     return await this.sparePartService.checkReturn(listId);
   }
-
-
 }
+

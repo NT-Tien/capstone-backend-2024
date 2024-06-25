@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { log } from 'console';
 import { BaseService } from 'src/common/base/service.base';
 import { IssueSparePartEntity, IssueSparePartStatus } from 'src/entities/issue-spare-part.entity';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
@@ -37,7 +38,9 @@ export class SparePartService extends BaseService<IssueSparePartEntity> {
     try {
       for (const sparepartId of sparepartIdList) {        
         const data = await this.issueSparePartRepository.findOne({ where: { id: sparepartId } });
-        if (data) {
+        log(data);
+        if (data != null) {
+          log(data.id + "ok");
           data.status = IssueSparePartStatus.RETURNED;
           await this.issueSparePartRepository.save(data);
         } else {

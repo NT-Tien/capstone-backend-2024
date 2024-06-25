@@ -43,7 +43,7 @@ export class TaskService extends BaseService<TaskEntity> {
     });
   }
 
-  async getCurrentTask(userId: string): Promise<TaskEntity> {
+  async getCurrentTask(userId: UUID): Promise<TaskEntity> {
     return await this.taskRepository.findOne({
       where: {
         fixer: { id: userId },
@@ -74,7 +74,7 @@ export class TaskService extends BaseService<TaskEntity> {
   }
 
   async getbyid(taskid: UUID, userid: UUID) {
-    return await this.taskRepository.findOneOrFail({
+    return  await this.taskRepository.findOne({
       where: {
         id: taskid,
         fixer: { id: userid },
@@ -89,6 +89,7 @@ export class TaskService extends BaseService<TaskEntity> {
         'device.machineModel.typeErrors',
       ],
     });
+    
   }
 
   private parseTaskStatus(statusString: string): TaskStatus | undefined {
