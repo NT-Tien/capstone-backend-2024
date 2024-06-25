@@ -51,7 +51,7 @@ export class TaskEntity extends BaseEntity {
   @ManyToOne(() => RequestEntity, (request) => request.id, { nullable: false })
   request: RequestEntity;
 
-  @OneToMany(() => IssueEntity, (issue) => issue.id)
+  @OneToMany(() => IssueEntity, (issue) => issue.task)
   issues?: IssueEntity[];
 
   @ManyToOne(() => AccountEntity, (account) => account.id)
