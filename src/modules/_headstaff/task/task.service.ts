@@ -30,9 +30,8 @@ export class TaskService extends BaseService<TaskEntity> {
         'fixer',
         'request.requester',
         'device',
+        'device.area',
         'device.machineModel',
-        'device.machineModel.spareParts',
-        'device.machineModel.typeErrors',
       ],
       order: { createdAt: 'DESC' },
       skip: (page - 1) * limit,
@@ -48,9 +47,13 @@ export class TaskService extends BaseService<TaskEntity> {
         'fixer',
         'request.requester',
         'device',
+        'device.area',
         'device.machineModel',
         'device.machineModel.spareParts',
         'device.machineModel.typeErrors',
+        'issues',
+        'issues.typeError',
+        'issues.issueSpareParts',
       ]
     });
   }
