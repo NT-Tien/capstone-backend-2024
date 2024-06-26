@@ -1,6 +1,6 @@
 # compiled output
 /dist
-/public
+/public/swagger-spec.json
 /node_modules
 /build
 
