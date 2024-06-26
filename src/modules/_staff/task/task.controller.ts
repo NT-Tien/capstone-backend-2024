@@ -18,11 +18,11 @@ import { UUID } from 'crypto';
 import { log } from 'console';
 
 @ApiTags('staff: task')
+@UseGuards(StaffGuard)
 @Controller('staff/task')
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
-  @UseGuards(StaffGuard)
   @ApiBearerAuth()
   @ApiResponse({
     type: TaskResponseDto.TaskGetAll,
@@ -39,8 +39,6 @@ export class TaskController {
     return this.taskService.staffGetAllTask(userid,page, limit, status);
   }
 
-
-  @UseGuards(StaffGuard)
   @ApiBearerAuth()
   @ApiResponse({
     type: TaskResponseDto.TaskGetAll,
@@ -54,7 +52,6 @@ export class TaskController {
     return await this.taskService.getTaskByStatus(userId, status);
   }
 
-  @UseGuards(StaffGuard)
   @ApiBearerAuth()
   @ApiResponse({
     type: TaskResponseDto.TaskGetOne,
@@ -71,7 +68,6 @@ export class TaskController {
 
 
 
-  @UseGuards(StaffGuard)
   @ApiBearerAuth()
   @ApiResponse({
     type: TaskResponseDto.TaskUpdate,
@@ -85,7 +81,6 @@ export class TaskController {
   }
 
 
-  @UseGuards(StaffGuard)
   @ApiBearerAuth()
   @ApiResponse({
     type: TaskResponseDto.TaskUpdate,

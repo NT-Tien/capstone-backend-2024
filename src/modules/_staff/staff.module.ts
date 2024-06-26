@@ -1,12 +1,12 @@
 import { Module } from "@nestjs/common";
 import { TaskModule } from "../_staff/task/task.module";
-import { SparePartModule } from "./spare-part/spare-part.module";
+import { DeviceModule } from "./device/device.module";
 
 
 @Module({
   imports: [
     TaskModule,
-    SparePartModule
+    DeviceModule,
   ],
 })
 export class StaffModule {}
