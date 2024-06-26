@@ -21,18 +21,6 @@ import { UUID } from 'crypto';
 export class SparePartController {
   constructor(private readonly sparePartService: SparePartService) {}
 
-  @UseGuards(StaffGuard)
-  @ApiBearerAuth()
-  @ApiResponse({
-    type: SparePartResponseDto.SparePartGetAll,
-    status: 200,
-  })
-  @Post('receipt')
-  async receipt(@Body('listId') listId: string[]) {
-    console.log(listId); // Đảm bảo in ra để kiểm tra listId
-    log(listId);
-    return await this.sparePartService.checkReceipt(listId);
-  }
 
 
   //@UseGuards(StaffGuard)

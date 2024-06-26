@@ -43,22 +43,6 @@ export class TaskController {
   @UseGuards(StaffGuard)
   @ApiBearerAuth()
   @ApiResponse({
-    type: TaskResponseDto.TaskGetOne,
-    status: 200,
-    description: 'Get curent Tasks',
-  })
-  @Get('currenttask/:userId')
-  async getcurrentTask( @Param('userId') userId: UUID) {
-    try{
-    return await this.taskService.getCurrentTask(userId);
-    }catch(error){
-      return null;
-    }
-  }
-
-  @UseGuards(StaffGuard)
-  @ApiBearerAuth()
-  @ApiResponse({
     type: TaskResponseDto.TaskGetAll,
     status: 200,
     description: 'Get all Tasks',
@@ -87,13 +71,31 @@ export class TaskController {
 
 
 
-  
+  @UseGuards(StaffGuard)
+  @ApiBearerAuth()
+  @ApiResponse({
+    type: TaskResponseDto.TaskUpdate,
+    status: 200,
+  })
+  @Post('receipt/:taskid')
+  async receipt(@Param('taskid') taskid: UUID,) {
+    console.log(taskid); // Đảm bảo in ra để kiểm tra listId
+    log(taskid);
+    return await this.taskService.checkReceipt(taskid);
+  }
 
 
-
-
-
-
-  
- 
+  @UseGuards(StaffGuard)
+  @ApiBearerAuth()
+  @ApiResponse({
+    type: TaskResponseDto.TaskUpdate,
+    status: 200,
+  })
+  @Post('updateIssue/:issueid/:newStatus')
+  async updateIssue(
+    @Param('issueid') issueid: UUID,
+    @Param('newStatus') newStatus: string,
+  ) {
+    return await this.taskService.updateissueStatus(issueid, newStatus);
+  } 
 }
