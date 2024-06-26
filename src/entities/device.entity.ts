@@ -42,4 +42,13 @@ export class DeviceEntity extends BaseEntity {
     type: 'float',
   })
   operationStatus: number;
+
+  @Column({
+    name: 'status',
+    type: 'boolean',
+    default: true,
+    nullable: true,
+  })
+  status: boolean;
+
 }

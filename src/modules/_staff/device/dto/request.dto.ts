@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
+import { IsNotEmpty, ValidateIf } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
 
 export namespace DeviceRequestDto {
@@ -34,11 +34,6 @@ export namespace DeviceRequestDto {
     @IsNotEmpty()
     @Expose()
     operationStatus: number;
-
-    @ApiProperty()
-    @IsOptional()
-    @Expose()
-    status?: boolean;
   }
 
   export class DeviceUpdateDto extends BaseDTO {
@@ -71,10 +66,5 @@ export namespace DeviceRequestDto {
     @ValidateIf((o) => o.operationStatus)
     @Expose()
     operationStatus: number;
-
-    @ApiProperty()
-    @ValidateIf((o) => o.status)
-    @Expose()
-    status: boolean;
   }
 }

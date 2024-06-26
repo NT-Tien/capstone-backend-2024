@@ -29,6 +29,7 @@ export class IssueSparePartEntity extends BaseEntity {
         name: 'status',
         type: 'enum',
         enum: IssueSparePartStatus,
+        default: IssueSparePartStatus.PENDING,
     })
     status: IssueSparePartStatus;
 

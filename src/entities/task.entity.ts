@@ -51,7 +51,7 @@ export class TaskEntity extends BaseEntity {
   @ManyToOne(() => RequestEntity, (request) => request.id, { nullable: false })
   request: RequestEntity;
 
-  @OneToMany(() => IssueEntity, (issue) => issue.id)
+  @OneToMany(() => IssueEntity, (issue) => issue.task)
   issues?: IssueEntity[];
 
   @ManyToOne(() => AccountEntity, (account) => account.id)
@@ -91,7 +91,7 @@ export class TaskEntity extends BaseEntity {
   operator: number;
 
   @Column({
-    name: 'total_time',
+    name: 'totalTime',
     type: 'int',
   })
   totalTime: number;

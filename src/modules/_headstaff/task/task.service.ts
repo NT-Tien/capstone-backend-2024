@@ -30,9 +30,8 @@ export class TaskService extends BaseService<TaskEntity> {
         'fixer',
         'request.requester',
         'device',
+        'device.area',
         'device.machineModel',
-        'device.machineModel.spareParts',
-        'device.machineModel.typeErrors',
       ],
       order: { createdAt: 'DESC' },
       skip: (page - 1) * limit,
@@ -48,16 +47,21 @@ export class TaskService extends BaseService<TaskEntity> {
         'fixer',
         'request.requester',
         'device',
+        'device.area',
         'device.machineModel',
         'device.machineModel.spareParts',
         'device.machineModel.typeErrors',
+        'issues',
+        'issues.typeError',
+        'issues.issueSpareParts',
+        'issues.issueSpareParts.sparePart',
       ]
     });
   }
 
   async customCreateTask(data: TaskRequestDto.TaskCreateDto) {
     // check request has been assigned to a task (status != cancelled or == completed)
-    const request = await this.requestRepository.findOne({ where: { id: data.request }, relations: ['tasks'] });
+    const request = await this.requestRepository.findOne({ where: { id: data.request }, relations: ['tasks', 'device'] });
     if (!request || request.status === RequestStatus.REJECTED) {
       throw new Error('Request not found or invalid status');
     }
@@ -73,10 +77,12 @@ export class TaskService extends BaseService<TaskEntity> {
     if (!allCancelled) {
       throw new Error('All tasks must be cancelled before creating a new task for this request');
     }
+    
     let newTask = new TaskEntity();
     newTask.request = request;
     newTask.device = request.device;
     newTask.status = TaskStatus.AWAITING_FIXER;
+    console.log({ ...data, ...newTask });
     return await this.taskRepository.save({ ...data, ...newTask });
   }
 

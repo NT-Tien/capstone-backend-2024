@@ -35,28 +35,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
       httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
     } else {
       // if the exception is an instance of HttpException
-      const status = exception.getStatus();
-      const exceptionResponse = exception.getResponse() as {
-        statusCode: number;
-        message: string | string[];
-        error: string;
-      };
-
+      const status = exception?.getStatus();
       const errorResponse = {
         statusCode: status,
         timestamp: new Date().toISOString(),
+        path: httpAdapter.getRequestUrl(ctx.getRequest()),
+        message: exception.getResponse(),
       }
-
-      if (typeof exceptionResponse.message === 'string') {
-        errorResponse['message'] = exceptionResponse.message;
-      } else {
-        errorResponse['message'] = exceptionResponse.message[0];
-      }
-
-      if (exceptionResponse.error) {
-        errorResponse['error'] = exceptionResponse.error;
-      }
-
       httpAdapter.reply(ctx.getResponse(), errorResponse, status);
       
     }
