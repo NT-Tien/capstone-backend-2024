@@ -18,7 +18,7 @@ import { StaffGuard } from 'src/modules/auth/guards/staff.guard';
 
 @ApiTags('staff: device')
 @UseGuards(StaffGuard)
-@Controller('admin/device')
+@Controller('staff/device')
 export class DeviceController {
   constructor(private readonly deviceService: DeviceService) {}
 
