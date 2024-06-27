@@ -29,10 +29,6 @@ export class TaskService extends BaseService<TaskEntity>{
       .leftJoinAndSelect('task.device', 'device')
       .leftJoinAndSelect('task.fixer', 'fixer')
       .andWhere('fixer.id = :id', { id: userId })
-      .andWhere('request.createdAt BETWEEN :start AND :end', {
-        start: new Date(new Date().setDate(new Date().getDate() - 30)),
-        end: new Date(),
-      })
       .getMany();
   }
 
