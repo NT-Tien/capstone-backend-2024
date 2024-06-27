@@ -12,7 +12,6 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeviceResponseDto } from './dto/response.dto';
 import { DeviceService } from './device.service';
 import { DeviceRequestDto } from './dto/request.dto';
-import { AdminGuard } from 'src/modules/auth/guards/admin.guard';
 import { StaffGuard } from 'src/modules/auth/guards/staff.guard';
 // import { CacheTTL } from '@nestjs/cache-manager';
 

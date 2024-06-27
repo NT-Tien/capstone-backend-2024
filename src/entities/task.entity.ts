@@ -130,4 +130,11 @@ export class TaskEntity extends BaseEntity {
     nullable: true,
   })
   videosVerify?: string;
+
+  @Column({
+    name: 'confirm_receipt',
+    type: 'boolean',
+    nullable: true,
+  })
+  confirmReceipt?: boolean;
 }

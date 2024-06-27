@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   Param,
   Post,
   Put,
@@ -21,7 +22,7 @@ import { log } from 'console';
 @UseGuards(StaffGuard)
 @Controller('staff/task')
 export class TaskController {
-  constructor(private readonly taskService: TaskService) {}
+  constructor(private readonly taskService: TaskService) { }
 
   @ApiBearerAuth()
   @ApiResponse({
@@ -29,68 +30,94 @@ export class TaskController {
     status: 200,
     description: 'Get all staff task order by priority and time',
   })
-  @Get(':userid/:page/:limit/:status')
+  @Get('')
   getAll(
-    @Param('userid') userid: UUID,
-    @Param('page') page: number,
-    @Param('limit') limit: number,
-    @Param('status') status: TaskStatus,
+    @Headers('user') user: any,
   ) {
-    return this.taskService.staffGetAllTask(userid,page, limit, status);
-  }
-
-  @ApiBearerAuth()
-  @ApiResponse({
-    type: TaskResponseDto.TaskGetAll,
-    status: 200,
-    description: 'Get all Tasks',
-  })
-  @Get(":userid/:status")
-  async getTaskbyStatus( 
-    @Param('userid') userId: string,
-    @Param('status') status: string) {
-    return await this.taskService.getTaskByStatus(userId, status);
+    return this.taskService.staffGetAllTask(user.id);
   }
 
   @ApiBearerAuth()
   @ApiResponse({
     type: TaskResponseDto.TaskGetOne,
     status: 200,
-    description: 'Get all Tasks',
+    description: 'Get staff task detail',
   })
-  @Get("detail/:fixerid/:taskid")
-  async getTaskbyId( 
-    @Param('fixerid') fixerid : UUID,
-    @Param('taskid') taskid : UUID
+  @Get(':taskId')
+  getOne(
+    @Headers('user') user: any,
+    @Param('taskId') taskId: UUID,
   ) {
-    return await this.taskService.getbyid(taskid, fixerid);
+    return this.taskService.customStaffGetTaskDetail(user.id, taskId);
   }
 
-
-
+  // confirm receipt
   @ApiBearerAuth()
   @ApiResponse({
     type: TaskResponseDto.TaskUpdate,
     status: 200,
+    description: 'Confirm receipt',
   })
-  @Post('receipt/:taskid')
-  async receipt(@Param('taskid') taskid: UUID,) {
-    console.log(taskid); // Đảm bảo in ra để kiểm tra listId
-    log(taskid);
-    return await this.taskService.checkReceipt(taskid);
+  @Post('receipt/:taskId')
+  confirmReceipt(
+    @Param('taskId') taskId: UUID,
+    @Headers('user') user: any,
+  ) {
+    return this.taskService.confirmReceipt(user.id, taskId);
   }
 
+  // @ApiBearerAuth()
+  // @ApiResponse({
+  //   type: TaskResponseDto.TaskGetAll,
+  //   status: 200,
+  //   description: 'Get all Tasks',
+  // })
+  // @Get(":userid/:status")
+  // async getTaskbyStatus( 
+  //   @Param('userid') userId: string,
+  //   @Param('status') status: string) {
+  //   return await this.taskService.getTaskByStatus(userId, status);
+  // }
 
-  @ApiBearerAuth()
-  @ApiResponse({
-    type: TaskResponseDto.TaskUpdate,
-    status: 200,
-  })
-  @Post('updateIssue/:issueid/:newStatus')
-  async updateIssue(
-    @Param('issueid') issueid: UUID,
-    @Param('newStatus') newStatus: string,
-  ) {
-    return await this.taskService.updateissueStatus(issueid, newStatus);
-  } 
+  // @ApiBearerAuth()
+  // @ApiResponse({
+  //   type: TaskResponseDto.TaskGetOne,
+  //   status: 200,
+  //   description: 'Get all Tasks',
+  // })
+  // @Get("detail/:fixerid/:taskid")
+  // async getTaskbyId( 
+  //   @Param('fixerid') fixerid : UUID,
+  //   @Param('taskid') taskid : UUID
+  // ) {
+  //   return await this.taskService.getbyid(taskid, fixerid);
+  // }
+
+
+
+  // @ApiBearerAuth()
+  // @ApiResponse({
+  //   type: TaskResponseDto.TaskUpdate,
+  //   status: 200,
+  // })
+  // @Post('receipt/:taskid')
+  // async receipt(@Param('taskid') taskid: UUID,) {
+  //   console.log(taskid); // Đảm bảo in ra để kiểm tra listId
+  //   log(taskid);
+  //   return await this.taskService.checkReceipt(taskid);
+  // }
+
+
+  // @ApiBearerAuth()
+  // @ApiResponse({
+  //   type: TaskResponseDto.TaskUpdate,
+  //   status: 200,
+  // })
+  // @Post('updateIssue/:issueid/:newStatus')
+  // async updateIssue(
+  //   @Param('issueid') issueid: UUID,
+  //   @Param('newStatus') newStatus: string,
+  // ) {
+  //   return await this.taskService.updateissueStatus(issueid, newStatus);
+  // } 
 }
