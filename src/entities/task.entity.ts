@@ -18,10 +18,6 @@ export enum TaskStatus {
    */
   AWAITING_FIXER = 'AWAITING_FIXER',
   /**
-   * PENDING_STOCK
-   */
-  PENDING_STOCK = 'PENDING_STOCK',
-  /**
    * ASSIGNED: khi đã gán fixer thì không thể update nội dung task, chỉ có thể update trạng thái task
    */
   ASSIGNED = 'ASSIGNED',
