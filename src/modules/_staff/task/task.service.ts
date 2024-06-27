@@ -27,6 +27,7 @@ export class TaskService extends BaseService<TaskEntity>{
     }
     return this.taskRepository.createQueryBuilder('task')
       .leftJoinAndSelect('task.device', 'device')
+      .leftJoinAndSelect('task.fixer', 'fixer')
       .andWhere('fixer.id = :id', { id: userId })
       .andWhere('request.createdAt BETWEEN :start AND :end', {
         start: new Date(new Date().setDate(new Date().getDate() - 30)),
@@ -44,6 +45,7 @@ export class TaskService extends BaseService<TaskEntity>{
     }
     return this.taskRepository.createQueryBuilder('task')
       .leftJoinAndSelect('task.device', 'device')
+      .leftJoinAndSelect('task.fixer', 'fixer')
       .leftJoinAndSelect('task.issues', 'issues')
       .leftJoinAndSelect('issues.issueSpareParts', 'issueSpareParts')
       .leftJoinAndSelect('issues.typeError', 'typeError')
@@ -58,6 +60,8 @@ export class TaskService extends BaseService<TaskEntity>{
       where: { id: taskId },
       relations: ['fixer'],
     });
+    console.log(task);
+    
     if (!task || task.fixer.id !== userId) {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
     }
