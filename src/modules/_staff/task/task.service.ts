@@ -66,7 +66,7 @@ export class TaskService extends BaseService<TaskEntity> {
   async confirmReceipt(userId: string, taskId: string) {
     let task = await this.taskRepository.findOne({
       where: { id: taskId },
-      relations: ['fixer', 'issues', 'issues.issueSpareParts'],
+      relations: ['fixer', 'issues', 'issues.issueSpareParts', 'issues.issueSpareParts.sparePart'],
     });
 
     if (!task || task.fixer.id !== userId) {
