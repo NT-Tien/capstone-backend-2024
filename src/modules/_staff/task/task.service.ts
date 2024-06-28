@@ -41,6 +41,8 @@ export class TaskService extends BaseService<TaskEntity>{
     }
     return this.taskRepository.createQueryBuilder('task')
       .leftJoinAndSelect('task.device', 'device')
+      .leftJoinAndSelect('device.area', 'area')
+      .leftJoinAndSelect('device.machineModel', 'machineModel')
       .leftJoinAndSelect('task.fixer', 'fixer')
       .leftJoinAndSelect('task.issues', 'issues')
       .leftJoinAndSelect('issues.issueSpareParts', 'issueSpareParts')
