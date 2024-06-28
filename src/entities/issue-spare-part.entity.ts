@@ -3,12 +3,6 @@ import { IssueEntity } from "./issue.entity";
 import { SparePartEntity } from "./spare-part.entity";
 import { BaseEntity } from "src/common/base/entity.base";
 
-export enum IssueSparePartStatus {
-    PENDING = 'PENDING',
-    RECIEVED = 'RECIEVED',
-    RETURNED = 'RETURNED',
-}
-
 @Entity({
     name: 'ISSUE_SPARE_PART',
 })
@@ -24,14 +18,6 @@ export class IssueSparePartEntity extends BaseEntity {
         type: 'int',
     })
     quantity: number;
-
-    @Column({
-        name: 'status',
-        type: 'enum',
-        enum: IssueSparePartStatus,
-        default: IssueSparePartStatus.PENDING,
-    })
-    status: IssueSparePartStatus;
 
     @Column({
         name: 'note',

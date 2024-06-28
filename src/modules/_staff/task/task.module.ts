@@ -6,9 +6,10 @@ import { AuthModule } from 'src/modules/auth/auth.module';
 import { TaskEntity } from 'src/entities/task.entity';
 import { IssueSparePartEntity } from 'src/entities/issue-spare-part.entity';
 import { AccountEntity } from 'src/entities/account.entity';
+import { IssueEntity } from 'src/entities/issue.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TaskEntity, AccountEntity]), AuthModule],
+  imports: [TypeOrmModule.forFeature([TaskEntity, IssueEntity, IssueSparePartEntity, AccountEntity]), AuthModule],
   controllers: [TaskController],
   providers: [TaskService],
 })

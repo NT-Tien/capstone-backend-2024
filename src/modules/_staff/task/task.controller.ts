@@ -66,6 +66,21 @@ export class TaskController {
     return this.taskService.confirmReceipt(user.id, taskId);
   }
 
+  // update issue status
+  @ApiBearerAuth()
+  @ApiResponse({
+    type: TaskResponseDto.TaskUpdate,
+    status: 200,
+    description: 'Update issue status',
+  })
+  @Post('issue/:issueId/:status')
+  updateIssueStatus(
+    @Param('issueId') issueId: UUID,
+    @Param('status') status: TaskStatus,
+  ) {
+    // return this.taskService.updateIssueStatus(issueId, status);
+  }
+
   // @ApiBearerAuth()
   // @ApiResponse({
   //   type: TaskResponseDto.TaskGetAll,
