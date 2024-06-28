@@ -7,6 +7,7 @@ import { IssueEntity, IssueStatus } from 'src/entities/issue.entity';
 import { TaskEntity, TaskStatus } from 'src/entities/task.entity';
 import { In, Repository } from 'typeorm';
 import { TaskRequestDto } from './dto/request.dto';
+import { SparePartEntity } from 'src/entities/spare-part.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -20,6 +21,8 @@ export class TaskService extends BaseService<TaskEntity> {
     private readonly issueRepository: Repository<IssueEntity>,
     @InjectRepository(IssueSparePartEntity)
     private readonly issueSparePartRepository: Repository<IssueSparePartEntity>,
+    @InjectRepository(SparePartEntity)
+    private readonly sparePartRepository: Repository<SparePartEntity>,
   ) {
     super(taskRepository);
   }
@@ -63,17 +66,23 @@ export class TaskService extends BaseService<TaskEntity> {
   async confirmReceipt(userId: string, taskId: string) {
     let task = await this.taskRepository.findOne({
       where: { id: taskId },
-      relations: ['fixer'],
+      relations: ['fixer', 'issues', 'issues.issueSpareParts'],
     });
 
     if (!task || task.fixer.id !== userId) {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
     }
-    // decrease spare part quantity
+    // decrease spare part quantity in db
     for (let issue of task.issues) {
       for (let issueSparePart of issue.issueSpareParts) {
-        issueSparePart.sparePart.quantity -= issueSparePart.quantity;
-        await this.issueSparePartRepository.save(issueSparePart);
+        let sparePart = await this.sparePartRepository.findOne({
+          where: { id: issueSparePart.sparePart.id },
+        });
+        if (!sparePart) {
+          throw new HttpException('Spare part not found', HttpStatus.NOT_FOUND);
+        }
+        sparePart.quantity -= issueSparePart.quantity;
+        await this.sparePartRepository.save(sparePart);
       }
     }
     task.confirmReceipt = true;
