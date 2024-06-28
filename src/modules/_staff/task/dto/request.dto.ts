@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, ValidateIf } from 'class-validator';
+import { IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
 
 
@@ -47,5 +47,24 @@ export namespace TaskRequestDto {
     @ValidateIf((object, value) => value !== undefined)
     @Expose()
     expirationDate: Date;
+  }
+
+  export class TaskConfirmDoneDto extends BaseDTO {
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
+    fixerNote: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    imagesVerify: string[];
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
+    videosVerify: string;
+
   }
 }

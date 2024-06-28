@@ -6,6 +6,7 @@ import { IssueSparePartEntity } from 'src/entities/issue-spare-part.entity';
 import { IssueEntity, IssueStatus } from 'src/entities/issue.entity';
 import { TaskEntity, TaskStatus } from 'src/entities/task.entity';
 import { In, Repository } from 'typeorm';
+import { TaskRequestDto } from './dto/request.dto';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -110,7 +111,7 @@ export class TaskService extends BaseService<TaskEntity> {
   }
 
   // confirm completion
-  async confirmCompletion(userId: string, taskId: string) {
+  async confirmCompletion(userId: string, taskId: string, data: TaskRequestDto.TaskConfirmDoneDto) {
     let task = await this.taskRepository.findOne({
       where: { id: taskId },
       relations: ['fixer'],
@@ -119,7 +120,7 @@ export class TaskService extends BaseService<TaskEntity> {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
     }
     task.status = TaskStatus.COMPLETED;
-    return await this.taskRepository.save(task);
+    return await this.taskRepository.save({...task, ...data});
   }
 
   // send 

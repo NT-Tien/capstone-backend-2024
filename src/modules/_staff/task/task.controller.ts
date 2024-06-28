@@ -18,6 +18,7 @@ import { TaskEntity, TaskStatus } from 'src/entities/task.entity';
 import { UUID } from 'crypto';
 import { log } from 'console';
 import { IssueStatus } from 'src/entities/issue.entity';
+import { TaskRequestDto } from './dto/request.dto';
 
 @ApiTags('staff: task')
 @UseGuards(StaffGuard)
@@ -93,8 +94,9 @@ export class TaskController {
   confirmDone(
     @Param('taskId') taskId: UUID,
     @Headers('user') user: any,
+    @Body() body: TaskRequestDto.TaskConfirmDoneDto,
   ) {
-    return this.taskService.confirmCompletion(user.id, taskId);
+    return this.taskService.confirmCompletion(user.id, taskId, body);
   }
 
   // update issue status
