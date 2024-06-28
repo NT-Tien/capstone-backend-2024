@@ -93,7 +93,7 @@ export class TaskService extends BaseService<TaskEntity> {
   async updateIssueStatus(userId: string, issueId: string, status: IssueStatus) {
     let issue = await this.issueRepository.findOne({
       where: { id: issueId },
-      relations: ['task', 'task.fixer', 'issues', 'issues.issueSpareParts'],
+      relations: ['task', 'task.fixer'],
     });
     if (!issue || issue.task.fixer.id !== userId) {
       throw new HttpException('Issue not found', HttpStatus.NOT_FOUND);
