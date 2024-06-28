@@ -17,6 +17,7 @@ import { StaffGuard } from 'src/modules/auth/guards/staff.guard';
 import { TaskEntity, TaskStatus } from 'src/entities/task.entity';
 import { UUID } from 'crypto';
 import { log } from 'console';
+import { IssueStatus } from 'src/entities/issue.entity';
 
 @ApiTags('staff: task')
 @UseGuards(StaffGuard)
@@ -66,6 +67,36 @@ export class TaskController {
     return this.taskService.confirmReceipt(user.id, taskId);
   }
 
+  // confirm in progress
+  @ApiBearerAuth()
+  @ApiResponse({
+    type: TaskResponseDto.TaskUpdate,
+    status: 200,
+    description: 'Confirm in progress',
+  })
+  @Post('in-progress/:taskId')
+  confirmInProgress(
+    @Param('taskId') taskId: UUID,
+    @Headers('user') user: any,
+  ) {
+    return this.taskService.confirmInProcess(user.id, taskId);
+  }
+
+  // confirm done
+  @ApiBearerAuth()
+  @ApiResponse({
+    type: TaskResponseDto.TaskUpdate,
+    status: 200,
+    description: 'Confirm done',
+  })
+  @Post('complete/:taskId')
+  confirmDone(
+    @Param('taskId') taskId: UUID,
+    @Headers('user') user: any,
+  ) {
+    return this.taskService.confirmCompletion(user.id, taskId);
+  }
+
   // update issue status
   @ApiBearerAuth()
   @ApiResponse({
@@ -73,13 +104,15 @@ export class TaskController {
     status: 200,
     description: 'Update issue status',
   })
-  @Post('issue/:issueId/:status')
+  @Put('issue/:issueId/:status')
   updateIssueStatus(
     @Param('issueId') issueId: UUID,
-    @Param('status') status: TaskStatus,
+    @Param('status') status: IssueStatus,
+    @Headers('user') user: any,
   ) {
-    // return this.taskService.updateIssueStatus(issueId, status);
+    return this.taskService.updateIssueStatus(user.id, issueId, status);
   }
+
 
   // @ApiBearerAuth()
   // @ApiResponse({

@@ -96,6 +96,19 @@ export class TaskService extends BaseService<TaskEntity> {
     return await this.issueRepository.save(issue);
   }
 
+  // confirm in process
+  async confirmInProcess(userId: string, taskId: string){
+    let task = await this.taskRepository.findOne({
+      where: { id: taskId },
+      relations: ['fixer'],
+    });
+    if (!task || task.fixer.id !== userId) {
+      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+    }
+    task.status = TaskStatus.IN_PROGRESS;
+    return await this.taskRepository.save(task);
+  }
+
   // confirm completion
   async confirmCompletion(userId: string, taskId: string) {
     let task = await this.taskRepository.findOne({
