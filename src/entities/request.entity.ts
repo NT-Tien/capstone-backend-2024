@@ -3,6 +3,7 @@ import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { DeviceEntity } from './device.entity';
 import { AccountEntity } from './account.entity';
 import { TaskEntity } from './task.entity';
+import { IssueEntity } from './issue.entity';
 
 export enum RequestStatus {
   PENDING = 'PENDING',
@@ -27,6 +28,10 @@ export enum RequestLevel {  // only for MAINTENANCE type
   },
 })
 export class RequestEntity extends BaseEntity {
+
+  @OneToMany(() => IssueEntity, (issue) => issue.request)
+  issues: IssueEntity[];
+
   @OneToMany(() => TaskEntity, (task) => task.request)
   tasks: TaskEntity[];
 

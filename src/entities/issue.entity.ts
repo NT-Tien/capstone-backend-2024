@@ -8,6 +8,7 @@ import {
 import { TaskEntity } from './task.entity';
 import { TypeErrorEntity } from './type-error.entity';
 import { IssueSparePartEntity } from './issue-spare-part.entity';
+import { RequestEntity } from './request.entity';
 
 export enum FixItemType {
     REPLACE = 'REPLACE',
@@ -24,7 +25,11 @@ export enum IssueStatus {
     name: 'ISSUE',
 })
 export class IssueEntity extends BaseEntity {
-    @ManyToOne(() => TaskEntity, (task) => task.id, { nullable: false })
+
+    @ManyToOne(() => RequestEntity, (request) => request.id)
+    request: RequestEntity;
+
+    @ManyToOne(() => TaskEntity, (task) => task.id, { nullable: true })
     task: TaskEntity;
 
     @ManyToOne(() => TypeErrorEntity, (typeError) => typeError.id)

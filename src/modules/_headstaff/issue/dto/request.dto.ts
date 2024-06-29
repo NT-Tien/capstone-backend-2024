@@ -8,7 +8,7 @@ export namespace IssueRequestDto {
     @ApiProperty()
     @IsNotEmpty()
     @Expose()
-    task: string;
+    request: string;
 
     @ApiProperty()
     @IsNotEmpty()
