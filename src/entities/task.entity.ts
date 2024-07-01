@@ -130,7 +130,7 @@ export class TaskEntity extends BaseEntity {
   @Column({
     name: 'confirm_receipt',
     type: 'boolean',
-    nullable: true,
+    default: false,
   })
   confirmReceipt?: boolean;
 }
