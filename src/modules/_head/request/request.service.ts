@@ -33,6 +33,8 @@ export class RequestService extends BaseService<RequestEntity> {
     }
     return this.requestRepository.createQueryBuilder('request')
       .leftJoinAndSelect('request.requester', 'requester')
+      .leftJoinAndSelect('request.device.area', 'area')
+      .leftJoinAndSelect('request.machineModel.', 'machineModel')
       .leftJoinAndSelect('request.device', 'device')
       .leftJoinAndSelect('request.tasks', 'tasks')
       .leftJoinAndSelect('request.checker', 'checker')
