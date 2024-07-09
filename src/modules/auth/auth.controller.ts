@@ -19,11 +19,7 @@ import { FastifyRequest } from 'fastify';
 import { AuthService } from './auth.service';
 import { AuthResponseDto } from './dto/response.dto';
 import { AuthRequestDto } from './dto/request.dto';
-import { StaffGuard } from './guards/staff.guard';
-import { HeadGuard } from './guards/head.guard';
 import { HeadStaffGuard } from './guards/headstaff.guard';
-import { StockkeeperGuard } from './guards/stockkeeper.guard';
-import { ManagerGuard } from './guards/manager.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -104,23 +100,13 @@ export class AuthController {
   @ApiResponse({ status: 200, type: AuthResponseDto.UpdateAccountResponseDto })
   @Post('update-phone')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(
-    StaffGuard,
-    AdminGuard,
-    HeadGuard,
-    HeadStaffGuard,
-    StockkeeperGuard,
-    ManagerGuard,
-  )
   @ApiBearerAuth()
   async changePhoneNumber(
     @Req() req: FastifyRequest['raw'],
     @Body() phone: AuthRequestDto.PhoneDto,
   ) {
-    const decoded = await this.authService.decodeToken(
-      req.headers.authorization?.split(' ')[1],
-    );
-    return this.authService.changePhoneNumber(decoded.id, phone);
+    const user = req.headers.user as any;
+    return this.authService.changePhoneNumber(user.id, phone);
   }
 
   // ! apis for head staffs
