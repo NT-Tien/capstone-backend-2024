@@ -34,7 +34,7 @@ export class RequestService extends BaseService<RequestEntity> {
       where: {
         status: status ? status : undefined,
       },
-      relations: ['device', 'device.area', 'device.machineModel', 'tasks', 'tasks.fixer', 'requester'],
+      relations: ['device', 'device.area', 'device.machineModel', 'tasks', 'tasks.fixer', 'requester', 'issues'],
       order: { createdAt: 'DESC' },
       skip: (page - 1) * limit,
       take: limit,
@@ -56,7 +56,7 @@ export class RequestService extends BaseService<RequestEntity> {
     });
     return this.requestRepository.findOne({
       where: { id },
-      relations: ['device', 'device.area', 'device.machineModel', 'tasks', 'tasks.fixer', 'requester'],
+      relations: ['device', 'device.area', 'device.machineModel', 'tasks', 'tasks.fixer', 'requester', 'issues'],
     });
   }
 
