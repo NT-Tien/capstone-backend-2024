@@ -56,7 +56,7 @@ export class RequestService extends BaseService<RequestEntity> {
     });
     return this.requestRepository.findOne({
       where: { id },
-      relations: ['device', 'device.area', 'device.machineModel', 'tasks', 'tasks.fixer', 'requester', 'issues'],
+      relations: ['device', 'device.area', 'device.machineModel', 'tasks', 'tasks.fixer', 'requester', 'issues', 'issues.typeError', 'issues.issueSpareParts'],
     });
   }
 
