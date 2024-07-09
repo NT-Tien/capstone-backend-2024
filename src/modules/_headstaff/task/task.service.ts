@@ -46,15 +46,15 @@ export class TaskService extends BaseService<TaskEntity> {
         'request',
         'fixer',
         'request.requester',
-        'request.issues',
-        'request.issues.typeError',
-        'request.issues.issueSpareParts',
-        'request.issues.issueSpareParts.sparePart',
         'device',
         'device.area',
         'device.machineModel',
         'device.machineModel.spareParts',
         'device.machineModel.typeErrors',
+        'issues',
+        'issues.typeError',
+        'issues.issueSpareParts',
+        'issues.issueSpareParts.sparePart',
       ]
     });
   }
