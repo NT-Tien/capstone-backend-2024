@@ -81,14 +81,6 @@ export class AuthController {
   @ApiResponse({ status: 200, type: AuthResponseDto.GetAccountResponseDto })
   @Get('get-account')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(
-    StaffGuard,
-    AdminGuard,
-    HeadGuard,
-    HeadStaffGuard,
-    StockkeeperGuard,
-    ManagerGuard,
-  )
   @ApiBearerAuth()
   async getAccount(@Req() req: FastifyRequest['raw']) {
     const decoded = await this.authService.decodeToken(
@@ -100,23 +92,13 @@ export class AuthController {
   @ApiResponse({ status: 200, type: AuthResponseDto.UpdateAccountResponseDto })
   @Post('change-password')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(
-    StaffGuard,
-    AdminGuard,
-    HeadGuard,
-    HeadStaffGuard,
-    StockkeeperGuard,
-    ManagerGuard,
-  )
   @ApiBearerAuth()
   async changePassword(
     @Req() req: FastifyRequest['raw'],
     @Body() password: AuthRequestDto.PasswordDto,
   ) {
-    const decoded = await this.authService.decodeToken(
-      req.headers.authorization?.split(' ')[1],
-    );
-    return this.authService.changePassword(decoded.id, password);
+    const user = req.headers.user as any;
+    return this.authService.changePassword(user.id, password);
   }
 
   @ApiResponse({ status: 200, type: AuthResponseDto.UpdateAccountResponseDto })

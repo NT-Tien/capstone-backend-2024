@@ -15,6 +15,7 @@ export class HeadGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
       const request = context.switchToHttp().getRequest();
+      console.log('request', request);
       const accessToken = (request?.headers?.authorization as string)?.split(
         ' ',
       )[1];
@@ -23,6 +24,8 @@ export class HeadGuard implements CanActivate {
         return true;
       } else return false;
     } catch (error) {
+      console.log('error', error);
+      
       return false;
     }
   }
