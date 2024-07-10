@@ -32,6 +32,11 @@ export namespace IssueRequestDto {
     @ApiProperty()
     @IsOptional()
     @Expose()
+    task?: string;
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
     typeError?: string;
 
     @ApiProperty()
