@@ -14,7 +14,7 @@ export class MachineModelService extends BaseService<MachineModelEntity> {
   }
 
   async customGetAll(page: number, limit: number) {
-    return await this.machineModelRepository.find({
+    return await this.machineModelRepository.findAndCount({
       skip: (page - 1) * limit,
       take: limit,
     });

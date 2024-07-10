@@ -17,7 +17,7 @@ import {
 } from '@blazity/nest-file-fastify';
 import { FastifyReply } from 'fastify';
 import * as dotenv from 'dotenv';
-import { AdminGuard } from 'src/modules/auth/guards/admin.guard';
+import { UploadGuard } from 'src/modules/auth/guards/upload.guard';
 
 dotenv.config();
 
@@ -39,7 +39,7 @@ export class VideoController {
       },
     },
   })
-  @UseGuards(AdminGuard)
+  @UseGuards(UploadGuard)
   @ApiBearerAuth()
   @Post('upload')
   @UseInterceptors(FileInterceptor('file', {

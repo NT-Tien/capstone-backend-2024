@@ -3,26 +3,27 @@ import {
   Injectable,
   CanActivate,
   ExecutionContext,
-  Inject,
+  Logger,
 } from '@nestjs/common';
-import { AuthService } from '../auth.service';
+import { Role } from 'src/entities/account.entity';
 
 @Injectable()
 export class AdminGuard implements CanActivate {
-  constructor(
-    @Inject('AUTH_SERVICE_TIENNT') private readonly AuthService: AuthService,
-  ) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  private readonly logger = new Logger(AdminGuard.name);
+
+  canActivate(context: ExecutionContext): boolean {
     try {
       const request = context.switchToHttp().getRequest();
-      const accessToken = (request?.headers?.authorization as string)?.split(
-        ' ',
-      )[1];
-      const response = await this.AuthService.verifyAdminToken(accessToken);
-      if (response) {
-        return true;
-      } else return false;
+      const user = request.headers['user'];
+      const handler = context.getHandler();
+      const controller = context.getClass();
+      const endpoint = `${controller.name}.${handler.name}`;
+      this.logger.log(`Accessing endpoint: ${endpoint}`);
+      if (user?.role !== Role.admin) {
+        return false;
+      }
+      return true;
     } catch (error) {
       return false;
     }

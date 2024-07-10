@@ -34,8 +34,8 @@ export class RequestService extends BaseService<RequestEntity> {
       where: {
         status: status ? status : undefined,
       },
-      relations: ['device', 'device.area', 'device.machineModel', 'tasks', 'tasks.fixer', 'requester', 'issues'],
-      order: { createdAt: 'DESC' },
+      relations: ['device', 'device.area', 'device.machineModel', 'device.machineModel.typeErrors', 'tasks', 'tasks.fixer', 'requester', 'issues'],
+      order: { createdAt: status === RequestStatus.PENDING ? 'ASC' : 'DESC'},
       skip: (page - 1) * limit,
       take: limit,
     });
