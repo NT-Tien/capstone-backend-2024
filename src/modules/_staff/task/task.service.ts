@@ -42,25 +42,30 @@ export class TaskService extends BaseService<TaskEntity> {
       .getMany();
   }
 
-  async customStaffGetTaskDetail(userId: string, taskId: string) {
-    let account = await this.accountRepository.findOne({
+  async customStaffGetTaskDetail(userId: string, id: string) {
+    var account = await this.accountRepository.findOne({
       where: { id: userId },
     });
     if (!account || account.deletedAt || account.role !== Role.staff) {
       throw new HttpException('Account is not valid', HttpStatus.BAD_REQUEST);
     }
-    return this.taskRepository.createQueryBuilder('task')
-      .leftJoinAndSelect('task.device', 'device')
-      .leftJoinAndSelect('device.area', 'area')
-      .leftJoinAndSelect('device.machineModel', 'machineModel')
-      .leftJoinAndSelect('task.fixer', 'fixer')
-      .leftJoinAndSelect('task.issues', 'issues')
-      .leftJoinAndSelect('issues.issueSpareParts', 'issueSpareParts')
-      .leftJoinAndSelect('issues.typeError', 'typeError')
-      .leftJoinAndSelect('issueSpareParts.sparePart', 'sparePart')
-      .where('task.id = :taskId', { taskId })
-      .andWhere('fixer.id = :id', { id: userId })
-      .getOne();
+    return await this.taskRepository.findOne({
+      where: { id },
+      relations: [
+        'request',
+        'fixer',
+        'request.requester',
+        'device',
+        'device.area',
+        'device.machineModel',
+        'device.machineModel.spareParts',
+        'device.machineModel.typeErrors',
+        'issues',
+        'issues.typeError',
+        'issues.issueSpareParts',
+        'issues.issueSpareParts.sparePart',
+      ]
+    });
   }
 
   async confirmReceipt(userId: string, taskId: string) {
