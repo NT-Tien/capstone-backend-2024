@@ -1,34 +1,29 @@
-// auth.guard.ts
 import {
   Injectable,
   CanActivate,
   ExecutionContext,
-  Logger,
-  HttpException,
 } from '@nestjs/common';
+import { JWTGuard } from './jwt.guard';
 import { JwtService } from '@nestjs/jwt';
 import { Role } from 'src/entities/account.entity';
 
 @Injectable()
-export class UploadGuard implements CanActivate {
-
+export class UploadGuard extends JWTGuard implements CanActivate {
   constructor(
-    private readonly jwtService: JwtService,
-  ) { }
-
+    protected readonly jwtService: JwtService
+  ) {
+    super(jwtService);
+  }
   canActivate(context: ExecutionContext): boolean {
+    if (!super.canActivate(context)) {
+      return false;
+    }
     try {
       const request = context.switchToHttp().getRequest();
-      const authHeader = request.headers.authorization;
-      if (authHeader) {
-        const token = authHeader.split(' ')[1]; // Assuming the Authorization header format is "Bearer <token>"
-        let user = this.jwtService.verify(token);// Attach the decoded token to the request objectoobjecto
-        if (user?.role == Role.admin || user?.role == Role.staff) {
-          request.headers.user = user;
-          return true;
-        }
-      }
-      return false;
+      const user = request?.headers?.user as any;
+      if (user && (user.role === Role.admin ||  user.role === Role.staff)) {
+        return true;
+      } else return false;
     } catch (error) {
       return false;
     }

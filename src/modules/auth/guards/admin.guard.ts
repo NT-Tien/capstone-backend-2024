@@ -1,29 +1,29 @@
-// auth.guard.ts
 import {
   Injectable,
   CanActivate,
   ExecutionContext,
-  Logger,
 } from '@nestjs/common';
+import { JWTGuard } from './jwt.guard';
+import { JwtService } from '@nestjs/jwt';
 import { Role } from 'src/entities/account.entity';
 
 @Injectable()
-export class AdminGuard implements CanActivate {
-
-  private readonly logger = new Logger(AdminGuard.name);
-
+export class AdminGuard extends JWTGuard implements CanActivate {
+  constructor(
+    protected readonly jwtService: JwtService
+  ) {
+    super(jwtService);
+  }
   canActivate(context: ExecutionContext): boolean {
+    if (!super.canActivate(context)) {
+      return false;
+    }
     try {
       const request = context.switchToHttp().getRequest();
-      const user = request.headers['user'];
-      const handler = context.getHandler();
-      const controller = context.getClass();
-      const endpoint = `${controller.name}.${handler.name}`;
-      this.logger.log(`Accessing endpoint: ${endpoint}`);
-      if (user?.role !== Role.admin) {
-        return false;
-      }
-      return true;
+      const user = request?.headers?.user as any;
+      if (user && user.role === Role.admin) {
+        return true;
+      } else return false;
     } catch (error) {
       return false;
     }
