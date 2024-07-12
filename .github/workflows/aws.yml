@@ -24,4 +24,4 @@ jobs:
           git pull origin main &&
           docker-compose down &&
           docker rmi capstone-backend-2024-backend:latest &&
-          docker-compose up --build -d &&
+          docker-compose up --build -d
