@@ -49,10 +49,10 @@ import { CACHE_REDIS_CONFIG } from './config/redis.client';
     PredictiveModule,
   ],
   providers: [
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: RequestInterceptor,
-    },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: RequestInterceptor,
+    // },
     {
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor,

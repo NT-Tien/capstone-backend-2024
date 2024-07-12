@@ -46,13 +46,13 @@ export class ImageController {
       fileSize: 1 * 1024 * 1024,
     },
   }))
-  async uploadFile(@UploadedFile() file: MemoryStorageFile) {
+  async uploadFile(
+    @UploadedFile() file: MemoryStorageFile,
+  ) {
     try {
       const fileBlob = new Blob([file.buffer], { type: file.mimetype });
       const dataForm = new FormData();
       dataForm.append('file', fileBlob);
-      console.log(!file.mimetype.includes('image'));
-
       // check if the file is image
       if (!file.mimetype.includes('image')) {
         throw new HttpException('File is not image', 400);
@@ -77,7 +77,10 @@ export class ImageController {
   // get image to show
 
   @Get(':path')
-  async showFile(@Param('path') path: string, @Res() res: FastifyReply) {
+  async showFile(
+    @Param('path') path: string, 
+    @Res() res: FastifyReply
+  ) {
     try {
       const response = await fetch(url + '/' + path, {
         method: 'GET',

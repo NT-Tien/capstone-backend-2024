@@ -23,7 +23,7 @@ export class UploadGuard implements CanActivate {
       if (authHeader) {
         const token = authHeader.split(' ')[1]; // Assuming the Authorization header format is "Bearer <token>"
         let user = this.jwtService.verify(token);// Attach the decoded token to the request objectoobjecto
-        if (user?.role !== Role.admin && user?.role !== Role.staff) {
+        if (user?.role == Role.admin || user?.role == Role.staff) {
           request.headers.user = user;
           return true;
         }
