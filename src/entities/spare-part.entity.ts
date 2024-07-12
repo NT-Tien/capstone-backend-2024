@@ -26,6 +26,12 @@ export class SparePartEntity extends BaseEntity {
   quantity: number;
 
   @Column({
+    type: 'varchar',
+    nullable: true,
+  })
+  image?: string;
+
+  @Column({
     name: 'Expiration_date',
     type: 'date',
   })

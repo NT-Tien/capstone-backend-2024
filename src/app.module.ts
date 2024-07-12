@@ -22,6 +22,7 @@ import { StockkeeperModule } from './modules/_stockkeeper/stockkeeper.module';
 import { PredictiveModule } from './modules/predictive-maintenance/predictive.module';
 import { redisStore } from 'cache-manager-redis-yet';
 import { CACHE_REDIS_CONFIG } from './config/redis.client';
+import { FileLocalModule } from './modules/upload-local/file.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { CACHE_REDIS_CONFIG } from './config/redis.client';
     }),
     MyMiddlewareModule,
     AuthModule,
+    FileLocalModule,
     ImageModule,
     VideoModule,
     NotifyModule,

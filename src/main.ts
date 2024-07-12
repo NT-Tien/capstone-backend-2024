@@ -64,7 +64,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  writeFileSync('./public/swagger-spec.json', JSON.stringify(document));
+  writeFileSync('./uploads/swagger-spec.json', JSON.stringify(document));
   SwaggerModule.setup('swagger', app, document, {
     swaggerOptions: {
       defaultModelsExpandDepth: -1,
@@ -74,7 +74,7 @@ async function bootstrap() {
   // -----------------------------------------------
 
   app.useStaticAssets({
-    root: join(__dirname, '..', 'public'),
+    root: join(__dirname, '..', 'uploads'),
   });
 
   await app.listen(8080, '0.0.0.0');

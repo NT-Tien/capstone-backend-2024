@@ -63,6 +63,17 @@ export class DeviceController {
     return await this.deviceService.getOneWithRelations(id);
   }
 
+  @ApiResponse({
+    type: DeviceResponseDto.DeviceGetOne,
+    status: 200,
+    description: 'Get one Device',
+  })
+  @ApiBearerAuth()
+  @Get('history-request/:id')
+  async getHistoryRequest(@Param('id') id: string) {
+    return await this.deviceService.getHistoryRequest(id);
+  }
+
   // @ApiBearerAuth()
   // @ApiResponse({
   //   type: DeviceResponseDto.DeviceCreate,
