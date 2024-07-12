@@ -77,13 +77,19 @@ export class TaskService extends BaseService<TaskEntity> {
     if (!allCancelled) {
       throw new Error('All tasks must be cancelled before creating a new task for this request');
     }
-    
+
     let newTask = new TaskEntity();
     newTask.request = request;
     newTask.device = request.device;
     newTask.status = TaskStatus.AWAITING_FIXER;
-    console.log({ ...data, ...newTask });
-    return await this.taskRepository.save({ ...data, ...newTask });
+    let newTaskResult = await this.taskRepository.save({ ...data, ...newTask });
+    // assign issues to task
+    let newIssuesAdded = await this.taskRepository.createQueryBuilder('task')
+      .relation(TaskEntity, 'issues')
+      .of(newTaskResult.id)
+      .add(data.issueIDs);
+
+    return { ...newTaskResult, issues: newIssuesAdded };
   }
 
   async assignFixer(taskId: string, data: TaskRequestDto.TaskAssignFixerDto) {

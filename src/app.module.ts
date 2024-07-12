@@ -12,7 +12,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ImageModule } from './modules/upload/image/image.module';
 import { VideoModule } from './modules/upload/video/video.module';
 import { NotifyModule } from './modules/notify/notify.module';
-import { AllExceptionsFilter } from './common/exceptions/catch.exception';
+import { AllExceptionsFilter } from './common/filters/catch.filter';
 import { AdminModule } from './modules/_admin/admin.module';
 import { ManagerModule } from './modules/_manager/manager.module';
 import { HeadModule } from './modules/_head/head.module';

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
 import { RequestStatus } from 'src/entities/request.entity';
 
@@ -26,6 +26,11 @@ export namespace TaskRequestDto {
     @IsNotEmpty()
     @Expose()
     operator: number;
+
+    @ApiProperty()
+    @IsArray()
+    @Expose()
+    issueIDs: string[];
 
     @ApiProperty()
     @IsOptional()
