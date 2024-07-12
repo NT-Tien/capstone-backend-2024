@@ -1,32 +1,36 @@
 // auth.guard.ts
 import {
-    Injectable,
-    CanActivate,
-    ExecutionContext,
-    Logger,
-  } from '@nestjs/common';
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  Logger,
+  HttpException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { Role } from 'src/entities/account.entity';
-  
-  @Injectable()
-  export class UploadGuard implements CanActivate {
-  
-    private readonly logger = new Logger(UploadGuard.name);
-  
-    canActivate(context: ExecutionContext): boolean {
-      try {
-        const request = context.switchToHttp().getRequest();
-        const user = request.headers['user'];
-        const handler = context.getHandler();
-        const controller = context.getClass();
-        const endpoint = `${controller.name}.${handler.name}`;
-        this.logger.log(`Accessing endpoint: ${endpoint}`);
-        // if (user?.role !== Role.admin && user?.role !== Role.staff) {
-        //   return false;
-        // }
-        return true;
-      } catch (error) {
-        return false;
+
+@Injectable()
+export class UploadGuard implements CanActivate {
+
+  constructor(
+    private readonly jwtService: JwtService,
+  ) { }
+
+  canActivate(context: ExecutionContext): boolean {
+    try {
+      const request = context.switchToHttp().getRequest();
+      const authHeader = request.headers.authorization;
+      if (authHeader) {
+        const token = authHeader.split(' ')[1]; // Assuming the Authorization header format is "Bearer <token>"
+        let user = this.jwtService.verify(token);// Attach the decoded token to the request objectoobjecto
+        if (user?.role !== Role.admin && user?.role !== Role.staff) {
+          request.headers.user = user;
+          return true;
+        }
       }
+      return false;
+    } catch (error) {
+      return false;
     }
   }
-  
+}
