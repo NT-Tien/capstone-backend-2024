@@ -4,6 +4,7 @@ import { DeviceModule } from "./device/device.module";
 import { SparePartModule } from "./spare-part/spare-part.module";
 import { TypeErrorModule } from "./type-error/type-error.module";
 import { AreaModule } from "./area/area.module";
+import { TypeErrorHeadModule } from "./type-error-head/type-error-head.module";
 
 @Module({
     imports: [
@@ -12,6 +13,7 @@ import { AreaModule } from "./area/area.module";
         DeviceModule,
         SparePartModule,
         TypeErrorModule,
+        TypeErrorHeadModule,
     ],
 })
 export class AdminModule {}

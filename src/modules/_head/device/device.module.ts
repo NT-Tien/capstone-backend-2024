@@ -6,7 +6,7 @@ import { AuthModule } from 'src/modules/auth/auth.module';
 import { DeviceController } from './device.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([DeviceEntity]), AuthModule],
+  imports: [TypeOrmModule.forFeature([DeviceEntity])],
   controllers: [DeviceController],
   providers: [DeviceService],
 })
