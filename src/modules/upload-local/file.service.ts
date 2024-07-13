@@ -21,36 +21,38 @@ export class FileService extends BaseService<FileLocalEntity> {
 
   // upload file
   async uploadFile(file: MemoryStorageFile) {
-      // check file type
-      // if (!file.mimetype.startsWith('image/')) {
-      //   throw new HttpException('File type is not image', 400);
-      // }
-      // write file to folder uploads
-      const fileName = uuidv4() + '.' + file.mimetype.split('/')[1];
-      // check folder exist
-      if (!require('fs').existsSync(join(__dirname, '..', '..', 'uploads'))) {
-        require('fs').mkdirSync(join(__dirname, '..', '..', 'uploads'));
-      }
-      // write file
-      require('fs').writeFileSync(join(__dirname, '..', '..', 'uploads', fileName), file.buffer);
-      // get file size
-      var stats = require('fs').statSync(join(__dirname, '..', '..', 'uploads', fileName));
-      var fileSizeInBytes = stats.size;
-      // create new file
-      return await this.fileRepository.save({ path: fileName, size: fileSizeInBytes, type: file.mimetype });
+    // check file type
+    // if (!file.mimetype.startsWith('image/')) {
+    //   throw new HttpException('File type is not image', 400);
+    // }
+    // write file to folder uploads
+    const fileName = uuidv4() + '.' + file.mimetype.split('/')[1];
+    // check folder exist
+    console.log('dirname', __dirname);
+
+    if (!require('fs').existsSync(join(__dirname, '..', '..', '..', 'uploads'))) {
+      require('fs').mkdirSync(join(__dirname, '..', '..', '..', 'uploads'));
+    }
+    // write file
+    require('fs').writeFileSync(join(__dirname, '..', '..', '..', 'uploads', fileName), file.buffer);
+    // get file size
+    var stats = require('fs').statSync(join(__dirname, '..', '..', '..', 'uploads', fileName));
+    var fileSizeInBytes = stats.size;
+    // create new file
+    return await this.fileRepository.save({ path: fileName, size: fileSizeInBytes, type: file.mimetype });
   }
 
   async deleteFile(path: string) {
     try {
-      if (require('fs').existsSync(join(__dirname, '..', '..', 'uploads', path))) {
-        await require('fs').unlinkSync(join(__dirname, '..', '..', 'uploads', path));
+      if (require('fs').existsSync(join(__dirname, '..', '..', '..', 'uploads', path))) {
+        await require('fs').unlinkSync(join(__dirname, '..', '..', '..', 'uploads', path));
         return this.fileRepository.delete({ path: path });
       } else {
         console.log('file not exist', path);
       }
     } catch (error) {
       console.log('delete file error', error);
-      
+
     }
   }
 }

@@ -74,7 +74,7 @@ async function bootstrap() {
   // -----------------------------------------------
 
   app.useStaticAssets({
-    root: join(__dirname, '..', 'uploads'),
+    root: join(__dirname, 'uploads'),
   });
 
   await app.listen(8080, '0.0.0.0');
