@@ -30,13 +30,13 @@ export class FileService extends BaseService<FileLocalEntity> {
     // check folder exist
     console.log('dirname', __dirname);
 
-    if (!require('fs').existsSync(join(__dirname, '..', '..', '..', 'uploads'))) {
-      require('fs').mkdirSync(join(__dirname, '..', '..', '..', 'uploads'));
+    if (!require('fs').existsSync(join(__dirname, '..', '..', '..', 'public/uploads'))) {
+      require('fs').mkdirSync(join(__dirname, '..', '..', '..', 'public/uploads'));
     }
     // write file
-    require('fs').writeFileSync(join(__dirname, '..', '..', '..', 'uploads', fileName), file.buffer);
+    require('fs').writeFileSync(join(__dirname, '..', '..', '..', 'public/uploads', fileName), file.buffer);
     // get file size
-    var stats = require('fs').statSync(join(__dirname, '..', '..', '..', 'uploads', fileName));
+    var stats = require('fs').statSync(join(__dirname, '..', '..', '..', 'public/uploads', fileName));
     var fileSizeInBytes = stats.size;
     // create new file
     return await this.fileRepository.save({ path: fileName, size: fileSizeInBytes, type: file.mimetype });
@@ -44,8 +44,8 @@ export class FileService extends BaseService<FileLocalEntity> {
 
   async deleteFile(path: string) {
     try {
-      if (require('fs').existsSync(join(__dirname, '..', '..', '..', 'uploads', path))) {
-        await require('fs').unlinkSync(join(__dirname, '..', '..', '..', 'uploads', path));
+      if (require('fs').existsSync(join(__dirname, '..', '..', '..', 'public/uploads', path))) {
+        await require('fs').unlinkSync(join(__dirname, '..', '..', '..', 'public/uploads', path));
         return this.fileRepository.delete({ path: path });
       } else {
         console.log('file not exist', path);

@@ -23,6 +23,8 @@ async function bootstrap() {
     ),
   );
 
+  app.setGlobalPrefix(`${process.env.PREFIX_API}`);
+
   // upload file -----------------------------------
   app.register(multipart);
 
@@ -64,7 +66,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  writeFileSync('./uploads/swagger-spec.json', JSON.stringify(document));
+  writeFileSync('./public/swagger-spec.json', JSON.stringify(document));
   SwaggerModule.setup('swagger', app, document, {
     swaggerOptions: {
       defaultModelsExpandDepth: -1,
@@ -74,7 +76,7 @@ async function bootstrap() {
   // -----------------------------------------------
 
   app.useStaticAssets({
-    root: join(__dirname, 'uploads'),
+    root: join(__dirname, '../public'),
   });
 
   await app.listen(8080, '0.0.0.0');
