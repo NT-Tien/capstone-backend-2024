@@ -16,7 +16,7 @@ export class IssueService extends BaseService<IssueEntity> {
   async getOneIssueById(id: string): Promise<IssueEntity> {
     return this.issueRepository.findOne({
       where: { id },
-      relations: ['task'],
+      relations: ['task', 'typeError', 'issueSpareParts', 'issueSpareParts.sparePart'],
     });
   }
 }
