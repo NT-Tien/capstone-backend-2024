@@ -40,6 +40,7 @@ export namespace TaskRequestDto {
     @ApiProperty()
     @IsDateString()
     @IsNotEmpty()
+    @Expose()
     fixerDate: Date;
 
   }
@@ -73,6 +74,7 @@ export namespace TaskRequestDto {
     @ApiProperty()
     @IsOptional()
     @IsDateString()
+    @Expose()
     fixerDate?: Date;
 
   }
