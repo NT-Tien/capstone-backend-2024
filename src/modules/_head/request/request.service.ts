@@ -70,9 +70,10 @@ export class RequestService extends BaseService<RequestEntity> {
     //   where: { requester: account, device: device, status: RequestStatus.PENDING },
     // });
     let request = await this.requestRepository.createQueryBuilder('request')
-      .where('requester = :requester', { requester: account })
-      .andWhere('device = :device', { device: device })
-      .andWhere('status = :status', { status: RequestStatus.PENDING })
+      .leftJoinAndSelect('request.device', 'device')
+      .andWhere('device.deletedAt is null')
+      .andWhere('device.id = :id', { id: data.device })
+      .andWhere('request.status = :status', { status: RequestStatus.PENDING })
       .getOne();
     if (request) {
       throw new Error('Request is duplicate');
