@@ -76,7 +76,7 @@ export class RequestService extends BaseService<RequestEntity> {
       .andWhere('request.status = :status', { status: RequestStatus.PENDING })
       .getOne();
     if (request) {
-      throw new Error('Request is duplicate');
+      throw new HttpException('Request is duplicate', HttpStatus.BAD_REQUEST);
     }
 
     // create new request
