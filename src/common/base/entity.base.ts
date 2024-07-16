@@ -10,7 +10,7 @@ export abstract class BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({})
   createdAt: Date;
 
   @UpdateDateColumn()

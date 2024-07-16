@@ -35,7 +35,7 @@ export class RequestService extends BaseService<RequestEntity> {
         status: status ? status : undefined,
       },
       relations: ['device', 'device.area', 'device.machineModel', 'device.machineModel.typeErrors', 'tasks', 'tasks.fixer', 'requester', 'issues'],
-      order: { createdAt: status === RequestStatus.PENDING ? 'ASC' : 'DESC'},
+      order: { createdAt: status === RequestStatus.PENDING ? 'ASC' : 'DESC' },
       skip: (page - 1) * limit,
       take: limit,
     });
@@ -56,12 +56,24 @@ export class RequestService extends BaseService<RequestEntity> {
     });
     return this.requestRepository.findOne({
       where: { id },
-      relations: ['device', 'device.area', 'device.machineModel', 'tasks', 'tasks.fixer', 'requester', 'issues', 'issues.task', 'issues.typeError', 'issues.issueSpareParts', 'issues.issueSpareParts.sparePart'],
+      relations: [
+        'device',
+        'device.area',
+        'device.machineModel',
+        'tasks',
+        'tasks.fixer',
+        'requester',
+        'issues',
+        'issues.task',
+        'issues.typeError',
+        'issues.issueSpareParts',
+        'issues.issueSpareParts.sparePart'
+      ],
     });
   }
 
   async updateStatus(userId: string, id: string, data: RequestRequestDto.RequestUpdateDto): Promise<RequestEntity> {
-    const account = await this.accountRepository.findOne({where: {id: userId}});
+    const account = await this.accountRepository.findOne({ where: { id: userId } });
     return await this.requestRepository.save({ id, ...data, checker: account });
   }
 }

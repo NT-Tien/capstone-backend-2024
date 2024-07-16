@@ -34,6 +34,10 @@ export enum TaskStatus {
    */
   COMPLETED = 'COMPLETED',
   /**
+ *
+ */
+  HEAD_CONFIRM = 'HEAD_CONFIRM',
+  /**
    *
    */
   CANCELLED = 'CANCELLED',
