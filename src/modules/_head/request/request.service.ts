@@ -66,9 +66,14 @@ export class RequestService extends BaseService<RequestEntity> {
       throw new Error('Device is not valid');
     }
     // check request duplicate
-    let request = await this.requestRepository.findOne({
-      where: { requester: account, device: device, status: RequestStatus.PENDING },
-    });
+    // let request = await this.requestRepository.findOne({
+    //   where: { requester: account, device: device, status: RequestStatus.PENDING },
+    // });
+    let request = await this.requestRepository.createQueryBuilder('request')
+      .where('requester = :requester', { requester: account })
+      .andWhere('device = :device', { device: device })
+      .andWhere('status = :status', { status: RequestStatus.PENDING })
+      .getOne();
     if (request) {
       throw new Error('Request is duplicate');
     }
