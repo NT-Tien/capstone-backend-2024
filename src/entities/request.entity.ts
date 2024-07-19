@@ -10,8 +10,9 @@ export enum RequestStatus {
   APPROVED = 'APPROVED',
   IN_PROGRESS = 'IN_PROGRESS',
   REJECTED = 'REJECTED',
-  // closed 
-  // to_confirm
+  /**TO_CONFIRM
+CLOSED
+REJECTED */
 }
 
 export enum RequestType {

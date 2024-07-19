@@ -116,33 +116,7 @@ export class TaskEntity extends BaseEntity {
 
 
   // bỏ 2 column evidence
-  @Column({
-    name: 'images_verify',
-    type: 'text',
-    array: true,
-    nullable: true,
-    default: [],
-  })
-  imagesVerify?: string[];
 
-  // get imagesVerify(): string[] {
-  //     return this._imagesVerify;
-  // }
-
-  // set imagesVerify(images: string[]) {
-  //     const maxLength = 3;
-  //     if (images.length > maxLength) {
-  //         throw new Error(`Độ dài của mảng không thể vượt quá ${maxLength}`);
-  //     }
-  //     this._imagesVerify = images;
-  // }
-
-  @Column({
-    name: 'videos_verify',
-    type: 'text',
-    nullable: true,
-  })
-  videosVerify?: string;
 
   @Column({
     name: 'confirm_receipt',
