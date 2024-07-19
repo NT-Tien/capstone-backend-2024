@@ -3,24 +3,26 @@ import {
   Injectable,
   CanActivate,
   ExecutionContext,
-  Inject,
 } from '@nestjs/common';
-import { AuthService } from '../auth.service';
+import { JWTGuard } from './jwt.guard';
+import { JwtService } from '@nestjs/jwt';
+import { Role } from 'src/entities/account.entity';
 
 @Injectable()
-export class StaffGuard implements CanActivate {
+export class StaffGuard extends JWTGuard implements CanActivate {
   constructor(
-    @Inject('AUTH_SERVICE_TIENNT') private readonly AuthService: AuthService,
-  ) {}
-
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+    protected readonly jwtService: JwtService
+  ) {
+    super(jwtService);
+  }
+  canActivate(context: ExecutionContext): boolean {
+    if (!super.canActivate(context)) {
+      return false;
+    }
     try {
       const request = context.switchToHttp().getRequest();
-      const accessToken = (request?.headers?.authorization as string)?.split(
-        ' ',
-      )[1];
-      const response = await this.AuthService.verifyStaffToken(accessToken);
-      if (response) {
+      const user = request?.headers?.user as any;
+      if (user && user.role === Role.staff) {
         return true;
       } else return false;
     } catch (error) {

@@ -15,6 +15,7 @@ export class AccountService extends BaseService<AccountEntity> {
 
   async getAllAccountsStaff(): Promise<AccountEntity[]> {
     return this.accountRepository.find({
+      relations: ['tasks'],
       where: { role: Role.staff },
       order: { createdAt: 'DESC' },
       // skip: (page - 1) * limit,

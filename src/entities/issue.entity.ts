@@ -20,7 +20,24 @@ export enum IssueStatus {
     FAILED = 'FAILED',
     RESOLVED = 'RESOLVED',
 }
+// thêm 2 columnevidence 
+/*
+@Column({
+    name: 'images_verify',
+    type: 'text',
+    array: true,
+    nullable: true,
+    default: [],
+  })
+  imagesVerify?: string[];
 
+  @Column({
+    name: 'videos_verify',
+    type: 'text',
+    nullable: true,
+  })
+  videosVerify?: string;
+*/
 @Entity({
     name: 'ISSUE',
 })

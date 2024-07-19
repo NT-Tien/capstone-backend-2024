@@ -3,9 +3,9 @@ import { Column, Entity, ManyToOne } from 'typeorm';
 import { MachineModelEntity } from './machine-model.entity';
 
 @Entity({
-  name: 'SPARE_PART',
+  name: 'TYPE_ERROR_HEAD',
 })
-export class SparePartEntity extends BaseEntity {
+export class TypeErrorHeadEntity extends BaseEntity {
   @ManyToOne(() => MachineModelEntity, (machineModel) => machineModel.id, {
     nullable: false,
   })
@@ -13,27 +13,20 @@ export class SparePartEntity extends BaseEntity {
 
   @Column({
     name: 'name',
-    type: 'varchar',
-    length: 100,
-    nullable: false,
+    type: 'text',
   })
   name: string;
 
   @Column({
-    name: 'quantity',
+    name: 'duration',
     type: 'int',
   })
-  quantity: number;
+  duration: number;
 
   @Column({
-    type: 'varchar',
-    nullable: true,
+    name: 'description',
+    type: 'text',
   })
-  image?: string;
+  description: string;
 
-  @Column({
-    name: 'Expiration_date',
-    type: 'date',
-  })
-  expirationDate: Date;
 }

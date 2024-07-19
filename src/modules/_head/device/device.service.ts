@@ -24,7 +24,15 @@ export class DeviceService extends BaseService<DeviceEntity> {
   async getOneWithRelations(id: string): Promise<DeviceEntity> {
     return this.deviceRepository.findOne({
       where: { id },
-      relations: ['area', 'machineModel'],
+      relations: ['area', 'machineModel', 'machineModel.typeErrorsHead'],
     });
   }
+
+    // get history request by device id
+    async getHistoryRequest(id: string): Promise<DeviceEntity> {
+      return this.deviceRepository.findOne({
+        where: { id },
+        relations: ['requests'],
+      });
+    }
 }

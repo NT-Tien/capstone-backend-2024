@@ -36,6 +36,8 @@ export class TaskController {
   getAll(
     @Headers('user') user: any,
   ) {
+    console.log(user);
+    
     return this.taskService.staffGetAllTask(user.id);
   }
 

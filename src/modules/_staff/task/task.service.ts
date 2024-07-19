@@ -29,6 +29,8 @@ export class TaskService extends BaseService<TaskEntity> {
 
 
   async staffGetAllTask(userId: string) {
+    console.log(userId);
+    
     let account = await this.accountRepository.findOne({
       where: { id: userId },
     });

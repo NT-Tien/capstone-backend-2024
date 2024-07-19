@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, ValidateIf } from 'class-validator';
+import { IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
 
 // export class SparePartEntity extends BaseEntity{
@@ -46,6 +46,11 @@ export namespace SparePartRequestDto {
     quantity: number;
 
     @ApiProperty()
+    @IsOptional()
+    @Expose()
+    image?: string;
+
+    @ApiProperty()
     @IsNotEmpty()
     @Expose()
     expirationDate: Date;
@@ -66,6 +71,11 @@ export namespace SparePartRequestDto {
     @ValidateIf((object, value) => value !== undefined)
     @Expose()
     quantity: number;
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
+    image?: string;
 
     @ApiProperty()
     @ValidateIf((object, value) => value !== undefined)

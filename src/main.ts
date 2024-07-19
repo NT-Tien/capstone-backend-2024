@@ -23,6 +23,8 @@ async function bootstrap() {
     ),
   );
 
+  app.setGlobalPrefix(`${process.env.PREFIX_API}`);
+
   // upload file -----------------------------------
   app.register(multipart);
 
@@ -74,7 +76,7 @@ async function bootstrap() {
   // -----------------------------------------------
 
   app.useStaticAssets({
-    root: join(__dirname, '..', 'public'),
+    root: join(__dirname, '../public'),
   });
 
   await app.listen(8080, '0.0.0.0');

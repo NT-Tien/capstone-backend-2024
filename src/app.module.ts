@@ -12,17 +12,17 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ImageModule } from './modules/upload/image/image.module';
 import { VideoModule } from './modules/upload/video/video.module';
 import { NotifyModule } from './modules/notify/notify.module';
-import { AllExceptionsFilter } from './common/exceptions/catch.exception';
+import { AllExceptionsFilter } from './common/filters/catch.filter';
 import { AdminModule } from './modules/_admin/admin.module';
 import { ManagerModule } from './modules/_manager/manager.module';
 import { HeadModule } from './modules/_head/head.module';
 import { HeadstaffModule } from './modules/_headstaff/headstaff.module';
 import { StaffModule } from './modules/_staff/staff.module';
 import { StockkeeperModule } from './modules/_stockkeeper/stockkeeper.module';
-import { RequestInterceptor } from './common/interceptors/request.interceptor';
 import { PredictiveModule } from './modules/predictive-maintenance/predictive.module';
 import { redisStore } from 'cache-manager-redis-yet';
 import { CACHE_REDIS_CONFIG } from './config/redis.client';
+import { FileLocalModule } from './modules/upload-local/file.module';
 
 @Module({
   imports: [
@@ -37,6 +37,7 @@ import { CACHE_REDIS_CONFIG } from './config/redis.client';
     }),
     MyMiddlewareModule,
     AuthModule,
+    FileLocalModule,
     ImageModule,
     VideoModule,
     NotifyModule,
@@ -49,10 +50,6 @@ import { CACHE_REDIS_CONFIG } from './config/redis.client';
     PredictiveModule,
   ],
   providers: [
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: RequestInterceptor,
-    },
     {
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor,

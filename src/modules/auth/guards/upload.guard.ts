@@ -1,32 +1,31 @@
-// auth.guard.ts
 import {
-    Injectable,
-    CanActivate,
-    ExecutionContext,
-    Logger,
-  } from '@nestjs/common';
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+} from '@nestjs/common';
+import { JWTGuard } from './jwt.guard';
+import { JwtService } from '@nestjs/jwt';
 import { Role } from 'src/entities/account.entity';
-  
-  @Injectable()
-  export class UploadGuard implements CanActivate {
-  
-    private readonly logger = new Logger(UploadGuard.name);
-  
-    canActivate(context: ExecutionContext): boolean {
-      try {
-        const request = context.switchToHttp().getRequest();
-        const user = request.headers['user'];
-        const handler = context.getHandler();
-        const controller = context.getClass();
-        const endpoint = `${controller.name}.${handler.name}`;
-        this.logger.log(`Accessing endpoint: ${endpoint}`);
-        if (user?.role !== Role.admin && user?.role !== Role.staff) {
-          return false;
-        }
+
+@Injectable()
+export class UploadGuard extends JWTGuard implements CanActivate {
+  constructor(
+    protected readonly jwtService: JwtService
+  ) {
+    super(jwtService);
+  }
+  canActivate(context: ExecutionContext): boolean {
+    if (!super.canActivate(context)) {
+      return false;
+    }
+    try {
+      const request = context.switchToHttp().getRequest();
+      const user = request?.headers?.user as any;
+      if (user && (user.role === Role.admin ||  user.role === Role.staff)) {
         return true;
-      } catch (error) {
-        return false;
-      }
+      } else return false;
+    } catch (error) {
+      return false;
     }
   }
-  
+}
