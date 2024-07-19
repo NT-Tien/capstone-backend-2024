@@ -14,6 +14,10 @@ import { DeviceEntity } from './device.entity';
 
 export enum TaskStatus {
   /**
+ * AWAITING_SPARE_SPART
+ */
+  AWAITING_SPARE_SPART = 'AWAITING_SPARE_SPART',
+  /**
    * AWAITING_FIXER: khi nào còn chưa gán fixer thì dược update nội dung task, ngược lại chỉ có thể cancel task
    */
   AWAITING_FIXER = 'AWAITING_FIXER',
@@ -29,6 +33,10 @@ export enum TaskStatus {
    *
    */
   COMPLETED = 'COMPLETED',
+  /**
+ *
+ */
+  HEAD_CONFIRM = 'HEAD_CONFIRM',
   /**
    *
    */
@@ -61,6 +69,13 @@ export class TaskEntity extends BaseEntity {
   fixerNote?: string;
 
   @Column({
+    name: 'fixer_date',
+    type: 'timestamp',
+    nullable: true,
+  })
+  fixerDate: Date;
+
+  @Column({
     name: 'name',
     type: 'text',
   })
@@ -70,7 +85,7 @@ export class TaskEntity extends BaseEntity {
     name: 'status',
     type: 'enum',
     enum: TaskStatus,
-    default: TaskStatus.AWAITING_FIXER,
+    default: TaskStatus.AWAITING_SPARE_SPART,
   })
   status: TaskStatus;
 

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsArray, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsArray, IsDateString, IsNotEmpty, IsOptional } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
 import { RequestStatus } from 'src/entities/request.entity';
 
@@ -37,6 +37,12 @@ export namespace TaskRequestDto {
     @Expose()
     totalTime?: number;
 
+    @ApiProperty()
+    @IsDateString()
+    @IsNotEmpty()
+    @Expose()
+    fixerDate: Date;
+
   }
 
   export class TaskUpdateDto extends BaseDTO {
@@ -61,9 +67,15 @@ export namespace TaskRequestDto {
     totalTime?: number;
 
     @ApiProperty()
-    @IsNotEmpty()
+    @IsOptional()
     @Expose()
-    status: RequestStatus;
+    status?: RequestStatus;
+
+    @ApiProperty()
+    @IsOptional()
+    @IsDateString()
+    @Expose()
+    fixerDate?: Date;
 
   }
 

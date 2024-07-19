@@ -1,5 +1,6 @@
 import { BaseEntity } from 'src/common/base/entity.base';
-import { Column, Entity, Unique } from 'typeorm';
+import { Column, Entity, OneToMany, Unique } from 'typeorm';
+import { TaskEntity } from './task.entity';
 
 export enum Role {
   admin = 'admin', // Role for super admin
@@ -46,4 +47,7 @@ export class AccountEntity extends BaseEntity {
     nullable: true,
   })
   role: Role;
+
+  @OneToMany(() => TaskEntity, (task) => task.fixer)
+  tasks: TaskEntity[];
 }
