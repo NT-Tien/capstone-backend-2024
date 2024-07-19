@@ -99,6 +99,8 @@ export class TaskEntity extends BaseEntity {
   })
   completedAt?: Date;
 
+
+  // bỏ 2 column evidence
   @Column({
     name: 'images_verify',
     type: 'text',

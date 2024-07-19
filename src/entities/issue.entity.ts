@@ -20,6 +20,7 @@ export enum IssueStatus {
     FAILED = 'FAILED',
     RESOLVED = 'RESOLVED',
 }
+// thêm 2 columnevidence 
 
 @Entity({
     name: 'ISSUE',
