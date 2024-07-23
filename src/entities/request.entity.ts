@@ -10,6 +10,7 @@ export enum RequestStatus {
   APPROVED = 'APPROVED',
   IN_PROGRESS = 'IN_PROGRESS',
   CLOSED = 'CLOSED',
+  HEAD_CONFIRM = 'HEAD_CONFIRM',
   REJECTED = 'REJECTED',
 }
 
