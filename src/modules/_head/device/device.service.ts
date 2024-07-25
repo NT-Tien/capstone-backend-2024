@@ -32,7 +32,7 @@ export class DeviceService extends BaseService<DeviceEntity> {
     async getHistoryRequest(id: string): Promise<DeviceEntity> {
       return this.deviceRepository.findOne({
         where: { id },
-        relations: ['requests'],
+        relations: ['requests', 'requests.requester', 'machineModel', 'area'],
       });
     }
 }
