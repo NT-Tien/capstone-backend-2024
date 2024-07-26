@@ -105,7 +105,7 @@ export class TaskEntity extends BaseEntity {
     name: 'totalTime',
     type: 'int',
   })
-  totalTime: number;
+  totalTime: number; // minutes
 
   @Column({
     name: 'completed_at',

@@ -31,6 +31,17 @@ export class AccountController {
     return await this.accountService.getAllAccountsStaff();
   }
 
+  @ApiBearerAuth()
+  @ApiResponse({
+    type: AccountResponseDto.AccountGetAll,
+    status: 200,
+    description: 'Get all Accounts available',
+  })
+  @Get('get-all-avaiable/:fixDate')
+  async getAllStaffAvaiable(@Param('fixDate') fixDate: string) {
+    return await this.accountService.getAllAccountsStaffAvaiable(fixDate);
+  }
+
   // @ApiResponse({
   //   type: AccountResponseDto.AccountGetAll,
   //   status: 200,
@@ -58,6 +69,7 @@ export class AccountController {
   async getOneFor(@Param('id') id: string) {
     return await this.accountService.getOne(id);
   }
+  
 
   // @ApiBearerAuth()
   // @ApiResponse({

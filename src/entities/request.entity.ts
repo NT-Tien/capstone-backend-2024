@@ -60,6 +60,13 @@ export class RequestEntity extends BaseEntity {
   checker: AccountEntity;
 
   @Column({
+    name: 'checker_date',
+    type: 'timestamp',
+    nullable: true,
+  })
+  checker_date: Date;
+
+  @Column({
     name: 'checker_note',
     type: 'text',
     nullable: true,
@@ -88,5 +95,13 @@ export class RequestEntity extends BaseEntity {
     enum: RequestLevel,
     nullable: true,
   })
-  level: RequestLevel;
+  level: RequestLevel; // forestall the failure
+
+  @Column({
+    name: 'is_seen',
+    type: 'boolean',
+    default: false,
+  })
+  is_seen: boolean;
+  
 }
