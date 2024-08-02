@@ -8,10 +8,10 @@ import { TaskEntity, TaskStatus } from 'src/entities/task.entity';
 import { In, Repository } from 'typeorm';
 import { TaskRequestDto } from './dto/request.dto';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
+import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
-
   constructor(
     @InjectRepository(TaskEntity)
     private readonly taskRepository: Repository<TaskEntity>,
@@ -23,21 +23,23 @@ export class TaskService extends BaseService<TaskEntity> {
     private readonly issueSparePartRepository: Repository<IssueSparePartEntity>,
     @InjectRepository(SparePartEntity)
     private readonly sparePartRepository: Repository<SparePartEntity>,
+    @InjectRepository(RequestEntity)
+    private readonly requestRepository: Repository<RequestEntity>,
   ) {
     super(taskRepository);
   }
 
-
   async staffGetAllTask(userId: string) {
     console.log(userId);
-    
+
     let account = await this.accountRepository.findOne({
       where: { id: userId },
     });
     if (!account || account.deletedAt || account.role !== Role.staff) {
       throw new HttpException('Account is not valid', HttpStatus.BAD_REQUEST);
     }
-    return this.taskRepository.createQueryBuilder('task')
+    return this.taskRepository
+      .createQueryBuilder('task')
       .leftJoinAndSelect('task.device', 'device')
       .leftJoinAndSelect('task.fixer', 'fixer')
       .andWhere('fixer.id = :id', { id: userId })
@@ -51,7 +53,8 @@ export class TaskService extends BaseService<TaskEntity> {
     if (!account || account.deletedAt || account.role !== Role.staff) {
       throw new HttpException('Account is not valid', HttpStatus.BAD_REQUEST);
     }
-    return this.taskRepository.createQueryBuilder('task')
+    return this.taskRepository
+      .createQueryBuilder('task')
       .leftJoinAndSelect('task.device', 'device')
       .leftJoinAndSelect('device.area', 'area')
       .leftJoinAndSelect('device.machineModel', 'machineModel')
@@ -68,7 +71,12 @@ export class TaskService extends BaseService<TaskEntity> {
   async confirmReceipt(userId: string, taskId: string) {
     let task = await this.taskRepository.findOne({
       where: { id: taskId },
-      relations: ['fixer', 'issues', 'issues.issueSpareParts', 'issues.issueSpareParts.sparePart'],
+      relations: [
+        'fixer',
+        'issues',
+        'issues.issueSpareParts',
+        'issues.issueSpareParts.sparePart',
+      ],
     });
 
     if (!task || task.fixer.id !== userId) {
@@ -88,11 +96,15 @@ export class TaskService extends BaseService<TaskEntity> {
       }
     }
     task.confirmReceipt = true;
-    return await this.taskRepository.save(task);;
+    return await this.taskRepository.save(task);
   }
 
   // update issue status
-  async updateIssueStatus(userId: string, issueId: string, status: IssueStatus) {
+  async updateIssueStatus(
+    userId: string,
+    issueId: string,
+    status: IssueStatus,
+  ) {
     let issue = await this.issueRepository.findOne({
       where: { id: issueId },
       relations: ['task', 'task.fixer'],
@@ -105,20 +117,38 @@ export class TaskService extends BaseService<TaskEntity> {
   }
 
   // confirm in process
-  async confirmInProcess(userId: string, taskId: string){
+  async confirmInProcess(userId: string, taskId: string) {
     let task = await this.taskRepository.findOne({
       where: { id: taskId },
-      relations: ['fixer'],
+      relations: ['fixer', 'request'],
     });
     if (!task || task.fixer.id !== userId) {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+    }
+    // update request status when task is started
+    if (
+      task.request.status === RequestStatus.CHECKED ||
+      task.request.status === RequestStatus.APPROVED
+    ) {
+      await this.requestRepository.update(
+        {
+          id: task.request.id,
+        },
+        {
+          status: RequestStatus.IN_PROGRESS,
+        },
+      );
     }
     task.status = TaskStatus.IN_PROGRESS;
     return await this.taskRepository.save(task);
   }
 
   // confirm completion
-  async confirmCompletion(userId: string, taskId: string, data: TaskRequestDto.TaskConfirmDoneDto) {
+  async confirmCompletion(
+    userId: string,
+    taskId: string,
+    data: TaskRequestDto.TaskConfirmDoneDto,
+  ) {
     let task = await this.taskRepository.findOne({
       where: { id: taskId },
       relations: ['fixer'],
@@ -127,11 +157,10 @@ export class TaskService extends BaseService<TaskEntity> {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
     }
     task.status = TaskStatus.COMPLETED;
-    return await this.taskRepository.save({...task, ...data});
+    return await this.taskRepository.save({ ...task, ...data });
   }
 
-  // send 
-
+  // send
 
   // async getTaskByStatus(userId: string, status: string): Promise<TaskEntity[]> {
   //   const parsedStatus: TaskStatus | undefined = this.parseTaskStatus(status);
@@ -139,8 +168,8 @@ export class TaskService extends BaseService<TaskEntity> {
   //     throw new Error(`Invalid status: ${status}`);
   //   }
   //   const tasks = await this.taskRepository.find(
-  //     { where: 
-  //       { fixer: { id: userId }, status: parsedStatus }    
+  //     { where:
+  //       { fixer: { id: userId }, status: parsedStatus }
   //     });
   //   return tasks;
   // }
@@ -168,7 +197,6 @@ export class TaskService extends BaseService<TaskEntity> {
   // }
   // }
 
-
   // async getbyid(taskid: UUID, userid: UUID) {
   //   return  await this.taskRepository.findOne({
   //     where: {
@@ -191,7 +219,6 @@ export class TaskService extends BaseService<TaskEntity> {
   //   });
 
   // }
-
 
   // async updateissueStatus(issueid: UUID, newStatus: string) :  Promise<boolean> {
 
@@ -227,6 +254,4 @@ export class TaskService extends BaseService<TaskEntity> {
 
   //   return statusMap[statusString];
   // }
-
-
 }
