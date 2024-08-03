@@ -47,9 +47,9 @@ export class TaskService extends BaseService<TaskEntity> {
     });
   }
 
-  async confirmReceipt(userId: string, taskId: string) {
+  async confirmReceipt(taskId: string) {
     let task = await this.taskRepository.findOne({
-      where: { id: taskId },
+      where: { id: taskId.trim() },
       relations: [
         'fixer',
         'issues',
@@ -58,7 +58,7 @@ export class TaskService extends BaseService<TaskEntity> {
       ],
     });
 
-    if (!task || task.fixer.id !== userId) {
+    if (!task) {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
     }
 

@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Headers,
-  Param,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 // import { CacheTTL } from '@nestjs/cache-manager';
 import { UUID } from 'crypto';
@@ -49,7 +42,8 @@ export class TaskController {
     description: 'Confirm receipt',
   })
   @Post('receipt/:taskId')
-  confirmReceipt(@Param('taskId') taskId: UUID, @Headers('user') user: any) {
-    return this.taskService.confirmReceipt(user.id, taskId);
+  receiveSpareParts(@Param('taskId') taskId: UUID) {
+    console.log('controller', taskId);
+    return this.taskService.confirmReceipt(taskId);
   }
 }
