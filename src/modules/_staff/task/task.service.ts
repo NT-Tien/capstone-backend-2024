@@ -41,6 +41,7 @@ export class TaskService extends BaseService<TaskEntity> {
     return this.taskRepository
       .createQueryBuilder('task')
       .leftJoinAndSelect('task.device', 'device')
+      .leftJoinAndSelect('device.area', 'area')
       .leftJoinAndSelect('task.fixer', 'fixer')
       .andWhere('fixer.id = :id', { id: userId })
       .getMany();
@@ -156,7 +157,7 @@ export class TaskService extends BaseService<TaskEntity> {
     if (!task || task.fixer.id !== userId) {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
     }
-    task.status = TaskStatus.COMPLETED;
+    task.status = TaskStatus.HEAD_STAFF_CONFIRM;
     return await this.taskRepository.save({ ...task, ...data });
   }
 
