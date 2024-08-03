@@ -9,7 +9,12 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 // import { CacheTTL } from '@nestjs/cache-manager';
 import { TaskService } from './task.service';
 import { HeadStaffGuard } from 'src/modules/auth/guards/headstaff.guard';
@@ -94,6 +99,17 @@ export class TaskController {
       id,
       TaskRequestDto.TaskUpdateDto.plainToClass(body),
     );
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Complete a Task',
+    description:
+      'Complete a task by updating status and update request status if all tasks are finished',
+  })
+  @Put(':id/complete')
+  async completeTask(@Param('id') id: string) {
+    return this.taskService.completeTask(id);
   }
 
   @ApiBearerAuth()

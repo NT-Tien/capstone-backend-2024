@@ -102,4 +102,43 @@ export class TaskService extends BaseService<TaskEntity> {
     task.status = TaskStatus.ASSIGNED;
     return await this.taskRepository.save(task);
   }
+
+  async completeTask(id: string) {
+    const task = await this.taskRepository.findOne({
+      where: {
+        id,
+      },
+      relations: ['request'],
+    });
+
+    if (!task || task.status !== TaskStatus.HEAD_STAFF_CONFIRM) {
+      throw new Error(
+        'Task not found or invalid status (must be head-staff-confirm) to run this',
+      );
+    }
+    task.status = TaskStatus.COMPLETED;
+    const result = await this.taskRepository.save(task);
+
+    const request = await this.requestRepository.findOne({
+      where: { id: task.request.id },
+      relations: ['tasks'],
+      select: {
+        tasks: {
+          id: true,
+          status: true,
+        },
+      },
+    });
+
+    console.log(request);
+    const allTasksInRequestCompleted = request.tasks.every((task) => {
+      return task.status === TaskStatus.COMPLETED;
+    });
+    if (allTasksInRequestCompleted) {
+      request.status = RequestStatus.HEAD_CONFIRM;
+      await this.requestRepository.save(request);
+    }
+
+    return result;
+  }
 }
