@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from 'src/common/base/service.base';
 import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
@@ -8,6 +14,7 @@ import { AccountEntity, Role } from 'src/entities/account.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
 import { HeadStaffGateway } from 'src/modules/notify/roles/notify.head-staff';
 import { NotifyService } from 'src/modules/notify/notify.service';
+import { FeedbackEntity } from '../../../entities/feedback.entity';
 
 @Injectable()
 export class RequestService extends BaseService<RequestEntity> {
@@ -18,6 +25,8 @@ export class RequestService extends BaseService<RequestEntity> {
     private readonly accountRepository: Repository<AccountEntity>,
     @InjectRepository(DeviceEntity)
     private readonly deviceRepository: Repository<DeviceEntity>,
+    @InjectRepository(FeedbackEntity)
+    private readonly feedbackRepository: Repository<FeedbackEntity>,
     private readonly headStaffGateWay: HeadStaffGateway,
     private readonly notifyService: NotifyService,
   ) {
@@ -94,5 +103,41 @@ export class RequestService extends BaseService<RequestEntity> {
     // push notify to head-staff
     this.headStaffGateWay.server.emit('new-request', result);
     return this.requestRepository.create(newRequest);
+  }
+
+  async confirmRequest(
+    requestId: string,
+    dto: RequestRequestDto.RequestConfirmDto,
+    userId: string,
+  ) {
+    const request = await this.requestRepository.findOne({
+      where: {
+        id: requestId,
+      },
+      relations: ['requester'],
+    });
+
+    if (!request) {
+      throw new BadRequestException('Request not found');
+    }
+    if (request.requester.id !== userId) {
+      throw new UnauthorizedException(
+        'You are not allowed to confirm this request',
+      );
+    }
+
+    request.status = RequestStatus.CLOSED;
+    const result1 = await this.requestRepository.save(request);
+
+    const feedback = new FeedbackEntity();
+    feedback.request = request;
+    feedback.content = dto.content;
+    feedback.requester = request.requester;
+    const result2 = await this.feedbackRepository.save(feedback);
+
+    return {
+      request: result1,
+      feedback: result2,
+    };
   }
 }

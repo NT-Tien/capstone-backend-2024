@@ -1,10 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, ValidateIf } from 'class-validator';
+import { IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
 import { RequestStatus } from 'src/entities/request.entity';
 
 export namespace RequestRequestDto {
+  export class RequestConfirmDto extends BaseDTO {
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
+    content: string;
+  }
   export class RequestCreateDto extends BaseDTO {
     @ApiProperty()
     @IsNotEmpty()
