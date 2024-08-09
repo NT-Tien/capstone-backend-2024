@@ -62,12 +62,13 @@ export class RequestService extends BaseService<RequestEntity> {
         'device.machineModel',
         'tasks',
         'tasks.fixer',
+        "tasks.issues",
         'requester',
         'issues',
         'issues.task',
         'issues.typeError',
         'issues.issueSpareParts',
-        'issues.issueSpareParts.sparePart'
+        'issues.issueSpareParts.sparePart',
       ],
     });
   }
