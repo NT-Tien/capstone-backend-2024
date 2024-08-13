@@ -48,6 +48,16 @@ export namespace IssueRequestDto {
     @IsOptional()
     @Expose()
     fixType?: string;
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
+    imagesVerify?: string[];
+  
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
+    videosVerify?: string;
   }
 }
 

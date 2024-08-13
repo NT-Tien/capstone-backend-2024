@@ -16,6 +16,7 @@ import { RequestService } from './request.service';
 import { RequestResponseDto } from './dto/response.dto';
 import { RequestRequestDto } from './dto/request.dto';
 import { HeadGuard } from 'src/modules/auth/guards/head.guard';
+import { UUID } from 'crypto';
 
 @ApiTags('head: request')
 @UseGuards(HeadGuard)
@@ -73,12 +74,22 @@ export class RequestController {
   @Post()
   async create(
     @Headers('user') user: any,
-    @Body() body: RequestRequestDto.RequestCreateDto
+    @Body() body: RequestRequestDto.RequestCreateDto,
   ) {
     return await this.requestService.customHeadCreateRequest(
       user.id,
       RequestRequestDto.RequestCreateDto.plainToClass(body),
     );
+  }
+
+  @ApiBearerAuth()
+  @Put('/:id/close')
+  async confirmRequest(
+    @Param('id') id: UUID,
+    @Body() body: RequestRequestDto.RequestConfirmDto,
+    @Headers('user') user: any,
+  ) {
+    return this.requestService.confirmRequest(id, body, user.id);
   }
 
   // @ApiBearerAuth()

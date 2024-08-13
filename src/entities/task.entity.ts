@@ -36,7 +36,7 @@ export enum TaskStatus {
   /**
  *
  */
-  HEAD_CONFIRM = 'HEAD_CONFIRM',
+  HEAD_STAFF_CONFIRM = 'HEAD_STAFF_CONFIRM',
   /**
    *
    */
@@ -105,7 +105,7 @@ export class TaskEntity extends BaseEntity {
     name: 'totalTime',
     type: 'int',
   })
-  totalTime: number;
+  totalTime: number; // minutes
 
   @Column({
     name: 'completed_at',
