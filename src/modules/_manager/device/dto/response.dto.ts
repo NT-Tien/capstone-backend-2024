@@ -119,4 +119,11 @@ export namespace DeviceResponseDto {
     @ApiProperty({ example: 200 })
     statusCode: number;
   }
+  export class ForcastResponseDto {
+    @ApiProperty()
+    machineId: string;
+
+    @ApiProperty()
+    isOk: boolean;
+  }
 }

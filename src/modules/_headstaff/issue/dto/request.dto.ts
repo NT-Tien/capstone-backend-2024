@@ -24,11 +24,9 @@ export namespace IssueRequestDto {
     @IsNotEmpty()
     @Expose()
     fixType: string;
-
   }
 
   export class IssueUpdateDto extends BaseDTO {
-
     @ApiProperty()
     @IsOptional()
     @Expose()
@@ -53,7 +51,7 @@ export namespace IssueRequestDto {
     @IsOptional()
     @Expose()
     imagesVerify?: string[];
-  
+
     @ApiProperty()
     @IsOptional()
     @Expose()

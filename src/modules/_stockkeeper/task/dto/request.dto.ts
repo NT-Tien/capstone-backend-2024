@@ -6,7 +6,6 @@ import { RequestStatus } from 'src/entities/request.entity';
 
 export namespace TaskRequestDto {
   export class TaskCreateDto extends BaseDTO {
-
     @ApiProperty()
     @IsNotEmpty()
     @Expose()
@@ -31,7 +30,6 @@ export namespace TaskRequestDto {
     @IsOptional()
     @Expose()
     totalTime?: number;
-
   }
 
   export class TaskUpdateDto extends BaseDTO {
@@ -59,7 +57,6 @@ export namespace TaskRequestDto {
     @IsNotEmpty()
     @Expose()
     status: RequestStatus;
-
   }
 
   export class TaskAssignFixerDto extends BaseDTO {

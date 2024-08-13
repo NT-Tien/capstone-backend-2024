@@ -6,7 +6,6 @@ import { RequestStatus } from 'src/entities/request.entity';
 
 export namespace TaskRequestDto {
   export class TaskCreateDto extends BaseDTO {
-
     @ApiProperty()
     @IsNotEmpty()
     @Expose()
@@ -42,7 +41,6 @@ export namespace TaskRequestDto {
     @IsNotEmpty()
     @Expose()
     fixerDate: Date;
-
   }
 
   export class TaskUpdateDto extends BaseDTO {
@@ -76,7 +74,6 @@ export namespace TaskRequestDto {
     @IsDateString()
     @Expose()
     fixerDate?: Date;
-
   }
 
   export class TaskAssignFixerDto extends BaseDTO {

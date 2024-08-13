@@ -30,7 +30,7 @@ export class ResponseInterceptor<T>
           .getResponse().statusCode;
         return new ApiResponse<T>(data, 'Success', responseStatusCode);
       }),
-      catchError(error => {
+      catchError((error) => {
         return throwError(() => error);
       }),
     );

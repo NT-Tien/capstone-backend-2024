@@ -14,8 +14,8 @@ import { DeviceEntity } from './device.entity';
 
 export enum TaskStatus {
   /**
- * AWAITING_SPARE_SPART
- */
+   * AWAITING_SPARE_SPART
+   */
   AWAITING_SPARE_SPART = 'AWAITING_SPARE_SPART',
   /**
    * AWAITING_FIXER: khi nào còn chưa gán fixer thì dược update nội dung task, ngược lại chỉ có thể cancel task
@@ -34,8 +34,8 @@ export enum TaskStatus {
    */
   COMPLETED = 'COMPLETED',
   /**
- *
- */
+   *
+   */
   HEAD_STAFF_CONFIRM = 'HEAD_STAFF_CONFIRM',
   /**
    *
@@ -114,9 +114,7 @@ export class TaskEntity extends BaseEntity {
   })
   completedAt?: Date;
 
-
   // bỏ 2 column evidence
-
 
   @Column({
     name: 'confirm_receipt',

@@ -23,7 +23,12 @@ export class RequestService extends BaseService<RequestEntity> {
     super(requestRepository);
   }
 
-  async customHeadStaffGetAllRequest(userId: string, page: number, limit: number, status: RequestStatus): Promise<[RequestEntity[], number]> {
+  async customHeadStaffGetAllRequest(
+    userId: string,
+    page: number,
+    limit: number,
+    status: RequestStatus,
+  ): Promise<[RequestEntity[], number]> {
     var account = await this.accountRepository.findOne({
       where: { id: userId },
     });
@@ -34,14 +39,26 @@ export class RequestService extends BaseService<RequestEntity> {
       where: {
         status: status ? status : undefined,
       },
-      relations: ['device', 'device.area', 'device.machineModel', 'device.machineModel.typeErrors', 'tasks', 'tasks.fixer', 'requester', 'issues'],
+      relations: [
+        'device',
+        'device.area',
+        'device.machineModel',
+        'device.machineModel.typeErrors',
+        'tasks',
+        'tasks.fixer',
+        'requester',
+        'issues',
+      ],
       order: { createdAt: status === RequestStatus.PENDING ? 'ASC' : 'DESC' },
       skip: (page - 1) * limit,
       take: limit,
     });
   }
 
-  async customHeadStaffGetOneRequest(userId: string, id: string): Promise<RequestEntity> {
+  async customHeadStaffGetOneRequest(
+    userId: string,
+    id: string,
+  ): Promise<RequestEntity> {
     var account = await this.accountRepository.findOne({
       where: { id: userId },
     });
@@ -49,11 +66,14 @@ export class RequestService extends BaseService<RequestEntity> {
       throw new HttpException('Account is not valid', HttpStatus.BAD_REQUEST);
     }
     // update status notify
-    await this.notifyRepository.update({
-      requestId: id,
-    }, {
-      status: true,
-    });
+    await this.notifyRepository.update(
+      {
+        requestId: id,
+      },
+      {
+        status: true,
+      },
+    );
     return this.requestRepository.findOne({
       where: { id },
       relations: [
@@ -67,13 +87,19 @@ export class RequestService extends BaseService<RequestEntity> {
         'issues.task',
         'issues.typeError',
         'issues.issueSpareParts',
-        'issues.issueSpareParts.sparePart'
+        'issues.issueSpareParts.sparePart',
       ],
     });
   }
 
-  async updateStatus(userId: string, id: string, data: RequestRequestDto.RequestUpdateDto): Promise<RequestEntity> {
-    const account = await this.accountRepository.findOne({ where: { id: userId } });
+  async updateStatus(
+    userId: string,
+    id: string,
+    data: RequestRequestDto.RequestUpdateDto,
+  ): Promise<RequestEntity> {
+    const account = await this.accountRepository.findOne({
+      where: { id: userId },
+    });
     return await this.requestRepository.save({ id, ...data, checker: account });
   }
 }

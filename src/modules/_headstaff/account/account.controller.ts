@@ -69,7 +69,6 @@ export class AccountController {
   async getOneFor(@Param('id') id: string) {
     return await this.accountService.getOne(id);
   }
-  
 
   // @ApiBearerAuth()
   // @ApiResponse({

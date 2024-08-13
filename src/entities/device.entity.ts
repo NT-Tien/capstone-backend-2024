@@ -50,5 +50,4 @@ export class DeviceEntity extends BaseEntity {
     nullable: true,
   })
   status: boolean;
-
 }

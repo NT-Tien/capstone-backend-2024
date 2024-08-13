@@ -9,7 +9,10 @@ import { IssueSparePartController } from './issue-spare-part.controller';
 import { IssueSparePartService } from './issue-spare-part.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([IssueEntity, IssueSparePartEntity]), AuthModule],
+  imports: [
+    TypeOrmModule.forFeature([IssueEntity, IssueSparePartEntity]),
+    AuthModule,
+  ],
   controllers: [IssueController, IssueSparePartController],
   providers: [IssueService, IssueSparePartService],
 })

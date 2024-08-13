@@ -41,14 +41,14 @@ export class ImageController {
   @UseGuards(UploadGuard)
   @ApiBearerAuth()
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file', {
-    limits: {
-      fileSize: 1 * 1024 * 1024,
-    },
-  }))
-  async uploadFile(
-    @UploadedFile() file: MemoryStorageFile,
-  ) {
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: {
+        fileSize: 1 * 1024 * 1024,
+      },
+    }),
+  )
+  async uploadFile(@UploadedFile() file: MemoryStorageFile) {
     try {
       const fileBlob = new Blob([file.buffer], { type: file.mimetype });
       const dataForm = new FormData();
@@ -77,10 +77,7 @@ export class ImageController {
   // get image to show
 
   @Get(':path')
-  async showFile(
-    @Param('path') path: string, 
-    @Res() res: FastifyReply
-  ) {
+  async showFile(@Param('path') path: string, @Res() res: FastifyReply) {
     try {
       const response = await fetch(url + '/' + path, {
         method: 'GET',

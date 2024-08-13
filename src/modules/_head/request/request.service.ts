@@ -40,7 +40,8 @@ export class RequestService extends BaseService<RequestEntity> {
     if (!account || account.deletedAt || account.role !== Role.head) {
       throw new HttpException('Account is not valid', HttpStatus.BAD_REQUEST);
     }
-    return this.requestRepository.createQueryBuilder('request')
+    return this.requestRepository
+      .createQueryBuilder('request')
       .leftJoinAndSelect('request.requester', 'requester')
       .leftJoinAndSelect('request.device', 'device')
       .leftJoinAndSelect('device.area', 'area')
@@ -78,7 +79,8 @@ export class RequestService extends BaseService<RequestEntity> {
     // let request = await this.requestRepository.findOne({
     //   where: { requester: account, device: device, status: RequestStatus.PENDING },
     // });
-    let request = await this.requestRepository.createQueryBuilder('request')
+    let request = await this.requestRepository
+      .createQueryBuilder('request')
       .leftJoinAndSelect('request.device', 'device')
       .andWhere('device.deletedAt is null')
       .andWhere('device.id = :id', { id: data.device })
@@ -92,7 +94,7 @@ export class RequestService extends BaseService<RequestEntity> {
     let newRequest = await this.requestRepository.save({
       requester: account,
       device: device,
-      requester_note: data.requester_note
+      requester_note: data.requester_note,
     });
 
     // create new notify

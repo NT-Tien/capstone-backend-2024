@@ -20,7 +20,11 @@ export class TaskService extends BaseService<TaskEntity> {
     super(taskRepository);
   }
 
-  async customGetAllTask(page: number, limit: number, status: TaskStatus): Promise<[TaskEntity[], number]> {
+  async customGetAllTask(
+    page: number,
+    limit: number,
+    status: TaskStatus,
+  ): Promise<[TaskEntity[], number]> {
     return this.taskRepository.findAndCount({
       where: {
         status: status ? status : undefined,
@@ -55,13 +59,16 @@ export class TaskService extends BaseService<TaskEntity> {
         'issues.typeError',
         'issues.issueSpareParts',
         'issues.issueSpareParts.sparePart',
-      ]
+      ],
     });
   }
 
   async customCreateTask(data: TaskRequestDto.TaskCreateDto) {
     // check request has been assigned to a task (status != cancelled or == completed)
-    const request = await this.requestRepository.findOne({ where: { id: data.request }, relations: ['tasks', 'device'] });
+    const request = await this.requestRepository.findOne({
+      where: { id: data.request },
+      relations: ['tasks', 'device'],
+    });
     if (!request || request.status === RequestStatus.REJECTED) {
       throw new Error('Request not found or invalid status');
     }
@@ -84,7 +91,8 @@ export class TaskService extends BaseService<TaskEntity> {
     newTask.status = TaskStatus.AWAITING_FIXER;
     let newTaskResult = await this.taskRepository.save({ ...data, ...newTask });
     // assign issues to task
-    let newIssuesAdded = await this.taskRepository.createQueryBuilder('task')
+    let newIssuesAdded = await this.taskRepository
+      .createQueryBuilder('task')
       .relation(TaskEntity, 'issues')
       .of(newTaskResult.id)
       .add(data.issueIDs);
@@ -97,7 +105,9 @@ export class TaskService extends BaseService<TaskEntity> {
     if (!task || task.status !== TaskStatus.AWAITING_FIXER || task.fixer) {
       throw new Error('Task not found or invalid status');
     }
-    const fixer = await this.accountRepository.findOne({ where: { id: data.fixer } });
+    const fixer = await this.accountRepository.findOne({
+      where: { id: data.fixer },
+    });
     task.fixer = fixer;
     task.status = TaskStatus.ASSIGNED;
     return await this.taskRepository.save(task);

@@ -22,7 +22,7 @@ import { UUID } from 'crypto';
 @UseGuards(HeadGuard)
 @Controller('head/request')
 export class RequestController {
-  constructor(private readonly requestService: RequestService) { }
+  constructor(private readonly requestService: RequestService) {}
 
   @ApiBearerAuth()
   @ApiResponse({
@@ -31,9 +31,7 @@ export class RequestController {
     description: 'Get all Requests',
   })
   @Get()
-  async getAll(
-    @Headers('user') user: any,
-  ) {
+  async getAll(@Headers('user') user: any) {
     return await this.requestService.customHeadGetAllRequest(user?.id);
   }
 

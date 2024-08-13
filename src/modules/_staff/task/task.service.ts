@@ -64,7 +64,7 @@ export class TaskService extends BaseService<TaskEntity> {
       .leftJoinAndSelect('issues.issueSpareParts', 'issueSpareParts')
       .leftJoinAndSelect('issues.typeError', 'typeError')
       .leftJoinAndSelect('issueSpareParts.sparePart', 'sparePart')
-      .where('task.id = :taskId', { taskId })
+      .where('task.id = :taskId', { id })
       .andWhere('fixer.id = :id', { id: userId })
       .getOne();
   }

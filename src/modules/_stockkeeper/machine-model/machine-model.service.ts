@@ -26,5 +26,4 @@ export class MachineModelService extends BaseService<MachineModelEntity> {
       relations: ['spareParts'],
     });
   }
-
 }

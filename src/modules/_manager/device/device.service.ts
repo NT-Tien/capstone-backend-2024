@@ -27,12 +27,5 @@ export class DeviceService extends BaseService<DeviceEntity> {
       relations: ['area', 'machineModel'],
     });
   }
-
-  // get one with relations
-  async forcast(model: string): Promise<ForcastResponseDto> {
-    const response : ForcastResponseDto{
-
-    };
-    return response;
-  }
+  z;
 }
