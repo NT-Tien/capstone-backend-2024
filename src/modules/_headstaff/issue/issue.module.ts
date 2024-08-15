@@ -7,9 +7,11 @@ import { IssueController } from './issue.controller';
 import { IssueSparePartEntity } from 'src/entities/issue-spare-part.entity';
 import { IssueSparePartController } from './issue-spare-part.controller';
 import { IssueSparePartService } from './issue-spare-part.service';
+import { TypeErrorEntity } from '../../../entities/type-error.entity';
+import { RequestEntity } from '../../../entities/request.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([IssueEntity, IssueSparePartEntity]), AuthModule],
+  imports: [TypeOrmModule.forFeature([IssueEntity, IssueSparePartEntity, TypeErrorEntity, RequestEntity]), AuthModule],
   controllers: [IssueController, IssueSparePartController],
   providers: [IssueService, IssueSparePartService],
 })

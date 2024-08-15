@@ -24,8 +24,7 @@ export class StaffGateway
   @WebSocketServer()
   server: Server;
 
-  constructor() // add servies
-  {}
+  constructor() {} // add servies
 
   handleConnection(client: Socket, ...args: any[]) {
     var ip =
@@ -34,14 +33,15 @@ export class StaffGateway
     console.log(ip, token, 'connected at', new Date().toLocaleString());
   }
 
-  // @SubscribeMessage('message')
-  // async handleMessage(@MessageBody() body: any) {
-  //     console.log(body);
-  //     setInterval(() => {
-  //         this.server.emit('new-payment', { message: 'Hello from server' });
-  //         console.log('send message to client');
-  //     }, 1000)
-  // }
+  @SubscribeMessage('message')
+  async handleMessage(@MessageBody() body: any) {
+    console.log(body);
+    this.server.emit('new-payment', { message: 'Fuck' });
+    setInterval(() => {
+      this.server.emit('new-payment', { message: 'Hello from server' });
+      console.log('send message to client');
+    }, 1000);
+  }
 
   afterInit(server: any) {
     console.log('init socket staff');
