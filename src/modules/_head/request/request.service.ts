@@ -47,6 +47,7 @@ export class RequestService extends BaseService<RequestEntity> {
       .leftJoinAndSelect('device.machineModel', 'machineModel')
       .leftJoinAndSelect('request.tasks', 'tasks')
       .leftJoinAndSelect('request.checker', 'checker')
+      .leftJoinAndSelect('request.issues', 'issues')
       .where('requester.deletedAt is null')
       .andWhere('requester.id = :id', { id: userId })
       .andWhere('request.createdAt BETWEEN :start AND :end', {

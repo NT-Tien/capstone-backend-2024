@@ -62,6 +62,7 @@ export class RequestService extends BaseService<RequestEntity> {
         'device.machineModel',
         'tasks',
         'tasks.fixer',
+        'tasks.issues',
         'requester',
         'issues',
         'issues.task',
