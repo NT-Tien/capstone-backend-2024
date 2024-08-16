@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
 import { IsArray, IsNotEmpty, IsOptional } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
 
@@ -37,7 +36,6 @@ export namespace IssueRequestDto {
     quantity: number;
   }
 
-  export class IssueUpdateDto extends BaseDTO {
   export class IssueCreateOneDto {
     @ApiProperty()
     @IsNotEmpty()
@@ -94,7 +92,7 @@ export namespace IssueRequestDto {
     @IsOptional()
     @Expose()
     imagesVerify?: string[];
-  
+
 
     @ApiProperty()
     @IsOptional()
