@@ -14,8 +14,16 @@ import { DeviceEntity } from './device.entity';
 
 export enum TaskStatus {
   /**
- * AWAITING_SPARE_SPART
- */
+  * !only apply for case renew device
+  */
+  IN_PROGRESS_RENEW_DEVICE = 'IN_PROGRESS_RENEW_DEVICE', // HEAD_STAFF update status to IN_PROGRESS_RENEW_DEVICE
+  /**
+   * !only apply for case renew device , after get new device head staff assign to fixer, update status to ASSIGNED
+   */
+  IN_PROGRESS_RENEW_DEVICE_DONE = 'IN_PROGRESS_RENEW_DEVICE_DONE', // ADMIN update status to IN_PROGRESS_RENEW_DEVICE_DONE
+  /**
+  * AWAITING_SPARE_SPART
+  */
   AWAITING_SPARE_SPART = 'AWAITING_SPARE_SPART',
   /**
    * AWAITING_FIXER: khi nào còn chưa gán fixer thì dược update nội dung task, ngược lại chỉ có thể cancel task
@@ -51,6 +59,11 @@ export class TaskEntity extends BaseEntity {
     nullable: false,
   })
   device: DeviceEntity;
+
+  @ManyToOne(() => DeviceEntity, (device) => device.id, {
+    nullable: true,
+  })
+  device_renew?: DeviceEntity; // only apply for case renew device
 
   @ManyToOne(() => RequestEntity, (request) => request.id, { nullable: false })
   request: RequestEntity;
@@ -147,5 +160,23 @@ export class TaskEntity extends BaseEntity {
     type: 'boolean',
     default: false,
   })
-  confirmReceipt?: boolean;
+  confirmReceipt?: boolean; // not use anymore
+
+  @Column({
+    name: 'confirm_recieve',
+    type: 'text',
+  })
+  confirmReceiptBY?: string; // store account id of stockkeeper who confirm get renew device
+
+  @Column({
+    name: 'confirm_recieve',
+    type: 'text',
+  })
+  confirmRecieveBy?: string; // store account id of stockkeeper who confirm get renew device
+
+  @Column({
+    name: 'confirm_get_renew_device_by',
+    type: 'text',
+  })
+  confirmGetRenewDeviceBy?: string; // store account id of stockkeeper who confirm get renew device
 }

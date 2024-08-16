@@ -47,7 +47,7 @@ export class TaskService extends BaseService<TaskEntity> {
     });
   }
 
-  async confirmReceipt(taskId: string) {
+  async confirmReceipt(taskId: string, userId: string) {
     let task = await this.taskRepository.findOne({
       where: { id: taskId.trim() },
       relations: [
@@ -76,6 +76,7 @@ export class TaskService extends BaseService<TaskEntity> {
       }
     }
     task.confirmReceipt = true;
+    task.confirmReceiptBY = userId;
     return await this.taskRepository.save(task);
   }
 }

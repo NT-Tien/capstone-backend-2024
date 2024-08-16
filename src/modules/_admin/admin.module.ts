@@ -5,6 +5,7 @@ import { SparePartModule } from "./spare-part/spare-part.module";
 import { TypeErrorModule } from "./type-error/type-error.module";
 import { AreaModule } from "./area/area.module";
 import { TypeErrorHeadModule } from "./type-error-head/type-error-head.module";
+import { TaskModule } from "./task/task.module";
 
 @Module({
     imports: [
@@ -14,6 +15,7 @@ import { TypeErrorHeadModule } from "./type-error-head/type-error-head.module";
         SparePartModule,
         TypeErrorModule,
         TypeErrorHeadModule,
+        TaskModule,
     ],
 })
 export class AdminModule {}
