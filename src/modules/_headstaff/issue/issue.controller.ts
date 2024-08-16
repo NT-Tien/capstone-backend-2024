@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Post,
   Put,
@@ -71,6 +72,16 @@ export class IssueController {
     return await this.issueService.create(
       IssueRequestDto.IssueCreateDto.plainToClass(body),
     );
+  }
+
+  @ApiBearerAuth()
+  @Post('/many')
+  @HttpCode(200)
+  async createMany(@Body() body: IssueRequestDto.IssueCreateManyDto) {
+    await this.issueService.createMany(body);
+    return {
+      message: 'Create many issues successfully',
+    }
   }
 
   @ApiBearerAuth()
