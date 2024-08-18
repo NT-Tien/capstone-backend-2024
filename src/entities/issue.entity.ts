@@ -65,13 +65,13 @@ export class IssueEntity extends BaseEntity {
         array: true,
         nullable: true,
         default: [],
-      })
-      imagesVerify?: string[];
-    
-      @Column({
+    })
+    imagesVerify?: string[];
+
+    @Column({
         name: 'videos_verify',
         type: 'text',
         nullable: true,
-      })
-      videosVerify?: string;
+    })
+    videosVerify?: string;
 }

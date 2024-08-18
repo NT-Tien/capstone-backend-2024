@@ -79,4 +79,18 @@ export class TaskService extends BaseService<TaskEntity> {
     task.confirmReceiptBY = userId;
     return await this.taskRepository.save(task);
   }
+
+  async pendingSparePart(taskId: string, payload: TaskRequestDto.StockkeeperPendingSparePart, userId: string) {
+    let task = await this.taskRepository.findOne({
+      where: { id: taskId.trim() },
+    });
+
+    if (!task) {
+      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+    }
+    task.status = TaskStatus.PENDING_SPARE_PART;
+    task.stockkeeperNote = payload.stockkeeperNote;
+    task.stockkeeperNoteId = userId;
+    return await this.taskRepository.save(task);
+  }
 }

@@ -7,6 +7,7 @@ import { IssueEntity } from './issue.entity';
 
 export enum RequestStatus {
   PENDING = 'PENDING',
+  HEAD_CANCEL = 'HEAD_CANCEL',
   CHECKED = 'CHECKED',
   APPROVED = 'APPROVED',
   IN_PROGRESS = 'IN_PROGRESS',

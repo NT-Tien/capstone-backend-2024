@@ -1,10 +1,11 @@
-import { Controller, Get, Headers, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Headers, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 // import { CacheTTL } from '@nestjs/cache-manager';
 import { UUID } from 'crypto';
 import { StockkeeperGuard } from 'src/modules/auth/guards/stockkeeper.guard';
 import { TaskResponseDto } from './dto/response.dto';
 import { TaskService } from './task.service';
+import { TaskRequestDto } from './dto/request.dto';
 
 @ApiTags('stockkeeper: task')
 @UseGuards(StockkeeperGuard)
@@ -48,4 +49,20 @@ export class TaskController {
   ) {
     return this.taskService.confirmReceipt(taskId, user.id);
   }
+
+    // pending spare part
+    @ApiBearerAuth()
+    @ApiResponse({
+      type: TaskResponseDto.TaskUpdate,
+      status: 200,
+      description: 'Confirm receipt',
+    })
+    @Post('pending-spare-part/:taskId')
+    pendingSparePart(
+      @Param('taskId') taskId: UUID,
+      @Body() body: TaskRequestDto.StockkeeperPendingSparePart,
+      @Headers('user') user: any
+    ) {
+      return this.taskService.pendingSparePart(taskId, body, user.id);
+    }
 }

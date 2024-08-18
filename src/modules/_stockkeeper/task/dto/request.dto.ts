@@ -68,4 +68,8 @@ export namespace TaskRequestDto {
     @Expose()
     fixer: string; // account id
   }
+
+  export class StockkeeperPendingSparePart extends BaseDTO {
+    stockkeeperNote: string;
+  }
 }

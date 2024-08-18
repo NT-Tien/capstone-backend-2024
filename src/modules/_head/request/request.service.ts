@@ -141,4 +141,32 @@ export class RequestService extends BaseService<RequestEntity> {
       feedback: result2,
     };
   }
+
+  async cancelRequest(
+    requestId: string,
+    userId: string,
+  ) {
+    const request = await this.requestRepository.findOne({
+      where: {
+        id: requestId,
+      },
+      relations: ['requester'],
+    });
+
+    if (!request) {
+      throw new BadRequestException('Request not found');
+    }
+    if (request.requester.id !== userId) {
+      throw new UnauthorizedException(
+        'You are not allowed to cancel this request',
+      );
+    }
+
+    request.status = RequestStatus.HEAD_CANCEL;
+    const result1 = await this.requestRepository.save(request);
+
+    return {
+      request: result1,
+    };
+  }
 }

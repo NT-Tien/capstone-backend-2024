@@ -3,6 +3,7 @@ import { Expose } from 'class-transformer';
 import { IsArray, IsDateString, IsNotEmpty, IsOptional } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
 import { RequestStatus } from 'src/entities/request.entity';
+import { TaskType } from 'src/entities/task.entity';
 
 export namespace TaskRequestDto {
   export class TaskCreateDto extends BaseDTO {
@@ -42,6 +43,11 @@ export namespace TaskRequestDto {
     @IsNotEmpty()
     @Expose()
     fixerDate: Date;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    type: TaskType;
 
   }
 

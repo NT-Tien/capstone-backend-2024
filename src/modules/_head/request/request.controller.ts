@@ -83,6 +83,15 @@ export class RequestController {
   }
 
   @ApiBearerAuth()
+  @Put('/:id/cancel')
+  async cancelRequest(
+    @Param('id') id: UUID,
+    @Headers('user') user: any,
+  ) {
+    return this.requestService.cancelRequest(id, user.id);
+  }
+
+  @ApiBearerAuth()
   @Put('/:id/close')
   async confirmRequest(
     @Param('id') id: UUID,

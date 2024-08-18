@@ -13,25 +13,25 @@ import { AccountEntity } from './account.entity';
 import { DeviceEntity } from './device.entity';
 
 export enum TaskStatus {
-  /**
-  * !only apply for case renew device
-  */
-  IN_PROGRESS_WARRANTY = 'IN_PROGRESS_WARRANTY', // HEAD_STAFF update status to IN_PROGRESS_WARRANTY
-  /**
-   * !only apply for case renew device , after get new device head staff assign to fixer, update status to ASSIGNED
-   */
-  IN_PROGRESS_WARRANTY_DONE = 'IN_PROGRESS_WARRANTY_DONE', // ADMIN update status to IN_PROGRESS_RENEW_DEVICE_DONE
-  /**
-  * !only apply for case renew device
-  */
-  IN_PROGRESS_RENEW_DEVICE = 'IN_PROGRESS_RENEW_DEVICE', // HEAD_STAFF update status to IN_PROGRESS_RENEW_DEVICE
-  /**
-   * !only apply for case renew device , after get new device head staff assign to fixer, update status to ASSIGNED
-   */
-  IN_PROGRESS_RENEW_DEVICE_DONE = 'IN_PROGRESS_RENEW_DEVICE_DONE', // ADMIN update status to IN_PROGRESS_RENEW_DEVICE_DONE
-  /**
-  * AWAITING_SPARE_SPART
-  */
+  // /**
+  // * !only apply for case renew device
+  // */
+  // IN_PROGRESS_WARRANTY = 'IN_PROGRESS_WARRANTY', // HEAD_STAFF update status to IN_PROGRESS_WARRANTY
+  // /**
+  //  * !only apply for case renew device , after get new device head staff assign to fixer, update status to ASSIGNED
+  //  */
+  // IN_PROGRESS_WARRANTY_DONE = 'IN_PROGRESS_WARRANTY_DONE', // ADMIN update status to IN_PROGRESS_RENEW_DEVICE_DONE
+  // /**
+  // * !only apply for case renew device
+  // */
+  // IN_PROGRESS_RENEW_DEVICE = 'IN_PROGRESS_RENEW_DEVICE', // HEAD_STAFF update status to IN_PROGRESS_RENEW_DEVICE
+  // /**
+  //  * !only apply for case renew device , after get new device head staff assign to fixer, update status to ASSIGNED
+  //  */
+  // IN_PROGRESS_RENEW_DEVICE_DONE = 'IN_PROGRESS_RENEW_DEVICE_DONE', // ADMIN update status to IN_PROGRESS_RENEW_DEVICE_DONE
+  // /**
+  // * AWAITING_SPARE_SPART
+  // */
   AWAITING_SPARE_SPART = 'AWAITING_SPARE_SPART',
   /**
    * AWAITING_FIXER: khi nào còn chưa gán fixer thì dược update nội dung task, ngược lại chỉ có thể cancel task
@@ -41,6 +41,10 @@ export enum TaskStatus {
    * ASSIGNED: khi đã gán fixer thì không thể update nội dung task, chỉ có thể update trạng thái task
    */
   ASSIGNED = 'ASSIGNED',
+  /**
+ * ASSIGNED: khi đã gán fixer thì không thể update nội dung task, chỉ có thể update trạng thái task
+ */
+  PENDING_SPARE_PART = 'PENDING_SPARE_PART',
   /**
    *
    */
@@ -57,6 +61,12 @@ export enum TaskStatus {
    *
    */
   CANCELLED = 'CANCELLED',
+}
+
+export enum TaskType {
+  DEFAULT = 'DEFAULT',
+  RENEW = 'RENEW',
+  WARRANTY = 'WARRANTY',
 }
 
 @Entity({
@@ -187,4 +197,27 @@ export class TaskEntity extends BaseEntity {
     type: 'text',
   })
   confirmGetRenewDeviceBy?: string; // store account id of stockkeeper who confirm get renew device
+
+  @Column({
+    name: 'type',
+    type: 'enum',
+    enum: TaskType,
+    default: TaskType.DEFAULT,
+  })
+  type: TaskType;
+
+  @Column({
+    name: 'stockkeeper_note',
+    type: 'text',
+    nullable: true,
+  })
+  stockkeeperNote?: string;
+
+  @Column({
+    name: 'stockkeeper_note_id',
+    type: 'text',
+    nullable: true,
+  })
+  stockkeeperNoteId?: string;
+
 }
