@@ -16,6 +16,14 @@ export enum TaskStatus {
   /**
   * !only apply for case renew device
   */
+  IN_PROGRESS_WARRANTY = 'IN_PROGRESS_WARRANTY', // HEAD_STAFF update status to IN_PROGRESS_WARRANTY
+  /**
+   * !only apply for case renew device , after get new device head staff assign to fixer, update status to ASSIGNED
+   */
+  IN_PROGRESS_WARRANTY_DONE = 'IN_PROGRESS_WARRANTY_DONE', // ADMIN update status to IN_PROGRESS_RENEW_DEVICE_DONE
+  /**
+  * !only apply for case renew device
+  */
   IN_PROGRESS_RENEW_DEVICE = 'IN_PROGRESS_RENEW_DEVICE', // HEAD_STAFF update status to IN_PROGRESS_RENEW_DEVICE
   /**
    * !only apply for case renew device , after get new device head staff assign to fixer, update status to ASSIGNED
@@ -44,7 +52,7 @@ export enum TaskStatus {
   /**
  *
  */
-  HEAD_STAFF_CONFIRM = 'HEAD_STAFF_CONFIRM',
+  HEAD_STAFF_CONFIRM = 'HEAD_DEPARTMENT_CONFIRM',
   /**
    *
    */
