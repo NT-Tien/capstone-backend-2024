@@ -181,20 +181,23 @@ export class TaskEntity extends BaseEntity {
   confirmReceipt?: boolean; // not use anymore
 
   @Column({
-    name: 'confirm_recieve',
+    name: 'confirm_receipt_by',
     type: 'text',
+    nullable: true,
   })
   confirmReceiptBY?: string; // store account id of stockkeeper who confirm get renew device
 
   @Column({
     name: 'confirm_recieve',
     type: 'text',
+    nullable: true,
   })
   confirmRecieveBy?: string; // store account id of stockkeeper who confirm get renew device
 
   @Column({
     name: 'confirm_get_renew_device_by',
     type: 'text',
+    nullable: true,
   })
   confirmGetRenewDeviceBy?: string; // store account id of stockkeeper who confirm get renew device
 

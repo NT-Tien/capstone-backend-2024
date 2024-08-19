@@ -46,6 +46,7 @@ export class DeviceEntity extends BaseEntity {
   @Column({
     name: 'is_warranty',
     type: 'boolean',
+    nullable: true,
   })
   isWarranty: boolean; // true: warranty, false: not warranty
 
