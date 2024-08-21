@@ -39,9 +39,14 @@ export namespace TaskRequestDto {
 
     @ApiProperty()
     @IsDateString()
-    @IsNotEmpty()
+    @IsOptional()
     @Expose()
     fixerDate: Date;
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
+    fixer: string; // account id
 
   }
 
@@ -76,6 +81,11 @@ export namespace TaskRequestDto {
     @IsDateString()
     @Expose()
     fixerDate?: Date;
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
+    fixer: string; // account id
 
   }
 
