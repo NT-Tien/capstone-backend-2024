@@ -105,5 +105,34 @@ export class RequestEntity extends BaseEntity {
     default: false,
   })
   is_seen: boolean;
+
+  @Column({
+    name: 'is_warranty',
+    type: 'boolean',
+    default: true,
+  })
+  is_warranty: boolean;
+
+  @Column({
+    name: 'during_warranty',
+    type: 'boolean',
+    default: true,
+  })
+  during_warranty: boolean;
+
+  @Column({
+    name: 'is_warranty',
+    type: 'boolean',
+    default: true,
+  })
+  is_rennew: boolean;
+
+  @Column({
+    name: 'during_warranty',
+    type: 'boolean',
+    default: true,
+  })
+  wait_renew: boolean;
+
   
 }

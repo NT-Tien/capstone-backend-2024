@@ -63,12 +63,6 @@ export enum TaskStatus {
   CANCELLED = 'CANCELLED',
 }
 
-export enum TaskType {
-  DEFAULT = 'DEFAULT',
-  RENEW = 'RENEW',
-  WARRANTY = 'WARRANTY',
-}
-
 @Entity({
   name: 'TASK',
 })
@@ -193,21 +187,6 @@ export class TaskEntity extends BaseEntity {
     nullable: true,
   })
   confirmRecieveBy?: string; // store account id of stockkeeper who confirm get renew device
-
-  @Column({
-    name: 'confirm_get_renew_device_by',
-    type: 'text',
-    nullable: true,
-  })
-  confirmGetRenewDeviceBy?: string; // store account id of stockkeeper who confirm get renew device
-
-  @Column({
-    name: 'type',
-    type: 'enum',
-    enum: TaskType,
-    default: TaskType.DEFAULT,
-  })
-  type: TaskType;
 
   @Column({
     name: 'stockkeeper_note',
