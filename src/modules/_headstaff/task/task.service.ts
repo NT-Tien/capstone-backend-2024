@@ -83,7 +83,7 @@ export class TaskService extends BaseService<TaskEntity> {
     newTask.request = request;
     newTask.device = request.device;
     newTask.status = TaskStatus.AWAITING_FIXER;
-    let newTaskResult = await this.taskRepository.save({ ...data, ...newTask });
+    let newTaskResult = await this.taskRepository.save({ ...data, ...newTask } as any);
     // assign issues to task
     let newIssuesAdded = await this.taskRepository.createQueryBuilder('task')
       .relation(TaskEntity, 'issues')
