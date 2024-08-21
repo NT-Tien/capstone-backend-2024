@@ -6,6 +6,7 @@ import { TaskEntity, TaskStatus } from 'src/entities/task.entity';
 import { Repository } from 'typeorm';
 import { TaskRequestDto } from './dto/request.dto';
 import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
+import { IssueStatus } from 'src/entities/issue.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -123,18 +124,17 @@ export class TaskService extends BaseService<TaskEntity> {
       where: { id: task.request.id },
       relations: ['tasks'],
       select: {
-        tasks: {
+        issues: {
           id: true,
           status: true,
         },
       },
     });
 
-    console.log(request);
-    const allTasksInRequestCompleted = request.tasks.every((task) => {
-      return task.status === TaskStatus.COMPLETED;
+    const allIssuesCompleted = request.issues.find((issue) => {
+      return issue.status === IssueStatus.PENDING;
     });
-    if (allTasksInRequestCompleted) {
+    if (!allIssuesCompleted) {
       request.status = RequestStatus.HEAD_CONFIRM;
       await this.requestRepository.save(request);
     }
