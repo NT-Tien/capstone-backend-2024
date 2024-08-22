@@ -112,11 +112,7 @@ export class TaskService extends BaseService<TaskEntity> {
       relations: ['request'],
     });
 
-    if (!task || task.status !== TaskStatus.HEAD_STAFF_CONFIRM) {
-      throw new Error(
-        'Task not found or invalid status (must be head-staff-confirm) to run this',
-      );
-    }
+    
     task.status = TaskStatus.COMPLETED;
     const result = await this.taskRepository.save(task);
 

@@ -121,14 +121,14 @@ export class RequestEntity extends BaseEntity {
   during_warranty: boolean;
 
   @Column({
-    name: 'is_warranty',
+    name: 'is_renew',
     type: 'boolean',
     default: false,
   })
   is_rennew: boolean;
 
   @Column({
-    name: 'during_warranty',
+    name: 'wait_renew',
     type: 'boolean',
     default: false,
   })
