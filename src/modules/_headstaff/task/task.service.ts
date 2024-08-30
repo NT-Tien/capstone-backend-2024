@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from 'src/common/base/service.base';
-import { AccountEntity } from 'src/entities/account.entity';
+import { AccountEntity, Role } from 'src/entities/account.entity';
 import { TaskEntity, TaskStatus } from 'src/entities/task.entity';
 import { Repository } from 'typeorm';
 import { TaskRequestDto } from './dto/request.dto';
@@ -21,7 +21,11 @@ export class TaskService extends BaseService<TaskEntity> {
     super(taskRepository);
   }
 
-  async customGetAllTask(page: number, limit: number, status: TaskStatus): Promise<[TaskEntity[], number]> {
+  async customGetAllTask(
+    page: number,
+    limit: number,
+    status: TaskStatus,
+  ): Promise<[TaskEntity[], number]> {
     return this.taskRepository.findAndCount({
       where: {
         status: status ? status : undefined,
@@ -56,13 +60,16 @@ export class TaskService extends BaseService<TaskEntity> {
         'issues.typeError',
         'issues.issueSpareParts',
         'issues.issueSpareParts.sparePart',
-      ]
+      ],
     });
   }
 
   async customCreateTask(data: TaskRequestDto.TaskCreateDto) {
     // check request has been assigned to a task (status != cancelled or == completed)
-    const request = await this.requestRepository.findOne({ where: { id: data.request }, relations: ['tasks', 'device'] });
+    const request = await this.requestRepository.findOne({
+      where: { id: data.request },
+      relations: ['tasks', 'device'],
+    });
     if (!request || request.status === RequestStatus.REJECTED) {
       throw new Error('Request not found or invalid status');
     }
@@ -82,10 +89,30 @@ export class TaskService extends BaseService<TaskEntity> {
     let newTask = new TaskEntity();
     newTask.request = request;
     newTask.device = request.device;
-    newTask.status = TaskStatus.AWAITING_FIXER;
-    let newTaskResult = await this.taskRepository.save({ ...data, ...newTask } as any);
+    if (data.fixer) {
+      const fixer = await this.accountRepository.findOne({
+        where: {
+          id: data.fixer,
+          role: Role.staff,
+        },
+      });
+
+      if (!fixer) {
+        throw new Error('Fixer not found');
+      }
+
+      newTask.fixer = fixer;
+      newTask.status = TaskStatus.ASSIGNED;
+    } else {
+      newTask.status = TaskStatus.AWAITING_FIXER;
+    }
+    let newTaskResult = await this.taskRepository.save({
+      ...data,
+      ...newTask,
+    } as any);
     // assign issues to task
-    let newIssuesAdded = await this.taskRepository.createQueryBuilder('task')
+    let newIssuesAdded = await this.taskRepository
+      .createQueryBuilder('task')
       .relation(TaskEntity, 'issues')
       .of(newTaskResult.id)
       .add(data.issueIDs);
@@ -98,7 +125,9 @@ export class TaskService extends BaseService<TaskEntity> {
     if (!task || task.status !== TaskStatus.AWAITING_FIXER || task.fixer) {
       throw new Error('Task not found or invalid status');
     }
-    const fixer = await this.accountRepository.findOne({ where: { id: data.fixer } });
+    const fixer = await this.accountRepository.findOne({
+      where: { id: data.fixer },
+    });
     task.fixer = fixer;
     task.status = TaskStatus.ASSIGNED;
     return await this.taskRepository.save(task);
@@ -112,28 +141,35 @@ export class TaskService extends BaseService<TaskEntity> {
       relations: ['request'],
     });
 
-    
     task.status = TaskStatus.COMPLETED;
     const result = await this.taskRepository.save(task);
 
     const request = await this.requestRepository.findOne({
       where: { id: task.request.id },
-      relations: ['tasks'],
+      relations: ['issues', 'tasks'],
       select: {
         issues: {
           id: true,
           status: true,
         },
+        tasks: {
+          id: true,
+          status: true
+        }
       },
     });
 
-    const allIssuesCompleted = request.issues.find((issue) => {
+    const hasUncompletedIssue = request.issues.find((issue) => {
       return issue.status === IssueStatus.PENDING;
     });
-    if (!allIssuesCompleted) {
+    const hasUncompletedTask = request.tasks.find((task) => {
+      return task.status !== TaskStatus.COMPLETED;
+    })
+    if (!hasUncompletedIssue && !hasUncompletedTask) {
       request.status = RequestStatus.HEAD_CONFIRM;
       await this.requestRepository.save(request);
     }
+
 
     return result;
   }

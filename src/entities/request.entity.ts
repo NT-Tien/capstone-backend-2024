@@ -1,9 +1,10 @@
 import { BaseEntity } from 'src/common/base/entity.base';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { DeviceEntity } from './device.entity';
 import { AccountEntity } from './account.entity';
 import { TaskEntity } from './task.entity';
 import { IssueEntity } from './issue.entity';
+import { FeedbackEntity } from './feedback.entity';
 
 export enum RequestStatus {
   PENDING = 'PENDING',
@@ -49,6 +50,9 @@ export class RequestEntity extends BaseEntity {
     nullable: false,
   })
   requester: AccountEntity;
+
+  @OneToOne(() => FeedbackEntity, (feedback) => feedback.request)
+  feedback?: FeedbackEntity;
 
   @Column({
     name: 'requester_note',
