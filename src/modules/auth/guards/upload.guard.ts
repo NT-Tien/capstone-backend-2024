@@ -1,17 +1,11 @@
-import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-} from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { JWTGuard } from './jwt.guard';
 import { JwtService } from '@nestjs/jwt';
 import { Role } from 'src/entities/account.entity';
 
 @Injectable()
 export class UploadGuard extends JWTGuard implements CanActivate {
-  constructor(
-    protected readonly jwtService: JwtService
-  ) {
+  constructor(protected readonly jwtService: JwtService) {
     super(jwtService);
   }
   canActivate(context: ExecutionContext): boolean {
@@ -21,7 +15,7 @@ export class UploadGuard extends JWTGuard implements CanActivate {
     try {
       const request = context.switchToHttp().getRequest();
       const user = request?.headers?.user as any;
-      if (user && (user.role === Role.admin ||  user.role === Role.staff)) {
+      if (user && (user.role === Role.admin || user.role === Role.staff)) {
         return true;
       } else return false;
     } catch (error) {

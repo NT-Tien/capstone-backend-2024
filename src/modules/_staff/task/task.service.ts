@@ -43,7 +43,7 @@ export class TaskService extends BaseService<TaskEntity> {
       .leftJoinAndSelect('task.device', 'device')
       .leftJoinAndSelect('device.area', 'area')
       .leftJoinAndSelect('task.fixer', 'fixer')
-      .leftJoinAndSelect("task.issues", 'issues')
+      .leftJoinAndSelect('task.issues', 'issues')
       .andWhere('fixer.id = :id', { id: userId })
       .getMany();
   }

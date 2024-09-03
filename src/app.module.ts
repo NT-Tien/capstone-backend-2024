@@ -60,4 +60,4 @@ import { FileLocalModule } from './modules/upload-local/file.module';
     },
   ],
 })
-export class AppModule { }
+export class AppModule {}

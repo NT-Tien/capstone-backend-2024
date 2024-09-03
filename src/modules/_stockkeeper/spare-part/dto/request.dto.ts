@@ -5,11 +5,9 @@ import { BaseDTO } from 'src/common/base/dto.base';
 
 export namespace SparePartRequestDto {
   export class SparePartUpdateDto extends BaseDTO {
-
     @ApiProperty()
     @IsNotEmpty()
     @Expose()
     quantity: number;
-
   }
 }

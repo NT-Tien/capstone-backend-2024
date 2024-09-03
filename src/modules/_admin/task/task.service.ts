@@ -20,7 +20,11 @@ export class TaskService extends BaseService<TaskEntity> {
     super(taskRepository);
   }
 
-  async customGetAllTask(page: number, limit: number, status: TaskStatus): Promise<[TaskEntity[], number]> {
+  async customGetAllTask(
+    page: number,
+    limit: number,
+    status: TaskStatus,
+  ): Promise<[TaskEntity[], number]> {
     return this.taskRepository.findAndCount({
       where: {
         status: status ? status : undefined,
@@ -55,9 +59,7 @@ export class TaskService extends BaseService<TaskEntity> {
         'issues.typeError',
         'issues.issueSpareParts',
         'issues.issueSpareParts.sparePart',
-      ]
+      ],
     });
   }
-
-
 }

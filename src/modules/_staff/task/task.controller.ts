@@ -24,7 +24,7 @@ import { TaskRequestDto } from './dto/request.dto';
 @UseGuards(StaffGuard)
 @Controller('staff/task')
 export class TaskController {
-  constructor(private readonly taskService: TaskService) { }
+  constructor(private readonly taskService: TaskService) {}
 
   @ApiBearerAuth()
   @ApiResponse({
@@ -33,11 +33,9 @@ export class TaskController {
     description: 'Get all staff task order by priority and time',
   })
   @Get('')
-  getAll(
-    @Headers('user') user: any,
-  ) {
+  getAll(@Headers('user') user: any) {
     console.log(user);
-    
+
     return this.taskService.staffGetAllTask(user.id);
   }
 
@@ -48,10 +46,7 @@ export class TaskController {
     description: 'Get staff task detail',
   })
   @Get(':taskId')
-  getOne(
-    @Headers('user') user: any,
-    @Param('taskId') taskId: UUID,
-  ) {
+  getOne(@Headers('user') user: any, @Param('taskId') taskId: UUID) {
     return this.taskService.customStaffGetTaskDetail(user.id, taskId);
   }
 
@@ -63,10 +58,7 @@ export class TaskController {
     description: 'Confirm receipt',
   })
   @Post('receipt/:taskId')
-  confirmReceipt(
-    @Param('taskId') taskId: UUID,
-    @Headers('user') user: any,
-  ) {
+  confirmReceipt(@Param('taskId') taskId: UUID, @Headers('user') user: any) {
     return this.taskService.confirmReceipt(user.id, taskId);
   }
 
@@ -78,10 +70,7 @@ export class TaskController {
     description: 'Confirm in progress',
   })
   @Post('in-progress/:taskId')
-  confirmInProgress(
-    @Param('taskId') taskId: UUID,
-    @Headers('user') user: any,
-  ) {
+  confirmInProgress(@Param('taskId') taskId: UUID, @Headers('user') user: any) {
     return this.taskService.confirmInProcess(user.id, taskId);
   }
 
@@ -117,7 +106,6 @@ export class TaskController {
     return this.taskService.updateIssueStatus(user.id, issueId, status);
   }
 
-
   // @ApiBearerAuth()
   // @ApiResponse({
   //   type: TaskResponseDto.TaskGetAll,
@@ -125,7 +113,7 @@ export class TaskController {
   //   description: 'Get all Tasks',
   // })
   // @Get(":userid/:status")
-  // async getTaskbyStatus( 
+  // async getTaskbyStatus(
   //   @Param('userid') userId: string,
   //   @Param('status') status: string) {
   //   return await this.taskService.getTaskByStatus(userId, status);
@@ -138,14 +126,12 @@ export class TaskController {
   //   description: 'Get all Tasks',
   // })
   // @Get("detail/:fixerid/:taskid")
-  // async getTaskbyId( 
+  // async getTaskbyId(
   //   @Param('fixerid') fixerid : UUID,
   //   @Param('taskid') taskid : UUID
   // ) {
   //   return await this.taskService.getbyid(taskid, fixerid);
   // }
-
-
 
   // @ApiBearerAuth()
   // @ApiResponse({
@@ -159,7 +145,6 @@ export class TaskController {
   //   return await this.taskService.checkReceipt(taskid);
   // }
 
-
   // @ApiBearerAuth()
   // @ApiResponse({
   //   type: TaskResponseDto.TaskUpdate,
@@ -171,5 +156,5 @@ export class TaskController {
   //   @Param('newStatus') newStatus: string,
   // ) {
   //   return await this.taskService.updateissueStatus(issueid, newStatus);
-  // } 
+  // }
 }

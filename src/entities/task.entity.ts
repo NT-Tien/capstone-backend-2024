@@ -42,8 +42,8 @@ export enum TaskStatus {
    */
   ASSIGNED = 'ASSIGNED',
   /**
- * ASSIGNED: khi đã gán fixer thì không thể update nội dung task, chỉ có thể update trạng thái task
- */
+   * ASSIGNED: khi đã gán fixer thì không thể update nội dung task, chỉ có thể update trạng thái task
+   */
   PENDING_SPARE_PART = 'PENDING_SPARE_PART',
   /**
    *
@@ -54,8 +54,8 @@ export enum TaskStatus {
    */
   COMPLETED = 'COMPLETED',
   /**
- *
- */
+   *
+   */
   HEAD_STAFF_CONFIRM = 'HEAD_DEPARTMENT_CONFIRM',
   /**
    *
@@ -201,5 +201,4 @@ export class TaskEntity extends BaseEntity {
     nullable: true,
   })
   stockkeeperNoteId?: string;
-
 }

@@ -18,9 +18,8 @@ dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter(
-      // { bodyLimit: 100 * 1024 * 1024 }
-    ),
+    new FastifyAdapter(),
+    // { bodyLimit: 100 * 1024 * 1024 }
   );
 
   app.setGlobalPrefix(`${process.env.PREFIX_API}`);

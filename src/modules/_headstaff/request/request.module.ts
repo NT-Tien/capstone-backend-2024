@@ -10,7 +10,12 @@ import { NotifyEntity } from 'src/entities/notify.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([RequestEntity, AccountEntity, DeviceEntity, NotifyEntity]),
+    TypeOrmModule.forFeature([
+      RequestEntity,
+      AccountEntity,
+      DeviceEntity,
+      NotifyEntity,
+    ]),
     AuthModule,
   ],
   controllers: [RequestController],

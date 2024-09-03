@@ -11,7 +11,12 @@ import { FeedbackEntity } from '../../../entities/feedback.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([RequestEntity, AccountEntity, DeviceEntity, FeedbackEntity]),
+    TypeOrmModule.forFeature([
+      RequestEntity,
+      AccountEntity,
+      DeviceEntity,
+      FeedbackEntity,
+    ]),
     AuthModule,
     NotifyModule,
   ],

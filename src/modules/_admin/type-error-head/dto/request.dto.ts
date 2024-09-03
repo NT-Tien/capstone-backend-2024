@@ -46,6 +46,5 @@ export namespace TypeErrorRequestDto {
     @IsOptional()
     @Expose()
     machineModel?: string;
-
   }
 }
