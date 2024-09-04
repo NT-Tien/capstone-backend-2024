@@ -35,17 +35,17 @@ export class RequestService extends BaseService<RequestEntity> {
 
     // Tính toán khoảng thời gian dựa trên giá trị time
     const currentDate = new Date();
-    if (time === 1) {
+    if (time == 1) {
       // Lọc theo tuần (7 ngày trước)
       dateRange = {
         createdAt: Between(subWeeks(currentDate, 1), endOfDay(currentDate)),
       };
-    } else if (time === 2) {
+    } else if (time == 2) {
       // Lọc theo tháng (30 ngày trước)
       dateRange = {
         createdAt: Between(subMonths(currentDate, 1), endOfDay(currentDate)),
       };
-    } else if (time === 3) {
+    } else if (time == 3) {
       // Lọc theo năm (365 ngày trước)
       dateRange = {
         createdAt: Between(subYears(currentDate, 1), endOfDay(currentDate)),
