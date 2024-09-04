@@ -22,7 +22,7 @@ import { RequestStatus } from 'src/entities/request.entity';
 @UseGuards(HeadStaffGuard)
 @Controller('head-staff/request')
 export class RequestController {
-  constructor(private readonly requestService: RequestService) { }
+  constructor(private readonly requestService: RequestService) {}
 
   @ApiBearerAuth()
   @ApiResponse({
@@ -37,7 +37,12 @@ export class RequestController {
     @Param('limit') limit: number,
     @Param('status') status: RequestStatus,
   ) {
-    return await this.requestService.customHeadStaffGetAllRequest(user?.id, page, limit, status);
+    return await this.requestService.customHeadStaffGetAllRequest(
+      user?.id,
+      page,
+      limit,
+      status,
+    );
   }
 
   // @ApiResponse({
@@ -64,12 +69,9 @@ export class RequestController {
   })
   @ApiBearerAuth()
   @Get(':id')
-  async getOne(
-    @Headers('user') user: any,
-    @Param('id') id: string,
-  ) {
+  async getOne(@Headers('user') user: any, @Param('id') id: string) {
     console.log(user?.id, id);
-    
+
     return await this.requestService.customHeadStaffGetOneRequest(user?.id, id);
   }
 
@@ -100,14 +102,10 @@ export class RequestController {
   async update(
     @Headers('user') user: any,
     @Param('id') id: string,
-   @Body() data: RequestRequestDto.RequestUpdateDto,
+    @Body() data: RequestRequestDto.RequestUpdateDto,
   ) {
     // create task for request before update status
-    return await this.requestService.updateStatus(
-      user.id,
-      id,
-      data
-    );
+    return await this.requestService.updateStatus(user.id, id, data);
   }
 
   // @ApiBearerAuth()

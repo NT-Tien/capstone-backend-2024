@@ -10,10 +10,22 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotifyEntity } from 'src/entities/notify.entity';
 
 @Module({
-  imports: [ TypeOrmModule.forFeature([NotifyEntity]),AuthModule],
+  imports: [TypeOrmModule.forFeature([NotifyEntity]), AuthModule],
   controllers: [NotifyController],
-  providers: [HeadStaffGateway, HeadGateway, StaffGateway, StockKeeperGateway, NotifyService],
-  exports: [HeadStaffGateway, HeadGateway, StaffGateway, StockKeeperGateway, NotifyService],
+  providers: [
+    HeadStaffGateway,
+    HeadGateway,
+    StaffGateway,
+    StockKeeperGateway,
+    NotifyService,
+  ],
+  exports: [
+    HeadStaffGateway,
+    HeadGateway,
+    StaffGateway,
+    StockKeeperGateway,
+    NotifyService,
+  ],
 })
 export class NotifyModule {}
 // this.zalopayGateway.server.emit('new-payment', { message: req.body });

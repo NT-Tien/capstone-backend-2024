@@ -1,9 +1,9 @@
-import { Module } from "@nestjs/common";
-import { RequestModule } from "./request/request.module";
-import { TaskModule } from "./task/task.module";
-import { AccountModule } from "./account/account.module";
-import { DeviceModule } from "./device/device.module";
-import { IssueModule } from "./issue/issue.module";
+import { Module } from '@nestjs/common';
+import { RequestModule } from './request/request.module';
+import { TaskModule } from './task/task.module';
+import { AccountModule } from './account/account.module';
+import { DeviceModule } from './device/device.module';
+import { IssueModule } from './issue/issue.module';
 
 @Module({
   imports: [
@@ -14,4 +14,4 @@ import { IssueModule } from "./issue/issue.module";
     IssueModule,
   ],
 })
-export class HeadstaffModule { }
+export class HeadstaffModule {}

@@ -81,7 +81,7 @@ export class IssueController {
     await this.issueService.createMany(body);
     return {
       message: 'Create many issues successfully',
-    }
+    };
   }
 
   @ApiBearerAuth()

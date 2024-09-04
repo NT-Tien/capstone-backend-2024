@@ -8,7 +8,10 @@ import { AccountEntity } from 'src/entities/account.entity';
 import { RequestEntity } from 'src/entities/request.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TaskEntity, AccountEntity, RequestEntity]), AuthModule],
+  imports: [
+    TypeOrmModule.forFeature([TaskEntity, AccountEntity, RequestEntity]),
+    AuthModule,
+  ],
   controllers: [TaskController],
   providers: [TaskService],
 })

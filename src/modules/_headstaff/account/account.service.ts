@@ -23,10 +23,9 @@ export class AccountService extends BaseService<AccountEntity> {
     });
   }
 
-  async getAllAccountsStaffAvaiable(
-    fixDate: string,
-  ): Promise<AccountEntity[]> {
-    let result = await this.accountRepository.createQueryBuilder('account')
+  async getAllAccountsStaffAvaiable(fixDate: string): Promise<AccountEntity[]> {
+    let result = await this.accountRepository
+      .createQueryBuilder('account')
       .leftJoinAndSelect('account.tasks', 'task')
       .where('account.role = :role', { role: Role.staff })
       .andWhere('task.fix_date = :fixDate OR task.id IS NULL', { fixDate })

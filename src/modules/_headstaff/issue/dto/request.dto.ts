@@ -93,7 +93,6 @@ export namespace IssueRequestDto {
     @Expose()
     imagesVerify?: string[];
 
-
     @ApiProperty()
     @IsOptional()
     @Expose()

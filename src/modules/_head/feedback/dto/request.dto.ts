@@ -5,7 +5,6 @@ import { BaseDTO } from 'src/common/base/dto.base';
 
 export namespace FeedbackRequestDto {
   export class FeedbackCreateDto extends BaseDTO {
-
     @ApiProperty()
     @IsNotEmpty()
     @Expose()
@@ -20,7 +19,6 @@ export namespace FeedbackRequestDto {
     @IsNotEmpty()
     @Expose()
     content: string;
-    
   }
 
   export class FeedbackUpdateDto extends BaseDTO {
