@@ -85,7 +85,7 @@ export class RequestService extends BaseService<RequestEntity> {
     var account = await this.accountRepository.findOne({
       where: { id: userId },
     });
-    if (!account || account.deletedAt || account.role !== Role.headstaff) {
+    if (!account || account.deletedAt || account.role !== Role.admin) {
       throw new HttpException('Account is not valid', HttpStatus.BAD_REQUEST);
     }
     // update status notify
