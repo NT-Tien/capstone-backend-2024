@@ -6,6 +6,7 @@ import { TypeErrorModule } from './type-error/type-error.module';
 import { AreaModule } from './area/area.module';
 import { TypeErrorHeadModule } from './type-error-head/type-error-head.module';
 import { TaskModule } from './task/task.module';
+import { RequestModule } from './request/request.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { TaskModule } from './task/task.module';
     TypeErrorModule,
     TypeErrorHeadModule,
     TaskModule,
+    RequestModule,
   ],
 })
 export class AdminModule {}
