@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -21,12 +22,13 @@ import { TaskResponseDto } from './dto/response.dto';
 import { TaskRequestDto } from './dto/request.dto';
 import { TaskStatus } from 'src/entities/task.entity';
 import { AdminGuard } from 'src/modules/auth/guards/admin.guard';
+import { time } from 'console';
 
 @ApiTags('admin: task')
 @UseGuards(AdminGuard)
 @Controller('admin/task')
 export class TaskController {
-  constructor(private readonly taskService: TaskService) {}
+  constructor(private readonly taskService: TaskService) { }
 
   @ApiBearerAuth()
   @ApiResponse({
@@ -39,8 +41,9 @@ export class TaskController {
     @Param('page') page: number,
     @Param('limit') limit: number,
     @Param('status') status: TaskStatus,
+    @Query('time') time: number = 1
   ) {
-    return this.taskService.customGetAllTask(page, limit, status);
+    return this.taskService.customGetAllTask(page, limit, status, time);
   }
 
   // @ApiResponse({
