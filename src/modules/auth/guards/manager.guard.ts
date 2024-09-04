@@ -20,6 +20,6 @@ export class ManagerGuard extends JWTGuard implements CanActivate {
       } else return false;
     } catch (error) {
       return false;
-    }
+    } 
   }
 }
