@@ -18,9 +18,10 @@ import { RequestResponseDto } from './dto/response.dto';
 import { RequestRequestDto } from './dto/request.dto';
 import { HeadStaffGuard } from 'src/modules/auth/guards/headstaff.guard';
 import { RequestStatus } from 'src/entities/request.entity';
+import { AdminGuard } from 'src/modules/auth/guards/admin.guard';
 
 @ApiTags('admin: request')
-@UseGuards(HeadStaffGuard)
+@UseGuards(AdminGuard)
 @Controller('admin/request')
 export class RequestController {
   constructor(private readonly requestService: RequestService) {}
