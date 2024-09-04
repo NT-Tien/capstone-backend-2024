@@ -22,7 +22,7 @@ export enum RequestType {
   MAINTENANCE = 'MAINTENANCE',
 }
 
-export enum RequestLevel {  // only for MAINTENANCE type
+export enum RequestLevel { // only for MAINTENANCE type
   LOW = 'LOW', // rate of failure is 10% - 30%
   MEDIUM = 'MEDIUM', // rate of failure is 30% - 70%
   HIGH = 'HIGH', // rate of failure is 70% - 100%
@@ -34,7 +34,6 @@ export enum RequestLevel {  // only for MAINTENANCE type
   },
 })
 export class RequestEntity extends BaseEntity {
-
   @OneToMany(() => IssueEntity, (issue) => issue.request)
   issues: IssueEntity[];
 
@@ -137,6 +136,4 @@ export class RequestEntity extends BaseEntity {
     default: false,
   })
   wait_renew: boolean;
-
-  
 }

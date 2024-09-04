@@ -1,14 +1,9 @@
 // auth.guard.ts
-import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-} from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class JWTGuard implements CanActivate {
-
   protected jwtService: JwtService;
 
   constructor(jwtService: JwtService) {
@@ -30,5 +25,4 @@ export class JWTGuard implements CanActivate {
       return false;
     }
   }
-
 }

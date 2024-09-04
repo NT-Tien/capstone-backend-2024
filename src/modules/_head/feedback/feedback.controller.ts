@@ -61,5 +61,4 @@ export class FeedbackController {
   async deleteHard(@Param('id') id: string) {
     return await this.feedbackService.delete(id);
   }
-
 }

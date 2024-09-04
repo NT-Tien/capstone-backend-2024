@@ -80,7 +80,11 @@ export class TaskService extends BaseService<TaskEntity> {
     return await this.taskRepository.save(task);
   }
 
-  async pendingSparePart(taskId: string, payload: TaskRequestDto.StockkeeperPendingSparePart, userId: string) {
+  async pendingSparePart(
+    taskId: string,
+    payload: TaskRequestDto.StockkeeperPendingSparePart,
+    userId: string,
+  ) {
     let task = await this.taskRepository.findOne({
       where: { id: taskId.trim() },
     });

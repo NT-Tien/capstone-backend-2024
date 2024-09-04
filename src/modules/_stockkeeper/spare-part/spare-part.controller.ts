@@ -48,5 +48,4 @@ export class SparePartController {
       SparePartRequestDto.SparePartUpdateDto.plainToClass(body),
     );
   }
-
 }

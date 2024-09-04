@@ -3,7 +3,6 @@ import { Expose } from 'class-transformer';
 import { IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
 
-
 export namespace TaskRequestDto {
   export class TaskCreateDto extends BaseDTO {
     @ApiProperty()
@@ -50,7 +49,6 @@ export namespace TaskRequestDto {
   }
 
   export class TaskConfirmDoneDto extends BaseDTO {
-
     @ApiProperty()
     @IsOptional()
     @Expose()
@@ -65,6 +63,5 @@ export namespace TaskRequestDto {
     @IsOptional()
     @Expose()
     videosVerify: string;
-
   }
 }

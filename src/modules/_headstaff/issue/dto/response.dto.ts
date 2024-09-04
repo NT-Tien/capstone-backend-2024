@@ -210,7 +210,4 @@ export namespace IssueSparePartResponseDto {
     @ApiProperty({ example: 200 })
     statusCode: number;
   }
-
-  
-
 }

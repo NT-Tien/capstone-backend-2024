@@ -8,7 +8,7 @@ export const TYPE_ORM_CONFIG = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  timezone: "+07:00",
+  timezone: '+07:00',
   synchronize: process.env.ENV === 'main' ? true : false,
   entities: ['dist/**/*.entity.js'],
   subscribers: ['dist/**/*.subscriber.js'],
