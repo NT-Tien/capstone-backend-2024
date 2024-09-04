@@ -28,5 +28,4 @@ export class TypeErrorHeadEntity extends BaseEntity {
     type: 'text',
   })
   description: string;
-
 }

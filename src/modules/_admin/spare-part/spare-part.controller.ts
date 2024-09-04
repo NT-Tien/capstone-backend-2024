@@ -33,7 +33,11 @@ export class SparePartController {
     @Param('limit') limit: number,
     @Param('searchName') searchName: string,
   ) {
-    return await this.sparePartService.customGetAllSparePart(page, limit, searchName);
+    return await this.sparePartService.customGetAllSparePart(
+      page,
+      limit,
+      searchName,
+    );
   }
 
   // @ApiResponse({

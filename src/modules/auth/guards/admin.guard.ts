@@ -1,17 +1,11 @@
-import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-} from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { JWTGuard } from './jwt.guard';
 import { JwtService } from '@nestjs/jwt';
 import { Role } from 'src/entities/account.entity';
 
 @Injectable()
 export class AdminGuard extends JWTGuard implements CanActivate {
-  constructor(
-    protected readonly jwtService: JwtService
-  ) {
+  constructor(protected readonly jwtService: JwtService) {
     super(jwtService);
   }
   canActivate(context: ExecutionContext): boolean {

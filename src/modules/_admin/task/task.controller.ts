@@ -26,7 +26,7 @@ import { AdminGuard } from 'src/modules/auth/guards/admin.guard';
 @UseGuards(AdminGuard)
 @Controller('admin/task')
 export class TaskController {
-  constructor(private readonly taskService: TaskService) { }
+  constructor(private readonly taskService: TaskService) {}
 
   @ApiBearerAuth()
   @ApiResponse({
@@ -71,7 +71,6 @@ export class TaskController {
     return await this.taskService.getOneTask(id);
   }
 
-
   @ApiBearerAuth()
   @ApiResponse({
     type: TaskResponseDto.TaskUpdate,
@@ -88,6 +87,4 @@ export class TaskController {
       TaskRequestDto.TaskUpdateDto.plainToClass(body),
     );
   }
-
-
 }

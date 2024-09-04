@@ -42,11 +42,13 @@ export class VideoController {
   @UseGuards(UploadGuard)
   @ApiBearerAuth()
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file', {
-    limits: {
-      fileSize: 50 * 1024 * 1024,
-    },
-  }))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: {
+        fileSize: 50 * 1024 * 1024,
+      },
+    }),
+  )
   async uploadFile(@UploadedFile() file: MemoryStorageFile) {
     try {
       const fileBlob = new Blob([file.buffer], { type: file.mimetype });

@@ -28,11 +28,11 @@ export class DeviceService extends BaseService<DeviceEntity> {
     });
   }
 
-    // get history request by device id
-    async getHistoryRequest(id: string): Promise<DeviceEntity> {
-      return this.deviceRepository.findOne({
-        where: { id },
-        relations: ['requests', 'requests.requester', 'machineModel', 'area'],
-      });
-    }
+  // get history request by device id
+  async getHistoryRequest(id: string): Promise<DeviceEntity> {
+    return this.deviceRepository.findOne({
+      where: { id },
+      relations: ['requests', 'requests.requester', 'machineModel', 'area'],
+    });
+  }
 }

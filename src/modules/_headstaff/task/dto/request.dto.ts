@@ -6,7 +6,6 @@ import { RequestStatus } from 'src/entities/request.entity';
 
 export namespace TaskRequestDto {
   export class TaskCreateDto extends BaseDTO {
-
     @ApiProperty()
     @IsNotEmpty()
     @Expose()
@@ -47,7 +46,6 @@ export namespace TaskRequestDto {
     @IsOptional()
     @Expose()
     fixer: string; // account id
-
   }
 
   export class TaskUpdateDto extends BaseDTO {
@@ -86,7 +84,6 @@ export namespace TaskRequestDto {
     @IsOptional()
     @Expose()
     fixer: string; // account id
-
   }
 
   export class TaskAssignFixerDto extends BaseDTO {

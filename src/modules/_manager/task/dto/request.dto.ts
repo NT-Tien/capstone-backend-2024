@@ -45,7 +45,6 @@ export namespace TaskRequestDto {
     @IsNotEmpty()
     @Expose()
     totalTime: number;
-
   }
 
   export class TaskUpdateDto extends BaseDTO {

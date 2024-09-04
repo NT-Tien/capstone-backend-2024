@@ -46,7 +46,7 @@ export namespace TaskResponseDto {
   export class TaskCreate {
     @ApiProperty({
       example: {
-               name: 'string',
+        name: 'string',
         status: 'string',
         priority: true,
         operator: 0,
@@ -66,7 +66,7 @@ export namespace TaskResponseDto {
   export class TaskUpdate {
     @ApiProperty({
       example: {
-               name: 'string',
+        name: 'string',
         status: 'string',
         priority: true,
         operator: 0,

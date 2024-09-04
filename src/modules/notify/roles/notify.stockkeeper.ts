@@ -24,8 +24,7 @@ export class StockKeeperGateway
   @WebSocketServer()
   server: Server;
 
-  constructor() // add servies
-  {}
+  constructor() {} // add servies
 
   handleConnection(client: Socket, ...args: any[]) {
     var ip =

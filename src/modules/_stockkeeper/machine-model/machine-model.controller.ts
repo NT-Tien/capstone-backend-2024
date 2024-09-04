@@ -29,10 +29,7 @@ export class MachineModelController {
     description: 'Get all MachineModels',
   })
   @Get(':page/:limit')
-  async getAll(
-    @Param('page') page: number,
-    @Param('limit') limit: number,
-  ) {
+  async getAll(@Param('page') page: number, @Param('limit') limit: number) {
     return await this.machineModelService.customGetAll(page, limit);
   }
 
@@ -126,5 +123,4 @@ export class MachineModelController {
   // async restore(@Param('id') id: string) {
   //   return await this.machineModelService.restore(id);
   // }
-
 }
