@@ -24,5 +24,4 @@ jobs:
           git pull &&
           docker-compose down &&
           docker rmi capstone-backend-2024-backend:latest &&
-          docker-compose up --build -d &&
-          docker system prune -a --force
+          docker-compose up --build -d
