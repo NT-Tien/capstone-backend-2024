@@ -89,6 +89,7 @@ export class RequestService extends BaseService<RequestEntity> {
         'issues.typeError',
         'issues.issueSpareParts',
         'issues.issueSpareParts.sparePart',
+        "feedback"
       ],
     });
   }
