@@ -6,10 +6,16 @@ import { RequestController } from './request.controller';
 import { AccountEntity } from 'src/entities/account.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
 import { AuthModule } from 'src/modules/auth/auth.module';
+import { NotifyEntity } from 'src/entities/notify.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([RequestEntity, AccountEntity, DeviceEntity]),
+    TypeOrmModule.forFeature([
+      RequestEntity,
+      AccountEntity,
+      DeviceEntity,
+      NotifyEntity,
+    ]),
     AuthModule,
   ],
   controllers: [RequestController],

@@ -15,9 +15,9 @@ export namespace RequestResponseDto {
           device: {
             message: 'Device information',
           },
-          account: {
-            message: 'Account information',
-          },
+          // account: {
+          //   message: 'Account information',
+          // },
           description: 'string',
           status: 'string',
         },
@@ -57,9 +57,6 @@ export namespace RequestResponseDto {
         device: {
           message: 'Device information',
         },
-        account: {
-          message: 'Account information',
-        },
         description: 'string',
         status: 'string',
         deletedAt: null,
@@ -82,9 +79,6 @@ export namespace RequestResponseDto {
         },
         device: {
           message: 'Device information',
-        },
-        account: {
-          message: 'Account information',
         },
         description: 'string',
         status: 'string',

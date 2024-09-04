@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, ValidateIf } from 'class-validator';
+import { IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
 import { RequestStatus } from 'src/entities/request.entity';
 
@@ -10,16 +10,6 @@ export namespace RequestRequestDto {
     @IsNotEmpty()
     @Expose()
     device: string;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @Expose()
-    requester: string;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @Expose()
-    requester_note: string;
   }
 
   export class RequestUpdateDto extends BaseDTO {
@@ -29,13 +19,33 @@ export namespace RequestRequestDto {
     // task?: string;
 
     @ApiProperty()
-    @ValidateIf((o) => o.requester_note)
-    @Expose()
-    requester_note?: string;
-
-    @ApiProperty()
-    @ValidateIf((o) => o.status)
+    @IsOptional()
     @Expose()
     status?: RequestStatus;
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
+    checker: string; // the last checker
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
+    checker_date: string; // the last checker date
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
+    checker_note: string; // the last checker note
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
+    is_seen: boolean; // the last checker note
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose() 
+    is_warranty: boolean;
   }
 }
