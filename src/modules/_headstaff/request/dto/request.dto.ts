@@ -42,5 +42,10 @@ export namespace RequestRequestDto {
     @IsOptional()
     @Expose()
     is_seen: boolean; // the last checker note
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose() 
+    is_warranty: boolean;
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from 'src/common/base/service.base';
-import { AccountEntity } from 'src/entities/account.entity';
+import { AccountEntity, Role } from 'src/entities/account.entity';
 import { TaskEntity, TaskStatus } from 'src/entities/task.entity';
 import { Repository } from 'typeorm';
 import { TaskRequestDto } from './dto/request.dto';
@@ -89,7 +89,23 @@ export class TaskService extends BaseService<TaskEntity> {
     let newTask = new TaskEntity();
     newTask.request = request;
     newTask.device = request.device;
-    newTask.status = TaskStatus.AWAITING_FIXER;
+    if (data.fixer) {
+      const fixer = await this.accountRepository.findOne({
+        where: {
+          id: data.fixer,
+          role: Role.staff,
+        },
+      });
+
+      if (!fixer) {
+        throw new Error('Fixer not found');
+      }
+
+      newTask.fixer = fixer;
+      newTask.status = TaskStatus.ASSIGNED;
+    } else {
+      newTask.status = TaskStatus.AWAITING_FIXER;
+    }
     let newTaskResult = await this.taskRepository.save({
       ...data,
       ...newTask,
@@ -130,22 +146,30 @@ export class TaskService extends BaseService<TaskEntity> {
 
     const request = await this.requestRepository.findOne({
       where: { id: task.request.id },
-      relations: ['tasks'],
+      relations: ['issues', 'tasks'],
       select: {
         issues: {
           id: true,
           status: true,
         },
+        tasks: {
+          id: true,
+          status: true
+        }
       },
     });
 
-    const allIssuesCompleted = request.issues.find((issue) => {
+    const hasUncompletedIssue = request.issues.find((issue) => {
       return issue.status === IssueStatus.PENDING;
     });
-    if (!allIssuesCompleted) {
+    const hasUncompletedTask = request.tasks.find((task) => {
+      return task.status !== TaskStatus.COMPLETED;
+    })
+    if (!hasUncompletedIssue && !hasUncompletedTask) {
       request.status = RequestStatus.HEAD_CONFIRM;
       await this.requestRepository.save(request);
     }
+
 
     return result;
   }
