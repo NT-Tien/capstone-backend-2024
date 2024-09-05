@@ -14,5 +14,6 @@ import { RequestEntity } from 'src/entities/request.entity';
   ],
   controllers: [TaskController],
   providers: [TaskService],
+  exports: [TaskService],
 })
 export class TaskModule {}

@@ -20,5 +20,6 @@ import { NotifyEntity } from 'src/entities/notify.entity';
   ],
   controllers: [RequestController],
   providers: [RequestService],
+  exports: [RequestService],
 })
 export class RequestModule {}
