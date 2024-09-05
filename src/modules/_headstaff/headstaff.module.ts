@@ -4,6 +4,7 @@ import { TaskModule } from './task/task.module';
 import { AccountModule } from './account/account.module';
 import { DeviceModule } from './device/device.module';
 import { IssueModule } from './issue/issue.module';
+import { HeadStaffDashboardController } from './headstaff.controller';
 
 @Module({
   imports: [
@@ -13,5 +14,6 @@ import { IssueModule } from './issue/issue.module';
     DeviceModule,
     IssueModule,
   ],
+  controllers: [HeadStaffDashboardController],  
 })
 export class HeadstaffModule {}

@@ -21,7 +21,7 @@ import { TaskStatus } from 'src/entities/task.entity';
 @ApiTags('head staff: dasboard')
 @UseGuards(HeadStaffGuard)
 @Controller('head-staff/dashboard')
-export class RequestController {
+export class HeadStaffDashboardController {
     constructor(
         private readonly requestService: RequestService,
         private readonly taskService: TaskService,
