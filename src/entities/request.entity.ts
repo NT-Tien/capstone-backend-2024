@@ -7,14 +7,14 @@ import { IssueEntity } from './issue.entity';
 import { FeedbackEntity } from './feedback.entity';
 
 export enum RequestStatus {
-  PENDING = 'PENDING',
+  PENDING = 'PENDING', // use for request renew
   HEAD_CANCEL = 'HEAD_CANCEL',
   CHECKED = 'CHECKED',
-  APPROVED = 'APPROVED',
-  IN_PROGRESS = 'IN_PROGRESS',
-  CLOSED = 'CLOSED',
+  APPROVED = 'APPROVED', // use for request renew
+  IN_PROGRESS = 'IN_PROGRESS', // use for request renew
+  CLOSED = 'CLOSED', // use for request renew
   HEAD_CONFIRM = 'HEAD_CONFIRM',
-  REJECTED = 'REJECTED',
+  REJECTED = 'REJECTED', // use for request renew
 }
 
 export enum RequestType {
@@ -57,7 +57,7 @@ export class RequestEntity extends BaseEntity {
     name: 'requester_note',
     type: 'text',
   })
-  requester_note: string;
+  requester_note: string; // if the request is renew type, requester is headstaff
 
   @ManyToOne(() => AccountEntity, (acc) => acc.id, {
     nullable: true,
@@ -76,7 +76,7 @@ export class RequestEntity extends BaseEntity {
     type: 'text',
     nullable: true,
   })
-  checker_note: string;
+  checker_note: string; // if the request is renew type, checker is admin
 
   @Column({
     name: 'status',

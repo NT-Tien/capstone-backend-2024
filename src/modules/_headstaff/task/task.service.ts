@@ -44,6 +44,16 @@ export class TaskService extends BaseService<TaskEntity> {
     });
   }
 
+  async customGetAllTaskDashboard(
+    status: TaskStatus,
+  ): Promise<[TaskEntity[], number]> {
+    return this.taskRepository.findAndCount({
+      where: {
+        status: status ? status : undefined,
+      },
+    });
+  }
+
   async getOneTask(id: string) {
     return await this.taskRepository.findOne({
       where: { id },

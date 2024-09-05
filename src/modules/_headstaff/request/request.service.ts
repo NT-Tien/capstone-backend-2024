@@ -23,6 +23,23 @@ export class RequestService extends BaseService<RequestEntity> {
     super(requestRepository);
   }
 
+  async customHeadStaffGetAllRequestDashboard(
+    userId: string,
+    status: RequestStatus,
+  ): Promise<[RequestEntity[], number]> {
+    var account = await this.accountRepository.findOne({
+      where: { id: userId },
+    });
+    if (!account || account.deletedAt || account.role !== Role.headstaff) {
+      throw new HttpException('Account is not valid', HttpStatus.BAD_REQUEST);
+    }
+    return this.requestRepository.findAndCount({
+      where: {
+        status: status ? status : undefined,
+      },
+    });
+  }
+  
   async customHeadStaffGetAllRequest(
     userId: string,
     page: number,
