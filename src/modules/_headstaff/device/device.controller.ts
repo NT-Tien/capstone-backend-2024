@@ -22,16 +22,16 @@ import { HeadStaffGuard } from 'src/modules/auth/guards/headstaff.guard';
 export class DeviceController {
   constructor(private readonly deviceService: DeviceService) {}
 
-  // @ApiBearerAuth()
-  // @ApiResponse({
-  //   type: DeviceResponseDto.DeviceGetAll,
-  //   status: 200,
-  //   description: 'Get all Devices',
-  // })
-  // @Get()
-  // async getAll() {
-  //   return await this.deviceService.getAllWithRelations();
-  // }
+  @ApiBearerAuth()
+  @ApiResponse({
+    type: DeviceResponseDto.DeviceGetAll,
+    status: 200,
+    description: 'Get all Devices not have position',
+  })
+  @Get()
+  async getAll() {
+    return await this.deviceService.getAllWithRelations();
+  }
 
   // @ApiResponse({
   //   type: DeviceResponseDto.DeviceGetAll,

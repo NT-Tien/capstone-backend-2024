@@ -10,6 +10,11 @@ export namespace RequestRequestDto {
     @IsNotEmpty()
     @Expose()
     device: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    requester_note: string;
   }
 
   export class RequestUpdateDto extends BaseDTO {

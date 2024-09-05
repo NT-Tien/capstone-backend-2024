@@ -75,22 +75,22 @@ export class RequestController {
     return await this.requestService.customHeadStaffGetOneRequest(user?.id, id);
   }
 
-  // @ApiBearerAuth()
-  // @ApiResponse({
-  //   type: RequestResponseDto.RequestCreate,
-  //   status: 201,
-  //   description: 'Create a Request',
-  // })
-  // @Post()
-  // async create(
-  //   @Headers('user') user: any,
-  //   @Body() body: RequestRequestDto.RequestCreateDto
-  // ) {
-  //   return await this.requestService.customHeadCreateRequest(
-  //     user.id,
-  //     RequestRequestDto.RequestCreateDto.plainToClass(body),
-  //   );
-  // }
+  @ApiBearerAuth()
+  @ApiResponse({
+    type: RequestResponseDto.RequestCreate,
+    status: 201,
+    description: 'Create a Request',
+  })
+  @Post()
+  async create(
+    @Headers('user') user: any,
+    @Body() body: RequestRequestDto.RequestCreateDto
+  ) {
+    return await this.requestService.customHeadCreateRequest(
+      user.id,
+      RequestRequestDto.RequestCreateDto.plainToClass(body),
+    );
+  }
 
   @ApiBearerAuth()
   @ApiResponse({

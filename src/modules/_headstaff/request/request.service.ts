@@ -94,6 +94,56 @@ export class RequestService extends BaseService<RequestEntity> {
     });
   }
 
+  async customHeadCreateRequest(
+    userId: string,
+    data: RequestRequestDto.RequestCreateDto,
+  ): Promise<RequestEntity> {
+    // find account
+    let account = await this.accountRepository.findOne({
+      where: { id: userId },
+    });
+    if (!account || account.deletedAt || account.role !== Role.head) {
+      throw new Error('Account is not valid');
+    }
+    // find device
+    let device = await this.deviceRepository.findOne({
+      where: { id: data.device },
+    });
+    if (!device || device.deletedAt) {
+      throw new Error('Device is not valid');
+    }
+    // check request duplicate
+    // let request = await this.requestRepository.findOne({
+    //   where: { requester: account, device: device, status: RequestStatus.PENDING },
+    // });
+    let request = await this.requestRepository
+      .createQueryBuilder('request')
+      .leftJoinAndSelect('request.device', 'device')
+      .andWhere('device.deletedAt is null')
+      .andWhere('device.id = :id', { id: data.device })
+      .andWhere('request.status = :status', { status: RequestStatus.PENDING })
+      .getOne();
+    if (request) {
+      throw new HttpException('Request is duplicate', HttpStatus.BAD_REQUEST);
+    }
+
+    // create new request
+    let newRequest = await this.requestRepository.save({
+      requester: account,
+      device: device,
+      requester_note: data.requester_note,
+    });
+
+    // create new notify
+    // let result = await this.notifyService.create({
+    //   roleReceiver: Role.head,
+    //   requestId: newRequest.id,
+    // });
+    // push notify to head-staff
+    // this.headStaffGateWay.server.emit('new-request', result);
+    return this.requestRepository.create(newRequest);
+  }
+
   async updateStatus(
     userId: string,
     id: string,

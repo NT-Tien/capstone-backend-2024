@@ -16,6 +16,10 @@ export class DeviceService extends BaseService<DeviceEntity> {
   // get all with relations
   async getAllWithRelations(): Promise<DeviceEntity[]> {
     return this.deviceRepository.find({
+      where: {
+        positionX : null,
+        positionY : null,
+      },
       relations: ['area', 'machineModel', 'machineModel.spareParts'],
     });
   }
