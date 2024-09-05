@@ -13,7 +13,7 @@ dotenv.config();
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET_KEY,
-      signOptions: { expiresIn: '10d', algorithm: 'HS256' },
+      signOptions: { expiresIn: '1000d', algorithm: 'HS256' },
     }),
     TypeOrmModule.forFeature([AccountEntity]),
   ],

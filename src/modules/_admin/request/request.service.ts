@@ -60,6 +60,7 @@ export class RequestService extends BaseService<RequestEntity> {
     return this.requestRepository.findAndCount({
       where: {
         status: status ? status : undefined,
+        is_rennew: true,
         ...dateRange,
       },
       relations: [
