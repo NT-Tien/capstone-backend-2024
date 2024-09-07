@@ -13,4 +13,7 @@ export const TYPE_ORM_CONFIG = {
   entities: ['dist/**/*.entity.js'],
   subscribers: ['dist/**/*.subscriber.js'],
   ssl: process.env.ENV === 'production' ? { ca: process.env.DB_SSL_CA } : false,
+  extra: {
+    options: '-c timezone=Asia/Ho_Chi_Minh', // Cấu hình múi giờ cho toàn bộ kết nối
+  },
 };
