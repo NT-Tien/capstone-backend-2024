@@ -33,7 +33,6 @@ export class SparePartEntity extends BaseEntity {
 
   @Column({
     name: 'Expiration_date',
-    type: 'timestamptz',
     nullable: true,
   })
   expirationDate: Date;

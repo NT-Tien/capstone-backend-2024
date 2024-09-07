@@ -40,7 +40,7 @@ async function bootstrap() {
   //   },
   // })
   // -----------------------------------------------
-
+  
   app.register(require('@fastify/cors'), {
     origin: [
       process.env.CORS_ORIGIN_FE1,
@@ -77,6 +77,7 @@ async function bootstrap() {
   app.useStaticAssets({
     root: join(__dirname, '../public'),
   });
+  console.log(new Date().toLocaleString());
 
   await app.listen(8080, '0.0.0.0');
 }

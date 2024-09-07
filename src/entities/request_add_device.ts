@@ -36,7 +36,6 @@ export class RequestAddDeviceEntity extends BaseEntity {
 
   @Column({
     name: 'checker_date',
-    type: 'timestamptz',
     nullable: true,
   })
   checker_date: Date;

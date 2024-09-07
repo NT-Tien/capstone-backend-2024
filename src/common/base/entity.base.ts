@@ -5,19 +5,29 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import * as moment from 'moment-timezone';
 
 export abstract class BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamptz' })
+  @UpdateDateColumn()
   updatedAt: Date;
 
-  @DeleteDateColumn({ type: 'timestamptz', nullable: true })
+  @DeleteDateColumn({ nullable: true })
   deletedAt: Date;
+
+
+  getFormattedCreatedAt(): string {
+    return moment(this.createdAt).tz('Asia/Ho_Chi_Minh').format();
+  }
+
+  getFormattedUpdatedAt(): string {
+    return moment(this.updatedAt).tz('Asia/Ho_Chi_Minh').format();
+  }
 
   @BeforeUpdate()
   beforeUpdate() {
@@ -26,4 +36,5 @@ export abstract class BaseEntity {
       throw new Error('Cannot update primary key (id)');
     }
   }
+
 }

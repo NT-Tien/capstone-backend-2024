@@ -66,7 +66,6 @@ export class RequestEntity extends BaseEntity {
 
   @Column({
     name: 'checker_date',
-    type: 'timestamptz',
     nullable: true,
   })
   checker_date: Date;
@@ -118,7 +117,6 @@ export class RequestEntity extends BaseEntity {
 
   @Column({
     name: 'return_date_warranty',
-    type: 'timestamptz',
     nullable: true,
   })
   return_date_warranty: Date;
