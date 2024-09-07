@@ -16,7 +16,6 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RequestService } from './request.service';
 import { RequestResponseDto } from './dto/response.dto';
 import { RequestRequestDto } from './dto/request.dto';
-import { HeadStaffGuard } from 'src/modules/auth/guards/headstaff.guard';
 import { RequestStatus } from 'src/entities/request.entity';
 import { AdminGuard } from 'src/modules/auth/guards/admin.guard';
 
@@ -30,7 +29,7 @@ export class RequestController {
   @ApiResponse({
     type: RequestResponseDto.RequestGetAll,
     status: 200,
-    description: 'Get all Requests',
+    description: 'Get all Requests for renew case',
   })
   @Get(':page/:limit/:status')
   async getAll(
@@ -97,16 +96,11 @@ export class RequestController {
   // }
 
   @ApiBearerAuth()
-  @ApiResponse({
-    type: RequestResponseDto.RequestUpdate,
-    status: 200,
-    description: 'Update a Request',
-  })
-  @Put(':id/:status')
+  @Put('admin-comfirm-renew/:id')
   async update(
     @Headers('user') user: any,
     @Param('id') id: string,
-    @Body() data: RequestRequestDto.RequestUpdateDto,
+    @Body() data: RequestRequestDto.AdminConfirmRenewUpdateDto,
   ) {
     // create task for request before update status
     return await this.requestService.updateStatus(user.id, id, data);

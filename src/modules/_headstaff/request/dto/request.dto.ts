@@ -52,5 +52,26 @@ export namespace RequestRequestDto {
     @IsOptional()
     @Expose() 
     is_warranty: boolean;
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose() 
+    return_date_warranty: Date;
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose() 
+    is_rennew: boolean;
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose() 
+    is_request_add_device: boolean;
+
+    @ApiProperty()
+    @IsOptional()
+    @Expose() 
+    is_renew_done: boolean; // for admin update
+
   }
 }

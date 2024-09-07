@@ -23,6 +23,7 @@ import { PredictiveModule } from './modules/predictive-maintenance/predictive.mo
 import { redisStore } from 'cache-manager-redis-yet';
 import { CACHE_REDIS_CONFIG } from './config/redis.client';
 import { FileLocalModule } from './modules/upload-local/file.module';
+import { HandelDataModule } from './modules/handle-data/handle-data.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { FileLocalModule } from './modules/upload-local/file.module';
     StaffModule,
     StockkeeperModule,
     PredictiveModule,
+    HandelDataModule,
   ],
   providers: [
     {
