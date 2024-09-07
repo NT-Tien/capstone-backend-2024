@@ -36,7 +36,7 @@ export class RequestAddDeviceEntity extends BaseEntity {
 
   @Column({
     name: 'checker_date',
-    type: 'timestamp',
+    type: 'timestamptz',
     nullable: true,
   })
   checker_date: Date;
@@ -57,34 +57,6 @@ export class RequestAddDeviceEntity extends BaseEntity {
     default: false,
   })
   is_seen: boolean;
-
-  @Column({
-    name: 'is_warranty',
-    type: 'boolean',
-    default: false,
-  })
-  is_warranty: boolean;
-
-  @Column({
-    name: 'return_date_warranty',
-    type: 'timestamp',
-    nullable: true,
-  })
-  return_date_warranty: Date;
-
-  @Column({
-    name: 'is_renew',
-    type: 'boolean',
-    default: false,
-  })
-  is_rennew: boolean;
-
-  @Column({
-    name: 'is_request_add_device',
-    type: 'boolean',
-    default: false,
-  })
-  is_request_add_device: boolean;
 
   @Column({
     name: 'is_renew_done',

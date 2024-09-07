@@ -58,13 +58,14 @@ export class MachineModelEntity extends BaseEntity {
 
   @Column({
     name: 'date_of_receipt',
-    type: 'date',
+    type: 'timestamptz',
+    nullable: true,
   })
   dateOfReceipt: Date;
 
   @Column({
     name: 'warranty_term',
-    type: 'date',
+    type: 'timestamptz',
     nullable: true,
   })
   warrantyTerm: Date;

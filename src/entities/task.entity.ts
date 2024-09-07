@@ -95,7 +95,7 @@ export class TaskEntity extends BaseEntity {
 
   @Column({
     name: 'fixer_date',
-    type: 'timestamp',
+    type: 'timestamptz',
     nullable: true,
   })
   fixerDate: Date;
@@ -134,7 +134,7 @@ export class TaskEntity extends BaseEntity {
 
   @Column({
     name: 'completed_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     nullable: true,
   })
   completedAt?: Date;

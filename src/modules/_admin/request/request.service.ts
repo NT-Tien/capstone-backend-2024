@@ -61,7 +61,6 @@ export class RequestService extends BaseService<RequestEntity> {
       where: {
         status: status ? status : undefined,
         is_rennew: true,
-        is_request_add_device: true,
         ...dateRange,
       },
       relations: [
