@@ -26,7 +26,7 @@ import { TaskStatus } from 'src/entities/task.entity';
 @UseGuards(HeadStaffGuard)
 @Controller('head-staff/task')
 export class TaskController {
-  constructor(private readonly taskService: TaskService) {}
+  constructor(private readonly taskService: TaskService) { }
 
   @ApiBearerAuth()
   @ApiResponse({
@@ -99,6 +99,21 @@ export class TaskController {
       id,
       TaskRequestDto.TaskUpdateDto.plainToClass(body),
     );
+  }
+
+  @ApiBearerAuth()
+  @ApiResponse({
+    type: TaskResponseDto.TaskUpdate,
+    status: 200,
+    description: 'Update a Task status to awaiting fixer',
+  })
+  @Put('update-task-to-awatting-fixer/:taskId/:sparePartId/:quantity')
+  async updateTaskStausToAwaitingFixer(
+    @Param('taskId') taskId: string,
+    @Param('sparePartId') sparePartId: string,
+    @Param('quantity') quantity: number,
+  ) {
+    return await this.taskService.updateTaskStausToAwaitingFixer(taskId, sparePartId, quantity);
   }
 
   @ApiBearerAuth()

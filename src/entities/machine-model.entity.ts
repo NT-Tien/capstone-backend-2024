@@ -59,6 +59,8 @@ export class MachineModelEntity extends BaseEntity {
   @Column({
     name: 'date_of_receipt',
     nullable: true,
+    // asian/ho-chi-minh
+    default: () => 'CURRENT_TIMESTAMP',
   })
   dateOfReceipt: Date;
 

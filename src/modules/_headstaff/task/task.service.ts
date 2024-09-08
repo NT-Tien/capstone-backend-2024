@@ -7,12 +7,15 @@ import { Repository } from 'typeorm';
 import { TaskRequestDto } from './dto/request.dto';
 import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
 import { IssueStatus } from 'src/entities/issue.entity';
+import { SparePartEntity } from 'src/entities/spare-part.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
   constructor(
     @InjectRepository(TaskEntity)
     private readonly taskRepository: Repository<TaskEntity>,
+    @InjectRepository(SparePartEntity)
+    private readonly sparePartRepository: Repository<SparePartEntity>,
     @InjectRepository(AccountEntity)
     private readonly accountRepository: Repository<AccountEntity>,
     @InjectRepository(RequestEntity)
@@ -128,6 +131,28 @@ export class TaskService extends BaseService<TaskEntity> {
       .add(data.issueIDs);
 
     return { ...newTaskResult, issues: newIssuesAdded };
+  }
+
+  async updateTaskStausToAwaitingFixer(taskId: string, sparePartId: string, quantity: number) {
+    // check task status is awaiting spare part and spare part quantity is enough
+    const task = await this.taskRepository.findOne({
+      where: { id: taskId },
+    });
+    if (!task || task.status == TaskStatus.AWAITING_SPARE_SPART) {
+      throw new Error('Task not found or invalid status');
+    }
+    const sparePart = await this.sparePartRepository.findOne({
+      where: { id: sparePartId },
+    });
+    if (!sparePart || sparePart.quantity < quantity) {
+      throw new Error('Spare part not found or not enough quantity');
+    }
+    // update spare part quantity
+    sparePart.quantity -= quantity;
+    await this.sparePartRepository.save(sparePart);
+    task.status = TaskStatus.AWAITING_FIXER;
+    await this.taskRepository.save(task);
+    return task;
   }
 
   async assignFixer(taskId: string, data: TaskRequestDto.TaskAssignFixerDto) {

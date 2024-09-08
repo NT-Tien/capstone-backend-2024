@@ -6,9 +6,7 @@ import { MachineModelEntity } from './machine-model.entity';
   name: 'TYPE_ERROR',
 })
 export class TypeErrorEntity extends BaseEntity {
-  @ManyToOne(() => MachineModelEntity, (machineModel) => machineModel.id, {
-    nullable: false,
-  })
+  @ManyToOne(() => MachineModelEntity, (machineModel) => machineModel.id)
   machineModel: MachineModelEntity;
 
   @Column({
