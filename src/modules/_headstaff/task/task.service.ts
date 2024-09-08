@@ -133,26 +133,26 @@ export class TaskService extends BaseService<TaskEntity> {
     return { ...newTaskResult, issues: newIssuesAdded };
   }
 
-  async updateTaskStausToAwaitingFixer(taskId: string, sparePartId: string, quantity: number) {
+  async updateTaskStausToAwaitingFixer(taskId: string) {
     // check task status is awaiting spare part and spare part quantity is enough
     const task = await this.taskRepository.findOne({
       where: { id: taskId },
+      relations: ['issues', 'issues.issueSpareParts'],
     });
-    if (!task || task.status == TaskStatus.AWAITING_SPARE_SPART) {
-      throw new Error('Task not found or invalid status');
+    let issues = task.issues;
+    // check issueSpareParts of each issues is enought 
+    for (let issue of issues) {
+      for (let issueSparePart of issue.issueSpareParts) {
+        const sparePart = await this.sparePartRepository.findOne({
+          where: { id: issueSparePart.sparePart.id },
+        });
+        if (sparePart.quantity < issueSparePart.quantity) {
+          throw new Error('Not enough spare part');
+        }
+      }
     }
-    const sparePart = await this.sparePartRepository.findOne({
-      where: { id: sparePartId },
-    });
-    if (!sparePart || sparePart.quantity < quantity) {
-      throw new Error('Spare part not found or not enough quantity');
-    }
-    // update spare part quantity
-    sparePart.quantity -= quantity;
-    await this.sparePartRepository.save(sparePart);
     task.status = TaskStatus.AWAITING_FIXER;
-    await this.taskRepository.save(task);
-    return task;
+    return await this.taskRepository.save(task);
   }
 
   async assignFixer(taskId: string, data: TaskRequestDto.TaskAssignFixerDto) {

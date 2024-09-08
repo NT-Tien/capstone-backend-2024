@@ -107,13 +107,11 @@ export class TaskController {
     status: 200,
     description: 'Update a Task status to awaiting fixer',
   })
-  @Put('update-task-to-awatting-fixer/:taskId/:sparePartId/:quantity')
+  @Put('update-task-to-awatting-fixer/:id')
   async updateTaskStausToAwaitingFixer(
-    @Param('taskId') taskId: string,
-    @Param('sparePartId') sparePartId: string,
-    @Param('quantity') quantity: number,
+    @Param('id') taskId: string,
   ) {
-    return await this.taskService.updateTaskStausToAwaitingFixer(taskId, sparePartId, quantity);
+    return await this.taskService.updateTaskStausToAwaitingFixer(taskId);
   }
 
   @ApiBearerAuth()
