@@ -42,10 +42,6 @@ export enum TaskStatus {
    */
   ASSIGNED = 'ASSIGNED',
   /**
-   * ASSIGNED: khi đã gán fixer thì không thể update nội dung task, chỉ có thể update trạng thái task
-   */
-  PENDING_SPARE_PART = 'PENDING_SPARE_PART',
-  /**
    *
    */
   IN_PROGRESS = 'IN_PROGRESS',

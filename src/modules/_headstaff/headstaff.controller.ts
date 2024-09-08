@@ -39,7 +39,7 @@ export class HeadStaffDashboardController {
             this.requestService.customHeadStaffGetAllRequestDashboard(user.id, RequestStatus.IN_PROGRESS),
             this.taskService.customGetAllTaskDashboard(TaskStatus.AWAITING_FIXER),
             this.taskService.customGetAllTaskDashboard(TaskStatus.ASSIGNED),
-            this.taskService.customGetAllTaskDashboard(TaskStatus.PENDING_SPARE_PART),
+            this.taskService.customGetAllTaskDashboard(TaskStatus.AWAITING_SPARE_SPART),
             this.taskService.customGetAllTaskDashboard(TaskStatus.IN_PROGRESS),
             this.taskService.customGetAllTaskDashboard(TaskStatus.HEAD_STAFF_CONFIRM),
         ]).then(results => {

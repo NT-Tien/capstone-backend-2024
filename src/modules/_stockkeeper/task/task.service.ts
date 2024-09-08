@@ -92,7 +92,7 @@ export class TaskService extends BaseService<TaskEntity> {
     if (!task) {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
     }
-    task.status = TaskStatus.PENDING_SPARE_PART;
+    task.status = TaskStatus.AWAITING_SPARE_SPART;
     task.stockkeeperNote = payload.stockkeeperNote;
     task.stockkeeperNoteId = userId;
     return await this.taskRepository.save(task);
