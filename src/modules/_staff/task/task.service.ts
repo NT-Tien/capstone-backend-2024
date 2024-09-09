@@ -63,6 +63,10 @@ export class TaskService extends BaseService<TaskEntity> {
       .leftJoinAndSelect('task.fixer', 'fixer')
       .leftJoinAndSelect('task.issues', 'issues')
       .leftJoinAndSelect('issues.issueSpareParts', 'issueSpareParts')
+      .leftJoinAndSelect('task.request', 'request')
+      .leftJoinAndSelect("request.tasks", "tasks") // so that staff can find the "send to warranty" request
+      .leftJoinAndSelect("tasks.issues", 'taskIssues')
+      .leftJoinAndSelect("taskIssues.typeError", 'taskIssueTypeError')
       .leftJoinAndSelect('issues.typeError', 'typeError')
       .leftJoinAndSelect('issueSpareParts.sparePart', 'sparePart')
       .where('task.id = :taskId', { taskId })
