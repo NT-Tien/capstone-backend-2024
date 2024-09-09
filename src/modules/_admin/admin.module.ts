@@ -7,6 +7,7 @@ import { AreaModule } from './area/area.module';
 import { TypeErrorHeadModule } from './type-error-head/type-error-head.module';
 import { TaskModule } from './task/task.module';
 import { RequestModule } from './request/request.module';
+import { RequestAddDeviceModule } from './request-add-device/request-add-device.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { RequestModule } from './request/request.module';
     TypeErrorHeadModule,
     TaskModule,
     RequestModule,
+    RequestAddDeviceModule,
   ],
 })
 export class AdminModule {}

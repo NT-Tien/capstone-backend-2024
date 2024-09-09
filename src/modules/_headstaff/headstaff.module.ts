@@ -6,6 +6,7 @@ import { DeviceModule } from './device/device.module';
 import { IssueModule } from './issue/issue.module';
 import { HeadStaffDashboardController } from './headstaff.controller';
 import { TypeErrorModule } from './type-error/type-error.module';
+import { RequestAddDeviceModule } from './request-add-device/request-add-device.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { TypeErrorModule } from './type-error/type-error.module';
     DeviceModule,
     IssueModule,
     TypeErrorModule,
+    RequestAddDeviceModule,
   ],
   controllers: [HeadStaffDashboardController],  
 })
