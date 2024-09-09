@@ -55,6 +55,18 @@ export class TaskController {
     return this.taskService.confirmReceipt(taskId, user.id);
   }
 
+    // confirm receipt receive spare parts
+    @ApiBearerAuth()
+    @ApiResponse({
+      type: TaskResponseDto.TaskUpdate,
+      status: 200,
+      description: 'Confirm receipt spare parts return',
+    })
+    @Post('return-task-sparepart/:taskId')
+    receiveSparePartsReturn(@Param('taskId') taskId: UUID, @Headers('user') user: any) {
+      return this.taskService.confirmReceipt(taskId, user.id);
+    }
+
   // pending spare part
   @ApiBearerAuth()
   @ApiResponse({

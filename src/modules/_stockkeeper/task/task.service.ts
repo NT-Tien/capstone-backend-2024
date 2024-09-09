@@ -5,6 +5,7 @@ import { TaskEntity, TaskStatus } from 'src/entities/task.entity';
 import { Repository } from 'typeorm';
 import { TaskRequestDto } from './dto/request.dto';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
+import { IssueStatus } from 'src/entities/issue.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -63,20 +64,68 @@ export class TaskService extends BaseService<TaskEntity> {
     }
 
     // decrease spare part quantity in db
-    for (let issue of task.issues) {
-      for (let issueSparePart of issue.issueSpareParts) {
-        let sparePart = await this.sparePartRepository.findOne({
-          where: { id: issueSparePart.sparePart.id },
-        });
-        if (!sparePart) {
-          throw new HttpException('Spare part not found', HttpStatus.NOT_FOUND);
-        }
-        sparePart.quantity -= issueSparePart.quantity;
-        await this.sparePartRepository.save(sparePart);
-      }
-    }
+    // for (let issue of task.issues) {
+    //   for (let issueSparePart of issue.issueSpareParts) {
+    //     let sparePart = await this.sparePartRepository.findOne({
+    //       where: { id: issueSparePart.sparePart.id },
+    //     });
+    //     if (!sparePart) {
+    //       throw new HttpException('Spare part not found', HttpStatus.NOT_FOUND);
+    //     }
+    //     sparePart.quantity -= issueSparePart.quantity;
+    //     await this.sparePartRepository.save(sparePart);
+    //   }
+    // }
     task.confirmReceipt = true;
     task.confirmReceiptBY = userId;
+    return await this.taskRepository.save(task);
+  }
+
+  async confirmReceiptReturn(taskId: string, userId: string) {
+    let task = await this.taskRepository.findOne({
+      where: { id: taskId.trim() },
+      relations: [
+        'fixer',
+        'issues',
+        'issues.issueSpareParts',
+        'issues.issueSpareParts.sparePart',
+      ],
+    });
+
+    if (!task) {
+      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+    }
+
+    // check spare part
+    for (let issue of task.issues) {
+      if (issue.status === IssueStatus.FAILED) {
+        for (let issueSparePart of issue.issueSpareParts) {
+          let sparePart = await this.sparePartRepository.findOne({
+            where: { id: issueSparePart.sparePart.id },
+          });
+          if (!sparePart) {
+            throw new HttpException('Spare part not found', HttpStatus.NOT_FOUND);
+          }
+        }
+      }
+    }
+    // return spare part quantity in db
+    for (let issue of task.issues) {
+      if (issue.status === IssueStatus.FAILED) {
+        for (let issueSparePart of issue.issueSpareParts) {
+          let sparePart = await this.sparePartRepository.findOne({
+            where: { id: issueSparePart.sparePart.id },
+          });
+          if (!sparePart) {
+            throw new HttpException('Spare part not found', HttpStatus.NOT_FOUND);
+          }
+          sparePart.quantity += issueSparePart.quantity;
+          await this.sparePartRepository.save(sparePart);
+        }
+      }
+    }
+    task.confirm_recieve_return_spare_part = userId;
+    task.status = TaskStatus.CLOSE_TASK_REQUEST_CANCELLED;
     return await this.taskRepository.save(task);
   }
 

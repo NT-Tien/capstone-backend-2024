@@ -90,6 +90,20 @@ export class TaskController {
     return this.taskService.confirmCompletion(user.id, taskId, body);
   }
 
+  @ApiBearerAuth()
+  @ApiResponse({
+    type: TaskResponseDto.TaskUpdate,
+    status: 200,
+    description: 'Confirm done',
+  })
+  @Post('request-task-cancel/:taskId')
+  requestTaskCancel(
+    @Param('taskId') taskId: UUID,
+    @Headers('user') user: any,
+  ) {
+    return this.taskService.staffRequestCanncelTask(user.id, taskId);
+  }
+
   // update issue status
   @ApiBearerAuth()
   @ApiResponse({

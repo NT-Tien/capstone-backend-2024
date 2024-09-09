@@ -163,6 +163,21 @@ export class TaskService extends BaseService<TaskEntity> {
     return await this.taskRepository.save({ ...task, ...data });
   }
 
+  async staffRequestCanncelTask(
+    userId: string,
+    taskId: string,
+  ) {
+    let task = await this.taskRepository.findOne({
+      where: { id: taskId },
+      relations: ['fixer'],
+    });
+    if (!task || task.fixer.id !== userId) {
+      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+    }
+    task.status = TaskStatus.STAFF_REQUEST_CANCELLED;
+    return await this.taskRepository.save(task);
+  }
+
   // send
 
   // async getTaskByStatus(userId: string, status: string): Promise<TaskEntity[]> {

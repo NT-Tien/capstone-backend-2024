@@ -57,6 +57,18 @@ export enum TaskStatus {
    *
    */
   CANCELLED = 'CANCELLED',
+  /**
+  *
+  */
+  STAFF_REQUEST_CANCELLED = 'STAFF_REQUEST_CANCELLED',
+  /**
+  *
+  */
+  HEAD_STAFF_CONFIRM_STAFF_REQUEST_CANCELLED = 'HEAD_STAFF_CONFIRM_STAFF_REQUEST_CANCELLED',
+  /**
+  * when all spare part in issue have status FAILED is returned
+  */
+  CLOSE_TASK_REQUEST_CANCELLED = 'CLOSE_TASK_REQUEST_CANCELLED',
 }
 
 @Entity({
@@ -166,7 +178,7 @@ export class TaskEntity extends BaseEntity {
     type: 'boolean',
     default: false,
   })
-  confirmReceipt?: boolean; // not use anymore
+  confirmReceipt?: boolean;
 
   @Column({
     name: 'confirm_receipt_by',
@@ -182,6 +194,13 @@ export class TaskEntity extends BaseEntity {
   })
   confirmRecieveBy?: string; // store account id of stockkeeper who confirm get renew device
 
+  @Column({
+    name: 'confirm_recieve_return_spare_part',
+    type: 'text',
+    nullable: true,
+  })
+  confirm_recieve_return_spare_part?: string; // store account id of stockkeeper who confirm get renew device
+  
   @Column({
     name: 'stockkeeper_note',
     type: 'text',
