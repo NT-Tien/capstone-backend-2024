@@ -46,18 +46,20 @@ export class HeadStaffDashboardController {
             this.taskService.customGetAllTaskDashboard(TaskStatus.IN_PROGRESS),
             this.taskService.customGetAllTaskDashboard(TaskStatus.HEAD_STAFF_CONFIRM),
         ]).then(results => {
-            const pendingRequests = results[0].length;
-            const checkedRequests = results[1].length;
-            const approvedRequests = results[2].length;
-            const inProgressRequests = results[3].length;
-            const closedRequests = results[4].length;
-            const headConfirmRequests = results[5].length;
-            const rejectedRequests = results[6].length;
-            const awaitingFixerTasks = results[7].length;
-            const assignedTasks = results[8].length;
-            const awaitingSparePartTasks = results[9].length;
-            const inProgressTasks = results[10].length;
-            const headStaffConfirmTasks = results[11].length;
+            console.log(...results);
+            
+            const pendingRequests = results[0][1];
+            const checkedRequests = results[1][1];
+            const approvedRequests = results[2][1]
+            const inProgressRequests = results[3][1]
+            const closedRequests = results[4][1]
+            const headConfirmRequests = results[5][1]
+            const rejectedRequests = results[6][1]
+            const awaitingFixerTasks = results[7][1]
+            const assignedTasks = results[8][1]
+            const awaitingSparePartTasks = results[9][1]
+            const inProgressTasks = results[10][1]
+            const headStaffConfirmTasks = results[11][1]
             return {
                 pendingRequests,
                 checkedRequests,
