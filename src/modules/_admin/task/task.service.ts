@@ -85,4 +85,19 @@ export class TaskService extends BaseService<TaskEntity> {
       ],
     });
   }
+
+  async getAllInfoTaskByAreaId(areaId: string) {
+    return await this.taskRepository.find({
+      where: {
+        device: {
+          area: {
+            id: areaId,
+          },
+        },
+      },
+      relations: [
+        'request',
+      ],
+    });
+  }
 }

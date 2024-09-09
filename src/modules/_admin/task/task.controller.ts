@@ -46,6 +46,19 @@ export class TaskController {
     return this.taskService.customGetAllTask(page, limit, status, time);
   }
 
+  @ApiBearerAuth()
+  @ApiResponse({
+    type: TaskResponseDto.TaskGetAll,
+    status: 200,
+    description: 'Get all Tasks',
+  })
+  @Get('get-all-by-area-id/:areaId')
+  getAllTaskInfoByAreaId(
+    @Param('areaId') areaID: string
+  ) {
+    return this.taskService.getAllInfoTaskByAreaId(areaID);
+  }
+
   // @ApiResponse({
   //   type: TaskResponseDto.TaskGetAll,
   //   status: 200,

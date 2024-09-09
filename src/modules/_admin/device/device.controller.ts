@@ -32,6 +32,14 @@ export class DeviceController {
     return await this.deviceService.getAllWithRelations();
   }
 
+  @ApiBearerAuth()
+  @Get('get-all-by-area-id/:areaId')
+  getAllTaskInfoByAreaId(
+    @Param('areaId') areaID: string
+  ) {
+    return this.deviceService.getAllInfoDeviceByAreaId(areaID);
+  }
+
   // @ApiResponse({
   //   type: DeviceResponseDto.DeviceGetAll,
   //   status: 200,

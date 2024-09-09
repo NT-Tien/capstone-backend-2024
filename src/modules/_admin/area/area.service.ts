@@ -19,4 +19,5 @@ export class AreaService extends BaseService<AreaEntity> {
       relations: ['devices'],
     });
   }
+
 }

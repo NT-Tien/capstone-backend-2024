@@ -46,8 +46,6 @@ export class HeadStaffDashboardController {
             this.taskService.customGetAllTaskDashboard(TaskStatus.IN_PROGRESS),
             this.taskService.customGetAllTaskDashboard(TaskStatus.HEAD_STAFF_CONFIRM),
         ]).then(results => {
-            console.log(...results);
-            
             const pendingRequests = results[0][1];
             const checkedRequests = results[1][1];
             const approvedRequests = results[2][1]
