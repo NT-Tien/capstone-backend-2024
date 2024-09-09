@@ -151,6 +151,16 @@ export class TaskService extends BaseService<TaskEntity> {
         }
       }
     }
+    // decrease spare part quantity
+    for (let issue of issues) {
+      for (let issueSparePart of issue.issueSpareParts) {
+        const sparePart = await this.sparePartRepository.findOne({
+          where: { id: issueSparePart.sparePart.id },
+        });
+        sparePart.quantity -= issueSparePart.quantity;
+        await this.sparePartRepository.save(sparePart);
+      }
+    }
     task.status = TaskStatus.AWAITING_FIXER;
     return await this.taskRepository.save(task);
   }
