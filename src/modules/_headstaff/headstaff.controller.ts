@@ -37,6 +37,9 @@ export class HeadStaffDashboardController {
             this.requestService.customHeadStaffGetAllRequestDashboard(user.id, RequestStatus.CHECKED),
             this.requestService.customHeadStaffGetAllRequestDashboard(user.id, RequestStatus.APPROVED),
             this.requestService.customHeadStaffGetAllRequestDashboard(user.id, RequestStatus.IN_PROGRESS),
+            this.requestService.customHeadStaffGetAllRequestDashboard(user.id, RequestStatus.CLOSED),
+            this.requestService.customHeadStaffGetAllRequestDashboard(user.id, RequestStatus.HEAD_CONFIRM),
+            this.requestService.customHeadStaffGetAllRequestDashboard(user.id, RequestStatus.REJECTED),
             this.taskService.customGetAllTaskDashboard(TaskStatus.AWAITING_FIXER),
             this.taskService.customGetAllTaskDashboard(TaskStatus.ASSIGNED),
             this.taskService.customGetAllTaskDashboard(TaskStatus.AWAITING_SPARE_SPART),
@@ -47,23 +50,29 @@ export class HeadStaffDashboardController {
             const checkedRequests = results[1].length;
             const approvedRequests = results[2].length;
             const inProgressRequests = results[3].length;
-            const awaitingFixerTasks = results[4].length;
-            const assignedTasks = results[5].length;
-            const pendingSparePartTasks = results[6].length;
-            const inProgressTasks = results[7].length;
-            const headStaffConfirmTasks = results[8].length;
-
+            const closedRequests = results[4].length;
+            const headConfirmRequests = results[5].length;
+            const rejectedRequests = results[6].length;
+            const awaitingFixerTasks = results[7].length;
+            const assignedTasks = results[8].length;
+            const awaitingSparePartTasks = results[9].length;
+            const inProgressTasks = results[10].length;
+            const headStaffConfirmTasks = results[11].length;
             return {
                 pendingRequests,
                 checkedRequests,
                 approvedRequests,
                 inProgressRequests,
+                closedRequests,
+                headConfirmRequests,
+                rejectedRequests,
                 awaitingFixerTasks,
                 assignedTasks,
-                pendingSparePartTasks,
+                awaitingSparePartTasks,
                 inProgressTasks,
-                headStaffConfirmTasks
+                headStaffConfirmTasks,
             };
+
         });
     }
 
