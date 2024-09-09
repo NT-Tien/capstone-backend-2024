@@ -33,6 +33,22 @@ export class TaskService extends BaseService<TaskEntity> {
     });
   }
 
+  async customGetAllTaskReturn(
+    page: number,
+    limit: number,
+    status: TaskStatus,
+  ): Promise<[TaskEntity[], number]> {
+    return this.taskRepository.findAndCount({
+      where: {
+        status: status ? status : undefined,
+      },
+      relations: ['fixer', 'device.machineModel'],
+      order: { createdAt: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+  }
+
   async getOneTask(id: string) {
     return await this.taskRepository.findOne({
       where: { id },
@@ -125,7 +141,7 @@ export class TaskService extends BaseService<TaskEntity> {
       }
     }
     task.confirm_recieve_return_spare_part = userId;
-    task.status = TaskStatus.CLOSE_TASK_REQUEST_CANCELLED;
+    task.status = TaskStatus.CONFRIM_RECEIPT_RETURN_SPARE_PART;
     return await this.taskRepository.save(task);
   }
 

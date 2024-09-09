@@ -14,6 +14,7 @@ import { StockkeeperGuard } from 'src/modules/auth/guards/stockkeeper.guard';
 import { TaskResponseDto } from './dto/response.dto';
 import { TaskService } from './task.service';
 import { TaskRequestDto } from './dto/request.dto';
+import { TaskStatus } from 'src/entities/task.entity';
 
 @ApiTags('stockkeeper: task')
 @UseGuards(StockkeeperGuard)
@@ -30,6 +31,16 @@ export class TaskController {
   @Get(':page/:limit')
   getAll(@Param('page') page: number, @Param('limit') limit: number) {
     return this.taskService.customGetAllTask(page, limit);
+  }
+
+  @ApiBearerAuth()
+  @Get('get-task-return/:page/:limit/:status')
+  getAllTaskForReturn(
+    @Param('page') page: number,
+    @Param('limit') limit: number,
+    @Param('status') status: TaskStatus,
+  ) {
+    return this.taskService.customGetAllTaskReturn(page, limit, status);
   }
 
   @ApiResponse({

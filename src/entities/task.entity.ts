@@ -68,7 +68,7 @@ export enum TaskStatus {
   /**
   * when all spare part in issue have status FAILED is returned
   */
-  CLOSE_TASK_REQUEST_CANCELLED = 'CLOSE_TASK_REQUEST_CANCELLED',
+  CONFRIM_RECEIPT_RETURN_SPARE_PART = 'CONFRIM_RECEIPT_RETURN_SPARE_PART',
 }
 
 @Entity({
