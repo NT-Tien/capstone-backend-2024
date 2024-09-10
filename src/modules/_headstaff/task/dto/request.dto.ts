@@ -42,10 +42,10 @@ export namespace TaskRequestDto {
     @Expose()
     fixerDate: Date;
 
-    @ApiProperty()
-    @IsOptional()
-    @Expose()
-    fixer: string; // account id
+    // @ApiProperty()
+    // @IsOptional()
+    // @Expose()
+    // fixer: string; // account id
   }
 
   export class TaskUpdateDto extends BaseDTO {

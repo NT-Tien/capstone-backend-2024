@@ -1,0 +1,616 @@
+insert into "ACCOUNT" (id, "createdAt", "updatedAt", "deletedAt", "Username", "Phone", "Password", "Role")
+values ('bbbc7563-ded8-4ddd-b4eb-2af38214054f', '2024-09-04 17:13:45.373934', '2024-09-04 17:13:45.373934', null,
+        'stockkeeper', '+84919127526', '$2b$10$1tyd7vqyIm2S3oitC/JU3eXJIDyMCjx3MTC6zsADyl8hSsOFPj6Nu', 'stockkeeper');
+insert into "ACCOUNT" (id, "createdAt", "updatedAt", "deletedAt", "Username", "Phone", "Password", "Role")
+values ('eed2c654-4057-40ee-8f92-0dbfb4aaf773', '2024-09-04 17:13:35.338808', '2024-09-04 17:13:35.338808', null,
+        'staff-1', '+84919127526', '$2b$10$mT71WjPpQrZkoVeGKMMAl.vL4x5tAAP9Fioo/ie2AeCw3SJ5JlOde', 'staff');
+insert into "ACCOUNT" (id, "createdAt", "updatedAt", "deletedAt", "Username", "Phone", "Password", "Role")
+values ('069f48c3-61f5-4beb-9cc8-4356099c5b0c', '2024-09-04 17:13:28.230483', '2024-09-04 17:13:28.230483', null,
+        'headstaff', '+84919127526', '$2b$10$kDCjot0jiQm9ZPeVMnuYYOEJRp0qUUEpqzSZsh1LJh2CUogjD0BGq', 'headstaff');
+insert into "ACCOUNT" (id, "createdAt", "updatedAt", "deletedAt", "Username", "Phone", "Password", "Role")
+values ('4d9fcfd7-2c60-4972-b90d-6cfd5a4f23aa', '2024-09-04 17:13:37.765789', '2024-09-04 17:13:37.765789', null,
+        'staff-2', '+84919127526', '$2b$10$9s1x2hk9rflpMYt8lY/O0OYQG7ylI38mctbUhpGS31Po0csb61VKu', 'staff');
+insert into "ACCOUNT" (id, "createdAt", "updatedAt", "deletedAt", "Username", "Phone", "Password", "Role")
+values ('88b82ca9-c641-41f4-bf52-491b5f33eb5c', '2024-09-04 17:13:24.943564', '2024-09-04 17:13:24.943564', null,
+        'admin', '+84919127526', '$2b$10$MlqJHJbTO/I9n6JYwwLgN.MRQhLYsRNVZ9FezelA2vgjI8tkB2XjS', 'admin');
+insert into "ACCOUNT" (id, "createdAt", "updatedAt", "deletedAt", "Username", "Phone", "Password", "Role")
+values ('c349e75c-0d1c-4652-81f4-89d40b12fff4', '2024-09-04 17:13:40.035985', '2024-09-04 17:13:40.035985', null,
+        'staff-3', '+84919127526', '$2b$10$JvzeyEF7aw2G5ssRxQU/sO3F/ikWwOL8v0l0vKK5B/DaCCNb3n6U2', 'staff');
+
+insert into public."MACHINE_MODEL" (id, "createdAt", "updatedAt", "deletedAt", name, description, manufacturer,
+                                    year_of_production, date_of_receipt, warranty_term)
+values ('ecd74e3c-e4c0-4f3a-83cb-cbaf33a3f440', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy may Siruba', 'Máy khâu đang được sử dụng bởi Sương Mai, được nhập khẩu từ Nhật Bản',
+        'Nhà máy Siruba Đài Loan', 2020, '2024-07-01', '2025-07-01');
+insert into public."MACHINE_MODEL" (id, "createdAt", "updatedAt", "deletedAt", name, description, manufacturer,
+                                    year_of_production, date_of_receipt, warranty_term)
+values ('78141e69-4b62-4c41-be74-11171a6dee68', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy may Juki', 'Máy khâu đang được sử dụng bởi Ánh Linh, được nhập khẩu từ Trung Quốc', 'Nhà máy Juki Tokyo',
+        2021, '2024-07-02', '2025-07-02');
+insert into public."MACHINE_MODEL" (id, "createdAt", "updatedAt", "deletedAt", name, description, manufacturer,
+                                    year_of_production, date_of_receipt, warranty_term)
+values ('dbd37dc4-3d79-4426-b595-d76b8de5f9f3', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy may Brother', 'Máy khâu đang được sử dụng bởi Joe, được nhập khẩu từ Trung Quốc', 'Nhà máy Brother, Tokyo',
+        2022, '2024-07-03', '2025-07-03');
+insert into public."MACHINE_MODEL" (id, "createdAt", "updatedAt", "deletedAt", name, description, manufacturer,
+                                    year_of_production, date_of_receipt, warranty_term)
+values ('007852af-2b11-4c0f-a631-e1c1e0f892ae', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy may Hikari', 'Máy khâu đang được sử dụng bởi Jack, được nhập khẩu từ Thái Lan', 'Nhà máy Hikari, Đài Loan',
+        2023, '2024-07-04', '2025-07-04');
+insert into public."MACHINE_MODEL" (id, "createdAt", "updatedAt", "deletedAt", name, description, manufacturer,
+                                    year_of_production, date_of_receipt, warranty_term)
+values ('5f63652d-bc0b-4a68-b0fb-2c2e31dca4ab', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy khâu 5', 'Máy khâu đang được sử dụng bởi Anna, được nhập khẩu từ Mỹ', 'Nhà máy Zoje, Trung Quốc', 2019,
+        '2024-07-05', '2025-07-05');
+insert into public."MACHINE_MODEL" (id, "createdAt", "updatedAt", "deletedAt", name, description, manufacturer,
+                                    year_of_production, date_of_receipt, warranty_term)
+values ('a3bf195f-1e90-43e6-9d74-ba34bf6d6f8a', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy may Zoje', 'Máy may đang được sử dụng bởi Tim, được nhập khẩu từ Mỹ', 'Nhà máy Butterfly, Bangladesh 1',
+        2020, '2024-07-06', '2025-07-06');
+insert into public."MACHINE_MODEL" (id, "createdAt", "updatedAt", "deletedAt", name, description, manufacturer,
+                                    year_of_production, date_of_receipt, warranty_term)
+values ('4c75dce2-806e-4c94-8733-6454a8e56597', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy may Butterfly', 'Máy may đang được sử dụng bởi Jim, được nhập khẩu từ Nhật Bản',
+        'Nhà máy Jack, Trung Quốc 2', 2021, '2024-07-07', '2025-07-07');
+insert into public."MACHINE_MODEL" (id, "createdAt", "updatedAt", "deletedAt", name, description, manufacturer,
+                                    year_of_production, date_of_receipt, warranty_term)
+values ('2fe7e6f8-9d8d-4116-82f1-f6812f7e3bed', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy may Jack', 'Máy may đang được sử dụng bởi Lan, được nhập khẩu từ thái Lan', ' Nhà máy Bangkok', 2022,
+        '2024-07-08', '2025-07-08');
+insert into public."MACHINE_MODEL" (id, "createdAt", "updatedAt", "deletedAt", name, description, manufacturer,
+                                    year_of_production, date_of_receipt, warranty_term)
+values ('ea43b9d2-8358-44b0-b76a-3b2d6f1e1c82', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy may Joe', 'Máy may đang được sử dụng bởi Ngọc, được nhập khẩu từ  Nhật Bản', 'Nhà máy Tokyo', 2023,
+        '2024-07-09', '2025-07-09');
+insert into public."MACHINE_MODEL" (id, "createdAt", "updatedAt", "deletedAt", name, description, manufacturer,
+                                    year_of_production, date_of_receipt, warranty_term)
+values ('345452e6-2adc-40b3-b3ed-2b43c7e85f52', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy may Panasonic', 'Máy may đang được sử dụng bởi Ánh, được nhập khẩu từ  Mỹ', 'Nhà máy Carlifonia', 2019,
+        '2024-07-10', '2025-07-10');
+
+insert into public."AREA" ("id", "createdAt", "updatedAt", "deletedAt", "Name", "Instruction", "width", height)
+values ('8f144361-d85b-4a83-a12a-43c457263f76', '2024-09-04 16:58:56.799796', '2024-09-04 16:58:56.799796', null,
+        'Tòa A322.L', 'Keep area clean and organized.', 50, 30);
+insert into public."AREA" ("id", "createdAt", "updatedAt", "deletedAt", "Name", "Instruction", "width", height)
+values ('3e2f8a1d-6c7f-4b03-8f8b-7f3c2d1f5a3e', '2024-09-04 16:58:56.860745', '2024-09-04 16:58:56.860745', null,
+        'Tòa A322.R', 'Use safety equipment when operating cutters.', 80, 40);
+insert into public."AREA" ("id", "createdAt", "updatedAt", "deletedAt", "Name", "Instruction", "width", height)
+values ('a7b3c6d0-2f4e-4d9a-93f2-0e6a7c5b1d2f', '2024-09-04 16:58:56.898735', '2024-09-04 16:58:56.898735', null,
+        'Tòa B432.P', 'Ensure proper labeling and sealing.', 60, 35);
+insert into public."AREA" ("id", "createdAt", "updatedAt", "deletedAt", "Name", "Instruction", "width", height)
+values ('1c9f2e7a-5b3d-4c6f-8a7d-3b4f68c1e25a', '2024-09-04 16:58:56.952647', '2024-09-04 16:58:56.952647', null,
+        'Tòa S812.O', 'Store materials in designated locations.', 100, 50);
+insert into public."AREA" ("id", "createdAt", "updatedAt", "deletedAt", "Name", "Instruction", "width", height)
+values ('e3d1f4b2-8c6a-4a1f-a5c3-7d2b5f6c3a89', '2024-09-04 16:58:56.996744', '2024-09-04 16:58:56.996744', null,
+        'Tòa I121.L', 'Thoroughly inspect finished products.', 40, 25);
+
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('209ba3be-610f-47ae-b982-43c7c3d44e52', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Phấn may', 10, 'image1.png', '2025-07-15', 'ecd74e3c-e4c0-4f3a-83cb-cbaf33a3f440');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('96405aa2-9ca0-4c7f-9e71-670e571c3e3f', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Teflon chân vịt', 5, 'image2.png', '2025-08-15', '78141e69-4b62-4c41-be74-11171a6dee68');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('b5ed07a5-d0cb-497e-9910-e6de94688ad0', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Băng keo các loại', 8, 'image3.png', '2025-09-15', 'dbd37dc4-3d79-4426-b595-d76b8de5f9f3');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('968a9621-89f2-4576-b565-01a8705b7fe4', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Kéo ngành may', 12, 'image4.png', '2025-10-15', '007852af-2b11-4c0f-a631-e1c1e0f892ae');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('a863238a-489e-47b6-8801-81e8c6033b14', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Búa các loại', 15, 'image5.png', '2025-11-15', '5f63652d-bc0b-4a68-b0fb-2c2e31dca4ab');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('b0a485ee-da1a-4456-aae2-fad249345ad5', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Nhựa ngành may', 20, 'image6.png', '2025-12-15', 'a3bf195f-1e90-43e6-9d74-ba34bf6d6f8a');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('090d3742-41be-4129-b0fc-b8c3b2ba6b0d', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Sticker dán lỗi', 25, 'image7.png', '2026-01-15', '4c75dce2-806e-4c94-8733-6454a8e56597');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('f2e3b919-bfd1-4b82-a150-5e04898f0b4d', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Vật tư treo thẻ bài', 30, 'image8.png', '2026-02-15', '2fe7e6f8-9d8d-4116-82f1-f6812f7e3bed');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('38e6983d-2c2d-4b2d-a685-26685da98969', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Bộ cự ly kansai w561 6.4', 10, 'image9.png', '2025-07-15', 'ea43b9d2-8358-44b0-b76a-3b2d6f1e1c82');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('f5a5a7c6-dc54-474a-a5b9-9900ed6dde63', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Băng keo các loại', 8, 'image11.png', '2025-09-15', '345452e6-2adc-40b3-b3ed-2b43c7e85f52');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('a5da0958-05f8-4b8b-9e81-5a553deff518', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Kéo ngành may', 12, 'image12.png', '2025-10-15', 'ecd74e3c-e4c0-4f3a-83cb-cbaf33a3f440');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('471f6951-21f1-4f80-a6af-d48aa936cac2', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Búa các loại', 15, 'image13.png', '2025-11-15', '78141e69-4b62-4c41-be74-11171a6dee68');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('2053b26f-9750-4134-b979-7a7beb4a2512', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Nhựa ngành may', 20, 'image14.png', '2025-12-15', 'dbd37dc4-3d79-4426-b595-d76b8de5f9f3');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('7df463d2-d3da-4c5a-9097-24867db686fe', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Sticker dán lỗi', 25, 'image15.png', '2026-01-15', '007852af-2b11-4c0f-a631-e1c1e0f892ae');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('79d6db3c-e5e0-42de-bbbb-f9b06182a41f', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Vật tư treo thẻ bài', 30, 'image16.png', '2026-02-15', '5f63652d-bc0b-4a68-b0fb-2c2e31dca4ab');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('d14bea2e-18db-4749-af20-8a91e760c00a', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Phấn may', 10, 'image17.png', '2025-07-15', 'a3bf195f-1e90-43e6-9d74-ba34bf6d6f8a');
+
+insert into public."TYPE_ERROR" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                 "machineModelId")
+values ('0e67ce7e-4c58-4403-a740-d1e4cf3f87cc', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Lỗi 1: Gãy kim', 120, 'Kim may bị gãy do áp lực hoặc chất liệu không phù hợp',
+        'ecd74e3c-e4c0-4f3a-83cb-cbaf33a3f440');
+insert into public."TYPE_ERROR" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                 "machineModelId")
+values ('71abd5eb-cf72-4f2d-b4bb-f61f4dca7d7e', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Lỗi 2: Đứt chỉ', 180, 'Chỉ may bị đứt do độ căng không đúng hoặc chỉ kém chất lượng',
+        '78141e69-4b62-4c41-be74-11171a6dee68');
+insert into public."TYPE_ERROR" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                 "machineModelId")
+values ('60cc4b3c-bc52-4248-8942-2287b58ed4c4', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Lỗi 3: Động cơ quá nhiệt', 150, 'Động cơ hoạt động liên tục quá lâu dẫn đến quá nhiệt',
+        'dbd37dc4-3d79-4426-b595-d76b8de5f9f3');
+insert into public."TYPE_ERROR" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                 "machineModelId")
+values ('54eb8e03-8e68-4c00-a623-887eb205832b', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Lỗi 4: Vấn đề với hộp suốt', 100, 'Hộp suốt bị kẹt hoặc không lắp đặt đúng cách',
+        '007852af-2b11-4c0f-a631-e1c1e0f892ae');
+insert into public."TYPE_ERROR" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                 "machineModelId")
+values ('0feb403f-d841-4904-8513-340f099a8c35', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Lỗi 5: Vấn đề về căng chỉ', 200, 'Độ căng chỉ không chính xác gây ra các vấn đề may',
+        '5f63652d-bc0b-4a68-b0fb-2c2e31dca4ab');
+insert into public."TYPE_ERROR" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                 "machineModelId")
+values ('4f4cdf81-f648-4cd0-a3a9-f5413348b412', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Lỗi 6: Bàn đạp chân không hoạt động', 90, 'Bàn đạp không phản hồi khi nhấn do lỗi kỹ thuật',
+        'a3bf195f-1e90-43e6-9d74-ba34bf6d6f8a');
+insert into public."TYPE_ERROR" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                 "machineModelId")
+values ('1166b211-0872-44a9-b564-ec20cba76241', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Lỗi 7: Máy không may được', 220, 'Máy không thực hiện quá trình may do sự cố phần cứng hoặc điện',
+        '4c75dce2-806e-4c94-8733-6454a8e56597');
+insert into public."TYPE_ERROR" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                 "machineModelId")
+values ('d41cd8d9-0bd4-4e57-82a8-5afa61ffb77e', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Lỗi 8: Vấn đề với bàn cắt', 130, 'Bàn cắt không hoạt động chính xác, dẫn đến cắt sai',
+        '2fe7e6f8-9d8d-4116-82f1-f6812f7e3bed');
+insert into public."TYPE_ERROR" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                 "machineModelId")
+values ('530d78b4-395a-404d-ab12-3539f2f66ade', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Lỗi 9: Bỏ mũi', 140, 'Máy may bỏ mũi do độ căng hoặc vấn đề với kim', 'ea43b9d2-8358-44b0-b76a-3b2d6f1e1c82');
+insert into public."TYPE_ERROR" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                 "machineModelId")
+values ('847b9be1-59b0-4257-8451-bb9e789e378b', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Lỗi 10: Tiếng ồn lạ', 170, 'Máy phát ra tiếng ồn không bình thường do các bộ phận bị mòn hoặc hư hỏng',
+        '345452e6-2adc-40b3-b3ed-2b43c7e85f52');
+
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('463e8c9b-9e89-47b8-a3ea-c0fe578034a1', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy tự nhiên dừng', 2, 'Máy đột ngột dừng hoạt động', 'ecd74e3c-e4c0-4f3a-83cb-cbaf33a3f440');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('4d543ef1-2ebc-4efa-b877-667e1e6c33c6', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Kim bị gãy', 1, 'Kim máy bị gãy trong quá trình hoạt động', '78141e69-4b62-4c41-be74-11171a6dee68');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('8b759763-12a6-4354-a53f-f1443117d03f', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Đèn power nhấp nháy', 3, 'Đèn báo nguồn nhấp nháy liên tục', 'dbd37dc4-3d79-4426-b595-d76b8de5f9f3');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('eff15b11-f658-48bb-b2e9-a7be83906987', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy bật không lên', 2, 'Máy không khởi động khi nhấn nút', '007852af-2b11-4c0f-a631-e1c1e0f892ae');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('704e49b4-641b-4e88-8d04-a936756966d0', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Điện không vào', 1, 'Không có điện vào máy', '5f63652d-bc0b-4a68-b0fb-2c2e31dca4ab');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('5dc25ab5-e7b1-42c6-b74e-85b422cb0976', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Đèn sáng nhưng kim không chạy', 2, 'Đèn báo sáng nhưng máy không hoạt động',
+        'a3bf195f-1e90-43e6-9d74-ba34bf6d6f8a');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('11d01d2c-5555-46d6-b7ed-8c69c4f115c7', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy tự nhiên dừng', 2, 'Máy đột ngột dừng hoạt động', '4c75dce2-806e-4c94-8733-6454a8e56597');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('8206b6aa-9a4c-4561-a5c9-d393b0423684', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Kim bị gãy', 1, 'Kim máy bị gãy trong quá trình hoạt động', '2fe7e6f8-9d8d-4116-82f1-f6812f7e3bed');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('afa25c43-0c54-42e7-a6cf-e08994c9614a', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Đèn power nhấp nháy', 3, 'Đèn báo nguồn nhấp nháy liên tục', 'ea43b9d2-8358-44b0-b76a-3b2d6f1e1c82');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('f3c6e061-6028-455c-a42c-29e53471ae50', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy bật không lên', 2, 'Máy không khởi động khi nhấn nút', '345452e6-2adc-40b3-b3ed-2b43c7e85f52');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('9b2e5ab1-a1dd-42d5-93cd-e5366f0a877f', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Điện không vào', 1, 'Không có điện vào máy', 'ecd74e3c-e4c0-4f3a-83cb-cbaf33a3f440');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('44af4951-2877-4b09-8638-340f6ab8928b', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Đèn sáng nhưng kim không chạy', 2, 'Đèn báo sáng nhưng máy không hoạt động',
+        '78141e69-4b62-4c41-be74-11171a6dee68');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('be0d5a40-f306-4e27-9d58-172fb6490029', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy tự nhiên dừng', 2, 'Máy đột ngột dừng hoạt động', 'dbd37dc4-3d79-4426-b595-d76b8de5f9f3');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('dc200c90-eff3-40f7-b102-bc145489bbbf', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Kim bị gãy', 1, 'Kim máy bị gãy trong quá trình hoạt động', '007852af-2b11-4c0f-a631-e1c1e0f892ae');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('5e67cd3c-9510-4da1-b499-7e8d127d25d6', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Đèn power nhấp nháy', 3, 'Đèn báo nguồn nhấp nháy liên tục', '5f63652d-bc0b-4a68-b0fb-2c2e31dca4ab');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('9c04494a-fee2-445b-b6cc-e01ce21dc4fb', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy bật không lên', 2, 'Máy không khởi động khi nhấn nút', 'a3bf195f-1e90-43e6-9d74-ba34bf6d6f8a');
+
+insert into "ACCOUNT" (id, "createdAt", "updatedAt", "deletedAt", "Username", "Phone", "Password", "Role")
+values ('bbbc7563-ded8-4ddd-b4eb-2af38214054f', '2024-09-04 17:13:45.373934', '2024-09-04 17:13:45.373934', null,
+        'stockkeeper', '+84919127526', '$2b$10$1tyd7vqyIm2S3oitC/JU3eXJIDyMCjx3MTC6zsADyl8hSsOFPj6Nu', 'stockkeeper');
+insert into "ACCOUNT" (id, "createdAt", "updatedAt", "deletedAt", "Username", "Phone", "Password", "Role")
+values ('eed2c654-4057-40ee-8f92-0dbfb4aaf773', '2024-09-04 17:13:35.338808', '2024-09-04 17:13:35.338808', null,
+        'staff-1', '+84919127526', '$2b$10$mT71WjPpQrZkoVeGKMMAl.vL4x5tAAP9Fioo/ie2AeCw3SJ5JlOde', 'staff');
+insert into "ACCOUNT" (id, "createdAt", "updatedAt", "deletedAt", "Username", "Phone", "Password", "Role")
+values ('069f48c3-61f5-4beb-9cc8-4356099c5b0c', '2024-09-04 17:13:28.230483', '2024-09-04 17:13:28.230483', null,
+        'headstaff', '+84919127526', '$2b$10$kDCjot0jiQm9ZPeVMnuYYOEJRp0qUUEpqzSZsh1LJh2CUogjD0BGq', 'headstaff');
+insert into "ACCOUNT" (id, "createdAt", "updatedAt", "deletedAt", "Username", "Phone", "Password", "Role")
+values ('4d9fcfd7-2c60-4972-b90d-6cfd5a4f23aa', '2024-09-04 17:13:37.765789', '2024-09-04 17:13:37.765789', null,
+        'staff-2', '+84919127526', '$2b$10$9s1x2hk9rflpMYt8lY/O0OYQG7ylI38mctbUhpGS31Po0csb61VKu', 'staff');
+insert into "ACCOUNT" (id, "createdAt", "updatedAt", "deletedAt", "Username", "Phone", "Password", "Role")
+values ('88b82ca9-c641-41f4-bf52-491b5f33eb5c', '2024-09-04 17:13:24.943564', '2024-09-04 17:13:24.943564', null,
+        'admin', '+84919127526', '$2b$10$MlqJHJbTO/I9n6JYwwLgN.MRQhLYsRNVZ9FezelA2vgjI8tkB2XjS', 'admin');
+insert into "ACCOUNT" (id, "createdAt", "updatedAt", "deletedAt", "Username", "Phone", "Password", "Role")
+values ('c349e75c-0d1c-4652-81f4-89d40b12fff4', '2024-09-04 17:13:40.035985', '2024-09-04 17:13:40.035985', null,
+        'staff-3', '+84919127526', '$2b$10$JvzeyEF7aw2G5ssRxQU/sO3F/ikWwOL8v0l0vKK5B/DaCCNb3n6U2', 'staff');
+
+insert into public."MACHINE_MODEL" (id, "createdAt", "updatedAt", "deletedAt", name, description, manufacturer,
+                                    year_of_production, date_of_receipt, warranty_term)
+values ('ecd74e3c-e4c0-4f3a-83cb-cbaf33a3f440', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy may Siruba', 'Máy khâu đang được sử dụng bởi Sương Mai, được nhập khẩu từ Nhật Bản',
+        'Nhà máy Siruba Đài Loan', 2020, '2024-07-01', '2025-07-01');
+insert into public."MACHINE_MODEL" (id, "createdAt", "updatedAt", "deletedAt", name, description, manufacturer,
+                                    year_of_production, date_of_receipt, warranty_term)
+values ('78141e69-4b62-4c41-be74-11171a6dee68', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy may Juki', 'Máy khâu đang được sử dụng bởi Ánh Linh, được nhập khẩu từ Trung Quốc', 'Nhà máy Juki Tokyo',
+        2021, '2024-07-02', '2025-07-02');
+insert into public."MACHINE_MODEL" (id, "createdAt", "updatedAt", "deletedAt", name, description, manufacturer,
+                                    year_of_production, date_of_receipt, warranty_term)
+values ('dbd37dc4-3d79-4426-b595-d76b8de5f9f3', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy may Brother', 'Máy khâu đang được sử dụng bởi Joe, được nhập khẩu từ Trung Quốc', 'Nhà máy Brother, Tokyo',
+        2022, '2024-07-03', '2025-07-03');
+insert into public."MACHINE_MODEL" (id, "createdAt", "updatedAt", "deletedAt", name, description, manufacturer,
+                                    year_of_production, date_of_receipt, warranty_term)
+values ('007852af-2b11-4c0f-a631-e1c1e0f892ae', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy may Hikari', 'Máy khâu đang được sử dụng bởi Jack, được nhập khẩu từ Thái Lan', 'Nhà máy Hikari, Đài Loan',
+        2023, '2024-07-04', '2025-07-04');
+insert into public."MACHINE_MODEL" (id, "createdAt", "updatedAt", "deletedAt", name, description, manufacturer,
+                                    year_of_production, date_of_receipt, warranty_term)
+values ('5f63652d-bc0b-4a68-b0fb-2c2e31dca4ab', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy khâu 5', 'Máy khâu đang được sử dụng bởi Anna, được nhập khẩu từ Mỹ', 'Nhà máy Zoje, Trung Quốc', 2019,
+        '2024-07-05', '2025-07-05');
+insert into public."MACHINE_MODEL" (id, "createdAt", "updatedAt", "deletedAt", name, description, manufacturer,
+                                    year_of_production, date_of_receipt, warranty_term)
+values ('a3bf195f-1e90-43e6-9d74-ba34bf6d6f8a', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy may Zoje', 'Máy may đang được sử dụng bởi Tim, được nhập khẩu từ Mỹ', 'Nhà máy Butterfly, Bangladesh 1',
+        2020, '2024-07-06', '2025-07-06');
+insert into public."MACHINE_MODEL" (id, "createdAt", "updatedAt", "deletedAt", name, description, manufacturer,
+                                    year_of_production, date_of_receipt, warranty_term)
+values ('4c75dce2-806e-4c94-8733-6454a8e56597', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy may Butterfly', 'Máy may đang được sử dụng bởi Jim, được nhập khẩu từ Nhật Bản',
+        'Nhà máy Jack, Trung Quốc 2', 2021, '2024-07-07', '2025-07-07');
+insert into public."MACHINE_MODEL" (id, "createdAt", "updatedAt", "deletedAt", name, description, manufacturer,
+                                    year_of_production, date_of_receipt, warranty_term)
+values ('2fe7e6f8-9d8d-4116-82f1-f6812f7e3bed', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy may Jack', 'Máy may đang được sử dụng bởi Lan, được nhập khẩu từ thái Lan', ' Nhà máy Bangkok', 2022,
+        '2024-07-08', '2025-07-08');
+insert into public."MACHINE_MODEL" (id, "createdAt", "updatedAt", "deletedAt", name, description, manufacturer,
+                                    year_of_production, date_of_receipt, warranty_term)
+values ('ea43b9d2-8358-44b0-b76a-3b2d6f1e1c82', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy may Joe', 'Máy may đang được sử dụng bởi Ngọc, được nhập khẩu từ  Nhật Bản', 'Nhà máy Tokyo', 2023,
+        '2024-07-09', '2025-07-09');
+insert into public."MACHINE_MODEL" (id, "createdAt", "updatedAt", "deletedAt", name, description, manufacturer,
+                                    year_of_production, date_of_receipt, warranty_term)
+values ('345452e6-2adc-40b3-b3ed-2b43c7e85f52', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy may Panasonic', 'Máy may đang được sử dụng bởi Ánh, được nhập khẩu từ  Mỹ', 'Nhà máy Carlifonia', 2019,
+        '2024-07-10', '2025-07-10');
+
+insert into public."AREA" ("id", "createdAt", "updatedAt", "deletedAt", "Name", "Instruction", "width", height)
+values ('8f144361-d85b-4a83-a12a-43c457263f76', '2024-09-04 16:58:56.799796', '2024-09-04 16:58:56.799796', null,
+        'Tòa A322.L', 'Keep area clean and organized.', 50, 30);
+insert into public."AREA" ("id", "createdAt", "updatedAt", "deletedAt", "Name", "Instruction", "width", height)
+values ('3e2f8a1d-6c7f-4b03-8f8b-7f3c2d1f5a3e', '2024-09-04 16:58:56.860745', '2024-09-04 16:58:56.860745', null,
+        'Tòa A322.R', 'Use safety equipment when operating cutters.', 80, 40);
+insert into public."AREA" ("id", "createdAt", "updatedAt", "deletedAt", "Name", "Instruction", "width", height)
+values ('a7b3c6d0-2f4e-4d9a-93f2-0e6a7c5b1d2f', '2024-09-04 16:58:56.898735', '2024-09-04 16:58:56.898735', null,
+        'Tòa B432.P', 'Ensure proper labeling and sealing.', 60, 35);
+insert into public."AREA" ("id", "createdAt", "updatedAt", "deletedAt", "Name", "Instruction", "width", height)
+values ('1c9f2e7a-5b3d-4c6f-8a7d-3b4f68c1e25a', '2024-09-04 16:58:56.952647', '2024-09-04 16:58:56.952647', null,
+        'Tòa S812.O', 'Store materials in designated locations.', 100, 50);
+insert into public."AREA" ("id", "createdAt", "updatedAt", "deletedAt", "Name", "Instruction", "width", height)
+values ('e3d1f4b2-8c6a-4a1f-a5c3-7d2b5f6c3a89', '2024-09-04 16:58:56.996744', '2024-09-04 16:58:56.996744', null,
+        'Tòa I121.L', 'Thoroughly inspect finished products.', 40, 25);
+
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('209ba3be-610f-47ae-b982-43c7c3d44e52', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Phấn may', 10, 'image1.png', '2025-07-15', 'ecd74e3c-e4c0-4f3a-83cb-cbaf33a3f440');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('96405aa2-9ca0-4c7f-9e71-670e571c3e3f', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Teflon chân vịt', 5, 'image2.png', '2025-08-15', '78141e69-4b62-4c41-be74-11171a6dee68');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('b5ed07a5-d0cb-497e-9910-e6de94688ad0', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Băng keo các loại', 8, 'image3.png', '2025-09-15', 'dbd37dc4-3d79-4426-b595-d76b8de5f9f3');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('968a9621-89f2-4576-b565-01a8705b7fe4', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Kéo ngành may', 12, 'image4.png', '2025-10-15', '007852af-2b11-4c0f-a631-e1c1e0f892ae');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('a863238a-489e-47b6-8801-81e8c6033b14', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Búa các loại', 15, 'image5.png', '2025-11-15', '5f63652d-bc0b-4a68-b0fb-2c2e31dca4ab');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('b0a485ee-da1a-4456-aae2-fad249345ad5', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Nhựa ngành may', 20, 'image6.png', '2025-12-15', 'a3bf195f-1e90-43e6-9d74-ba34bf6d6f8a');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('090d3742-41be-4129-b0fc-b8c3b2ba6b0d', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Sticker dán lỗi', 25, 'image7.png', '2026-01-15', '4c75dce2-806e-4c94-8733-6454a8e56597');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('f2e3b919-bfd1-4b82-a150-5e04898f0b4d', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Vật tư treo thẻ bài', 30, 'image8.png', '2026-02-15', '2fe7e6f8-9d8d-4116-82f1-f6812f7e3bed');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('38e6983d-2c2d-4b2d-a685-26685da98969', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Bộ cự ly kansai w561 6.4', 10, 'image9.png', '2025-07-15', 'ea43b9d2-8358-44b0-b76a-3b2d6f1e1c82');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('f5a5a7c6-dc54-474a-a5b9-9900ed6dde63', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Băng keo các loại', 8, 'image11.png', '2025-09-15', '345452e6-2adc-40b3-b3ed-2b43c7e85f52');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('a5da0958-05f8-4b8b-9e81-5a553deff518', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Kéo ngành may', 12, 'image12.png', '2025-10-15', 'ecd74e3c-e4c0-4f3a-83cb-cbaf33a3f440');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('471f6951-21f1-4f80-a6af-d48aa936cac2', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Búa các loại', 15, 'image13.png', '2025-11-15', '78141e69-4b62-4c41-be74-11171a6dee68');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('2053b26f-9750-4134-b979-7a7beb4a2512', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Nhựa ngành may', 20, 'image14.png', '2025-12-15', 'dbd37dc4-3d79-4426-b595-d76b8de5f9f3');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('7df463d2-d3da-4c5a-9097-24867db686fe', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Sticker dán lỗi', 25, 'image15.png', '2026-01-15', '007852af-2b11-4c0f-a631-e1c1e0f892ae');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('79d6db3c-e5e0-42de-bbbb-f9b06182a41f', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Vật tư treo thẻ bài', 30, 'image16.png', '2026-02-15', '5f63652d-bc0b-4a68-b0fb-2c2e31dca4ab');
+insert into public."SPARE_PART" (id, "createdAt", "updatedAt", "deletedAt", name, quantity, image, "Expiration_date",
+                                 "machineModelId")
+values ('d14bea2e-18db-4749-af20-8a91e760c00a', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Phấn may', 10, 'image17.png', '2025-07-15', 'a3bf195f-1e90-43e6-9d74-ba34bf6d6f8a');
+
+insert into public."TYPE_ERROR" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                 "machineModelId")
+values ('0e67ce7e-4c58-4403-a740-d1e4cf3f87cc', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Lỗi 1: Gãy kim', 120, 'Kim may bị gãy do áp lực hoặc chất liệu không phù hợp',
+        'ecd74e3c-e4c0-4f3a-83cb-cbaf33a3f440');
+insert into public."TYPE_ERROR" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                 "machineModelId")
+values ('71abd5eb-cf72-4f2d-b4bb-f61f4dca7d7e', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Lỗi 2: Đứt chỉ', 180, 'Chỉ may bị đứt do độ căng không đúng hoặc chỉ kém chất lượng',
+        '78141e69-4b62-4c41-be74-11171a6dee68');
+insert into public."TYPE_ERROR" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                 "machineModelId")
+values ('60cc4b3c-bc52-4248-8942-2287b58ed4c4', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Lỗi 3: Động cơ quá nhiệt', 150, 'Động cơ hoạt động liên tục quá lâu dẫn đến quá nhiệt',
+        'dbd37dc4-3d79-4426-b595-d76b8de5f9f3');
+insert into public."TYPE_ERROR" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                 "machineModelId")
+values ('54eb8e03-8e68-4c00-a623-887eb205832b', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Lỗi 4: Vấn đề với hộp suốt', 100, 'Hộp suốt bị kẹt hoặc không lắp đặt đúng cách',
+        '007852af-2b11-4c0f-a631-e1c1e0f892ae');
+insert into public."TYPE_ERROR" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                 "machineModelId")
+values ('0feb403f-d841-4904-8513-340f099a8c35', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Lỗi 5: Vấn đề về căng chỉ', 200, 'Độ căng chỉ không chính xác gây ra các vấn đề may',
+        '5f63652d-bc0b-4a68-b0fb-2c2e31dca4ab');
+insert into public."TYPE_ERROR" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                 "machineModelId")
+values ('4f4cdf81-f648-4cd0-a3a9-f5413348b412', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Lỗi 6: Bàn đạp chân không hoạt động', 90, 'Bàn đạp không phản hồi khi nhấn do lỗi kỹ thuật',
+        'a3bf195f-1e90-43e6-9d74-ba34bf6d6f8a');
+insert into public."TYPE_ERROR" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                 "machineModelId")
+values ('1166b211-0872-44a9-b564-ec20cba76241', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Lỗi 7: Máy không may được', 220, 'Máy không thực hiện quá trình may do sự cố phần cứng hoặc điện',
+        '4c75dce2-806e-4c94-8733-6454a8e56597');
+insert into public."TYPE_ERROR" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                 "machineModelId")
+values ('d41cd8d9-0bd4-4e57-82a8-5afa61ffb77e', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Lỗi 8: Vấn đề với bàn cắt', 130, 'Bàn cắt không hoạt động chính xác, dẫn đến cắt sai',
+        '2fe7e6f8-9d8d-4116-82f1-f6812f7e3bed');
+insert into public."TYPE_ERROR" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                 "machineModelId")
+values ('530d78b4-395a-404d-ab12-3539f2f66ade', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Lỗi 9: Bỏ mũi', 140, 'Máy may bỏ mũi do độ căng hoặc vấn đề với kim', 'ea43b9d2-8358-44b0-b76a-3b2d6f1e1c82');
+insert into public."TYPE_ERROR" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                 "machineModelId")
+values ('847b9be1-59b0-4257-8451-bb9e789e378b', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Lỗi 10: Tiếng ồn lạ', 170, 'Máy phát ra tiếng ồn không bình thường do các bộ phận bị mòn hoặc hư hỏng',
+        '345452e6-2adc-40b3-b3ed-2b43c7e85f52');
+
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('463e8c9b-9e89-47b8-a3ea-c0fe578034a1', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy tự nhiên dừng', 2, 'Máy đột ngột dừng hoạt động', 'ecd74e3c-e4c0-4f3a-83cb-cbaf33a3f440');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('4d543ef1-2ebc-4efa-b877-667e1e6c33c6', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Kim bị gãy', 1, 'Kim máy bị gãy trong quá trình hoạt động', '78141e69-4b62-4c41-be74-11171a6dee68');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('8b759763-12a6-4354-a53f-f1443117d03f', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Đèn power nhấp nháy', 3, 'Đèn báo nguồn nhấp nháy liên tục', 'dbd37dc4-3d79-4426-b595-d76b8de5f9f3');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('eff15b11-f658-48bb-b2e9-a7be83906987', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy bật không lên', 2, 'Máy không khởi động khi nhấn nút', '007852af-2b11-4c0f-a631-e1c1e0f892ae');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('704e49b4-641b-4e88-8d04-a936756966d0', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Điện không vào', 1, 'Không có điện vào máy', '5f63652d-bc0b-4a68-b0fb-2c2e31dca4ab');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('5dc25ab5-e7b1-42c6-b74e-85b422cb0976', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Đèn sáng nhưng kim không chạy', 2, 'Đèn báo sáng nhưng máy không hoạt động',
+        'a3bf195f-1e90-43e6-9d74-ba34bf6d6f8a');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('11d01d2c-5555-46d6-b7ed-8c69c4f115c7', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy tự nhiên dừng', 2, 'Máy đột ngột dừng hoạt động', '4c75dce2-806e-4c94-8733-6454a8e56597');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('8206b6aa-9a4c-4561-a5c9-d393b0423684', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Kim bị gãy', 1, 'Kim máy bị gãy trong quá trình hoạt động', '2fe7e6f8-9d8d-4116-82f1-f6812f7e3bed');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('afa25c43-0c54-42e7-a6cf-e08994c9614a', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Đèn power nhấp nháy', 3, 'Đèn báo nguồn nhấp nháy liên tục', 'ea43b9d2-8358-44b0-b76a-3b2d6f1e1c82');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('f3c6e061-6028-455c-a42c-29e53471ae50', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy bật không lên', 2, 'Máy không khởi động khi nhấn nút', '345452e6-2adc-40b3-b3ed-2b43c7e85f52');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('9b2e5ab1-a1dd-42d5-93cd-e5366f0a877f', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Điện không vào', 1, 'Không có điện vào máy', 'ecd74e3c-e4c0-4f3a-83cb-cbaf33a3f440');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('44af4951-2877-4b09-8638-340f6ab8928b', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Đèn sáng nhưng kim không chạy', 2, 'Đèn báo sáng nhưng máy không hoạt động',
+        '78141e69-4b62-4c41-be74-11171a6dee68');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('be0d5a40-f306-4e27-9d58-172fb6490029', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy tự nhiên dừng', 2, 'Máy đột ngột dừng hoạt động', 'dbd37dc4-3d79-4426-b595-d76b8de5f9f3');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('dc200c90-eff3-40f7-b102-bc145489bbbf', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Kim bị gãy', 1, 'Kim máy bị gãy trong quá trình hoạt động', '007852af-2b11-4c0f-a631-e1c1e0f892ae');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('5e67cd3c-9510-4da1-b499-7e8d127d25d6', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Đèn power nhấp nháy', 3, 'Đèn báo nguồn nhấp nháy liên tục', '5f63652d-bc0b-4a68-b0fb-2c2e31dca4ab');
+insert into public."TYPE_ERROR_HEAD" (id, "createdAt", "updatedAt", "deletedAt", name, duration, description,
+                                      "machineModelId")
+values ('9c04494a-fee2-445b-b6cc-e01ce21dc4fb', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null,
+        'Máy bật không lên', 2, 'Máy không khởi động khi nhấn nút', 'a3bf195f-1e90-43e6-9d74-ba34bf6d6f8a');
+
+insert into public."DEVICE" (id, "createdAt", "updatedAt", "deletedAt", position_x, position_y, description,
+                             operation_info, is_warranty, status, "areaId", "machineModelId")
+values ('dc5b3156-b61e-4ddb-b20f-84dc445c8681', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null, 10,
+        20, 'Máy khâu 1', 1, null, true, '8f144361-d85b-4a83-a12a-43c457263f76',
+        'ecd74e3c-e4c0-4f3a-83cb-cbaf33a3f440');
+insert into public."DEVICE" (id, "createdAt", "updatedAt", "deletedAt", position_x, position_y, description,
+                             operation_info, is_warranty, status, "areaId", "machineModelId")
+values ('5c8d8d53-371d-4f65-9698-f9380bd4c617', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null, 15,
+        25, 'Máy khâu 2', 1.1, null, true, '3e2f8a1d-6c7f-4b03-8f8b-7f3c2d1f5a3e',
+        '78141e69-4b62-4c41-be74-11171a6dee68');
+insert into public."DEVICE" (id, "createdAt", "updatedAt", "deletedAt", position_x, position_y, description,
+                             operation_info, is_warranty, status, "areaId", "machineModelId")
+values ('a3d31174-d835-4250-935a-b9cae6d6228e', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null, 20,
+        30, 'Máy khâu 3', 1.2, null, true, 'a7b3c6d0-2f4e-4d9a-93f2-0e6a7c5b1d2f',
+        'dbd37dc4-3d79-4426-b595-d76b8de5f9f3');
+insert into public."DEVICE" (id, "createdAt", "updatedAt", "deletedAt", position_x, position_y, description,
+                             operation_info, is_warranty, status, "areaId", "machineModelId")
+values ('cc858ec6-5c24-4508-ba74-7ea99bcca76d', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null, 25,
+        35, 'Máy khâu 4', 1.3, null, true, '1c9f2e7a-5b3d-4c6f-8a7d-3b4f68c1e25a',
+        '007852af-2b11-4c0f-a631-e1c1e0f892ae');
+insert into public."DEVICE" (id, "createdAt", "updatedAt", "deletedAt", position_x, position_y, description,
+                             operation_info, is_warranty, status, "areaId", "machineModelId")
+values ('21f911e4-956e-4a2a-94bc-e21773cde4a6', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null, 30,
+        40, 'Máy may 1', 1.4, null, true, 'e3d1f4b2-8c6a-4a1f-a5c3-7d2b5f6c3a89',
+        '5f63652d-bc0b-4a68-b0fb-2c2e31dca4ab');
+insert into public."DEVICE" (id, "createdAt", "updatedAt", "deletedAt", position_x, position_y, description,
+                             operation_info, is_warranty, status, "areaId", "machineModelId")
+values ('f7628a76-ce45-4f67-b085-2af6d230a88f', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null, 35,
+        45, 'Máy may 2', 1.5, null, true, '8f144361-d85b-4a83-a12a-43c457263f76',
+        'a3bf195f-1e90-43e6-9d74-ba34bf6d6f8a');
+insert into public."DEVICE" (id, "createdAt", "updatedAt", "deletedAt", position_x, position_y, description,
+                             operation_info, is_warranty, status, "areaId", "machineModelId")
+values ('576b06db-4d9b-4223-9a3c-fa0af9f557dd', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null, 40,
+        50, 'Máy may 3', 1.6, null, true, '3e2f8a1d-6c7f-4b03-8f8b-7f3c2d1f5a3e',
+        '4c75dce2-806e-4c94-8733-6454a8e56597');
+insert into public."DEVICE" (id, "createdAt", "updatedAt", "deletedAt", position_x, position_y, description,
+                             operation_info, is_warranty, status, "areaId", "machineModelId")
+values ('79ca37de-ef0e-4248-b5be-0d41ba433dea', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null, 45,
+        55, 'Máy may 4', 1.7, null, true, 'a7b3c6d0-2f4e-4d9a-93f2-0e6a7c5b1d2f',
+        '2fe7e6f8-9d8d-4116-82f1-f6812f7e3bed');
+insert into public."DEVICE" (id, "createdAt", "updatedAt", "deletedAt", position_x, position_y, description,
+                             operation_info, is_warranty, status, "areaId", "machineModelId")
+values ('fdbd5ac2-96b5-44f5-becc-70e74663fc74', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null, 50,
+        60, 'Máy khâu 5', 1.8, null, true, '1c9f2e7a-5b3d-4c6f-8a7d-3b4f68c1e25a',
+        'ea43b9d2-8358-44b0-b76a-3b2d6f1e1c82');
+insert into public."DEVICE" (id, "createdAt", "updatedAt", "deletedAt", position_x, position_y, description,
+                             operation_info, is_warranty, status, "areaId", "machineModelId")
+values ('23ab91d9-b0f4-436e-b3af-1c91e654c4c0', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null, 55,
+        65, 'Máy khâu 6', 1.9, null, true, 'e3d1f4b2-8c6a-4a1f-a5c3-7d2b5f6c3a89',
+        '345452e6-2adc-40b3-b3ed-2b43c7e85f52');
+insert into public."DEVICE" (id, "createdAt", "updatedAt", "deletedAt", position_x, position_y, description,
+                             operation_info, is_warranty, status, "areaId", "machineModelId")
+values ('41e3291d-7f8d-4303-9bb4-475c7704bcf6', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null, 60,
+        70, 'Máy khâu 7', 2, null, true, '8f144361-d85b-4a83-a12a-43c457263f76',
+        'ecd74e3c-e4c0-4f3a-83cb-cbaf33a3f440');
+insert into public."DEVICE" (id, "createdAt", "updatedAt", "deletedAt", position_x, position_y, description,
+                             operation_info, is_warranty, status, "areaId", "machineModelId")
+values ('63c1e413-4fa2-4d2f-8b87-9dff5f788855', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null, 65,
+        75, 'Máy khâu 8', 2.1, null, true, '3e2f8a1d-6c7f-4b03-8f8b-7f3c2d1f5a3e',
+        '78141e69-4b62-4c41-be74-11171a6dee68');
+insert into public."DEVICE" (id, "createdAt", "updatedAt", "deletedAt", position_x, position_y, description,
+                             operation_info, is_warranty, status, "areaId", "machineModelId")
+values ('6a026b0f-a877-4587-bc31-856bc4f3c7cd', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null, 70,
+        80, 'Máy may 5', 2.2, null, true, 'a7b3c6d0-2f4e-4d9a-93f2-0e6a7c5b1d2f',
+        'dbd37dc4-3d79-4426-b595-d76b8de5f9f3');
+insert into public."DEVICE" (id, "createdAt", "updatedAt", "deletedAt", position_x, position_y, description,
+                             operation_info, is_warranty, status, "areaId", "machineModelId")
+values ('b193793e-12a6-4670-b9a2-78d148f5216f', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null, 75,
+        85, 'Máy may 6', 2.3, null, true, '1c9f2e7a-5b3d-4c6f-8a7d-3b4f68c1e25a',
+        '007852af-2b11-4c0f-a631-e1c1e0f892ae');
+insert into public."DEVICE" (id, "createdAt", "updatedAt", "deletedAt", position_x, position_y, description,
+                             operation_info, is_warranty, status, "areaId", "machineModelId")
+values ('d4311e41-2d64-49f7-b636-feb009ebdf6d', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null, 80,
+        90, 'Máy may 7', 2.4, null, true, 'e3d1f4b2-8c6a-4a1f-a5c3-7d2b5f6c3a89',
+        '5f63652d-bc0b-4a68-b0fb-2c2e31dca4ab');
+insert into public."DEVICE" (id, "createdAt", "updatedAt", "deletedAt", position_x, position_y, description,
+                             operation_info, is_warranty, status, "areaId", "machineModelId")
+values ('455d3502-20b9-4dd0-9475-4dd096943171', '2024-07-15 10:00:00.000000', '2024-07-15 10:00:00.000000', null, 85,
+        95, 'Máy may 8', 2.5, null, true, '8f144361-d85b-4a83-a12a-43c457263f76',
+        'a3bf195f-1e90-43e6-9d74-ba34bf6d6f8a');
