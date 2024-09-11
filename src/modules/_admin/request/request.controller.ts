@@ -23,7 +23,7 @@ import { AdminGuard } from 'src/modules/auth/guards/admin.guard';
 @UseGuards(AdminGuard)
 @Controller('admin/request')
 export class RequestController {
-  constructor(private readonly requestService: RequestService) {}
+  constructor(private readonly requestService: RequestService) { }
 
   @ApiBearerAuth()
   @ApiResponse({
@@ -37,15 +37,20 @@ export class RequestController {
     @Param('page') page: number,
     @Param('limit') limit: number,
     @Param('status') status: RequestStatus,
-    @Query('time') time: number = 1
+    @Query('time') time: number = 1,
+    @Query('all') all: boolean = false,
   ) {
-    return await this.requestService.customHeadStaffGetAllRequest(
-      user?.id,
-      page,
-      limit,
-      status,
-      time
-    );
+    if (all) {
+      return await this.requestService.getAll();
+    } else {
+      return await this.requestService.customHeadStaffGetAllRequest(
+        user?.id,
+        page,
+        limit,
+        status,
+        time
+      );
+    }
   }
 
   // @ApiResponse({

@@ -37,13 +37,17 @@ export class TaskController {
     description: 'Get all Tasks',
   })
   @Get(':page/:limit/:status')
-  getAll(
+  async getAll(
     @Param('page') page: number,
     @Param('limit') limit: number,
     @Param('status') status: TaskStatus,
-    @Query('time') time: number = 1
+    @Query('time') time: number = 1,
+    @Query('all') all: boolean = false,
   ) {
-    return this.taskService.customGetAllTask(page, limit, status, time);
+    if (all) {
+      return await this.taskService.getAll();
+    }
+    return await this.taskService.customGetAllTask(page, limit, status, time);
   }
 
   @ApiBearerAuth()
