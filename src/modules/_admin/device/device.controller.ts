@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -35,9 +36,10 @@ export class DeviceController {
   @ApiBearerAuth()
   @Get('get-all-by-area-id/:areaId')
   getAllTaskInfoByAreaId(
-    @Param('areaId') areaID: string
+    @Param('areaId') areaID: string,
+    @Query('time') time: number = 1
   ) {
-    return this.deviceService.getAllInfoDeviceByAreaId(areaID);
+    return this.deviceService.getAllInfoDeviceByAreaId(areaID, time);
   }
 
   // @ApiResponse({

@@ -30,7 +30,7 @@ export class DeviceService extends BaseService<DeviceEntity> {
     });
   }
 
-  async getAllInfoDeviceByAreaId(areaId: string) {
+  async getAllInfoDeviceByAreaId(areaId: string, time: number = 1) {
     return Promise.all([
       this.deviceRepository.find({
         where: {
@@ -68,6 +68,25 @@ export class DeviceService extends BaseService<DeviceEntity> {
       let staff_request_cancelled = 0;
       let head_staff_confirm_staff_request_cancelled = 0;
       let close_task_request_cancelled = 0;
+
+      // filter requests by time (1: this week, 2: last month, 3: this year)
+      devices = devices.map(device => {
+        device.requests = device.requests.filter(request => {
+          const requestTime = new Date(request.createdAt).getTime();
+          const currentTime = new Date().getTime();
+          switch (time) {
+            case 1:
+              return requestTime >= currentTime - 7 * 24 * 60 * 60 * 1000;
+            case 2:
+              return requestTime >= currentTime - 30 * 24 * 60 * 60 * 1000;
+            case 3:
+              return requestTime >= currentTime - 365 * 24 * 60 * 60 * 1000;
+            default:
+              return true;
+          }
+        });
+        return device
+      });
 
       devices.forEach(device => {
         device.requests.forEach(request => {
