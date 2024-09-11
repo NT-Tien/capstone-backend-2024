@@ -26,7 +26,7 @@ export class TaskService extends BaseService<TaskEntity> {
       where: {
         confirmReceipt: false,
       },
-      relations: ['fixer', 'device.machineModel'],
+      relations: ['fixer', 'device.machineModel', "issues", "issues.issueSpareParts", "issues.issueSpareParts.sparePart"],
       order: { createdAt: 'DESC' },
       skip: (page - 1) * limit,
       take: limit,

@@ -102,23 +102,23 @@ export class TaskService extends BaseService<TaskEntity> {
     let newTask = new TaskEntity();
     newTask.request = request;
     newTask.device = request.device;
-    if (data.fixer) {
-      const fixer = await this.accountRepository.findOne({
-        where: {
-          id: data.fixer,
-          role: Role.staff,
-        },
-      });
+    // if (data.fixer) {
+    //   const fixer = await this.accountRepository.findOne({
+    //     where: {
+    //       id: data.fixer,
+    //       role: Role.staff,
+    //     },
+    //   });
 
-      if (!fixer) {
-        throw new Error('Fixer not found');
-      }
+    //   if (!fixer) {
+    //     throw new Error('Fixer not found');
+    //   }
 
-      newTask.fixer = fixer;
-      newTask.status = TaskStatus.ASSIGNED;
-    } else {
-      newTask.status = TaskStatus.AWAITING_FIXER;
-    }
+    //   newTask.fixer = fixer;
+    //   newTask.status = TaskStatus.ASSIGNED;
+    // } else {
+    //   newTask.status = TaskStatus.AWAITING_FIXER;
+    // }
     let newTaskResult = await this.taskRepository.save({
       ...data,
       ...newTask,
@@ -137,7 +137,7 @@ export class TaskService extends BaseService<TaskEntity> {
     // check task status is awaiting spare part and spare part quantity is enough
     const task = await this.taskRepository.findOne({
       where: { id: taskId },
-      relations: ['issues', 'issues.issueSpareParts'],
+      relations: ['issues', 'issues.issueSpareParts', "issues.issueSpareParts.sparePart"],
     });
     let issues = task.issues;
     // check issueSpareParts of each issues is enought 
