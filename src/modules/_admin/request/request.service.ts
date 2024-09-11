@@ -24,6 +24,21 @@ export class RequestService extends BaseService<RequestEntity> {
     super(requestRepository);
   }
 
+  async test_all() {
+    return this.requestRepository.find({
+      relations: [
+        'device',
+        'device.area',
+        'device.machineModel',
+        'device.machineModel.typeErrors',
+        'tasks',
+        'tasks.fixer',
+        'requester',
+        'issues',
+      ],
+    });
+  }
+
   async customHeadStaffGetAllRequest(
     userId: string,
     page: number,
@@ -60,7 +75,7 @@ export class RequestService extends BaseService<RequestEntity> {
     return this.requestRepository.findAndCount({
       where: {
         status: status ? status : undefined,
-        is_rennew: true,
+        // is_rennew: false,
         ...dateRange,
       },
       relations: [
@@ -113,7 +128,7 @@ export class RequestService extends BaseService<RequestEntity> {
         'issues.typeError',
         'issues.issueSpareParts',
         'issues.issueSpareParts.sparePart',
-        "feedback"
+        'feedback',
       ],
     });
   }

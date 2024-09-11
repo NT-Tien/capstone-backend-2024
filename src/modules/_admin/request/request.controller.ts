@@ -40,8 +40,11 @@ export class RequestController {
     @Query('time') time: number = 1,
     @Query('all') all: boolean = false,
   ) {
+    console.log(all, typeof all)
     if (all) {
-      return await this.requestService.getAll();
+      const result = await this.requestService.test_all();
+      console.log(JSON.stringify(result, null, 2));
+      return result
     } else {
       return await this.requestService.customHeadStaffGetAllRequest(
         user?.id,
