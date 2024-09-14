@@ -23,7 +23,7 @@ export class SparePartController {
 
 
   @ApiBearerAuth()
-  @Get(':page/:limit/:searchName')
+  @Get(':page/:limit')
   async getAll(
     @Param('page') page: number,
     @Param('limit') limit: number,

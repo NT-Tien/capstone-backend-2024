@@ -64,71 +64,90 @@ export class SparePartService extends BaseService<SparePartEntity> {
   }
 
   async customUpdate(id: string, data: Partial<SparePartEntity>) {
-    // find the spare part by id
+    // Tìm spare part theo id
     const sparePart = await this.sparePartRepository.findOne({ where: { id } });
     if (!sparePart) {
       throw new Error('Spare part not found');
     }
+  
+    // Cập nhật số lượng mới của spare part
+    let result = await super.update(id, data);
+  
+    // Chỉ xử lý nếu số lượng mới lớn hơn số lượng hiện tại
     if (data?.quantity && data.quantity > sparePart.quantity) {
       const tasks = await this.taskRepository.find({
-        where: {
-          status: TaskStatus.AWAITING_SPARE_SPART,
-        },
+        where: { status: TaskStatus.AWAITING_SPARE_SPART },
         relations: ['issues', 'issues.spareParts', 'issues.spareParts.sparePart'],
       });
-      // sort tasks by field priority = true and then sort by createdAt follow by DESC
+  
+      // Sắp xếp task theo priority và createdAt
       tasks.sort((a, b) => {
-        if (a.priority && !b.priority) {
-          return -1;
-        }
-        if (!a.priority && b.priority) {
-          return 1;
+        if (a.priority !== b.priority) {
+          return a.priority ? -1 : 1;
         }
         return b.createdAt.getTime() - a.createdAt.getTime();
       });
-      let result = await super.update(id, data);
-
-      // kiếm các task đầu cần thêm spare part cho cái spare part đang được cập nhật nếu số lượng cập nhật thêm số lượng cần cho task đó thì tìm thêm task tiếp theo cho đến khi nào không đủ, 
-
-      // sau đó check lại task đó các spare bên trong đã ở trạng thái đủ hết chưa nếu rồi thì cập nhật trạng thái task 
-      // nếu 
-
-
-      return result;
-    }
-    return super.update(id, data);
-  }
-
-  async updateTaskStausToAwaitingFixer(taskId: string) {
-    // check task status is awaiting spare part and spare part quantity is enough
-    const task = await this.taskRepository.findOne({
-      where: { id: taskId },
-      relations: ['issues', 'issues.issueSpareParts', "issues.issueSpareParts.sparePart"],
-    });
-    let issues = task.issues;
-    // check issueSpareParts of each issues is enought 
-    for (let issue of issues) {
-      for (let issueSparePart of issue.issueSpareParts) {
-        const sparePart = await this.sparePartRepository.findOne({
-          where: { id: issueSparePart.sparePart.id },
-        });
-        if (sparePart.quantity < issueSparePart.quantity) {
-          throw new Error('Not enough spare part');
+  
+      // Số lượng phụ tùng sau khi cập nhật
+      let updatedQuantity = sparePart.quantity;
+  
+      // Duyệt qua từng task đã sắp xếp
+      for (const task of tasks) {
+        let isTaskUpdated = false;
+  
+        // Duyệt qua từng issue trong task
+        for (const issue of task.issues) {
+          // Duyệt qua từng spare part trong issue
+          for (const issueSparePart of issue.issueSpareParts) {
+            if (issueSparePart.sparePart.id === sparePart.id) {
+              // Tính toán số lượng phụ tùng cần thêm cho nhiệm vụ
+              const quantityNeedToAdd = issueSparePart.quantity - issueSparePart.sparePart.quantity;
+  
+              if (quantityNeedToAdd > 0 && updatedQuantity < data.quantity) {
+                const quantityToAdd = Math.min(quantityNeedToAdd, data.quantity - updatedQuantity);
+                issueSparePart.sparePart.quantity += quantityToAdd;
+                updatedQuantity += quantityToAdd;
+                await this.sparePartRepository.save(issueSparePart.sparePart);
+                isTaskUpdated = true;
+              }
+            }
+          }
         }
+  
+        // Nếu task đã được cập nhật phụ tùng
+        if (isTaskUpdated) {
+          // Kiểm tra nếu tất cả phụ tùng trong task đã đủ số lượng
+          const allSparePartsReady = task.issues.every(issue =>
+            issue.issueSpareParts.every(
+              issueSparePart => issueSparePart.sparePart.quantity >= issueSparePart.quantity
+            )
+          );
+  
+          // Nếu tất cả phụ tùng đủ, cập nhật trạng thái task
+          if (allSparePartsReady) {
+            task.status = TaskStatus.AWAITING_FIXER;
+            await this.taskRepository.save(task);
+  
+            // Trừ số lượng phụ tùng đã dùng trong kho
+            for (const issue of task.issues) {
+              for (const issueSparePart of issue.issueSpareParts) {
+                issueSparePart.sparePart.quantity -= issueSparePart.quantity;
+                await this.sparePartRepository.save(issueSparePart.sparePart);
+              }
+            }
+          }
+        }
+  
+        // Nếu số lượng phụ tùng đã cập nhật hết thì dừng lại
+        if (updatedQuantity >= data.quantity) break;
       }
+  
+      // Cập nhật lại số lượng phụ tùng cuối cùng sau khi xử lý
+      sparePart.quantity = updatedQuantity;
+      await this.sparePartRepository.save(sparePart);
     }
-    // decrease spare part quantity
-    for (let issue of issues) {
-      for (let issueSparePart of issue.issueSpareParts) {
-        const sparePart = await this.sparePartRepository.findOne({
-          where: { id: issueSparePart.sparePart.id },
-        });
-        sparePart.quantity -= issueSparePart.quantity;
-        await this.sparePartRepository.save(sparePart);
-      }
-    }
-    task.status = TaskStatus.AWAITING_FIXER;
-    return await this.taskRepository.save(task);
+  
+    return result;
   }
-
+  
 }
