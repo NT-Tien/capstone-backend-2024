@@ -19,7 +19,27 @@ import { StockkeeperGuard } from 'src/modules/auth/guards/stockkeeper.guard';
 @UseGuards(StockkeeperGuard)
 @Controller('stockkeeper/spare-part')
 export class SparePartController {
-  constructor(private readonly sparePartService: SparePartService) {}
+  constructor(private readonly sparePartService: SparePartService) { }
+
+
+  @ApiBearerAuth()
+  @Get(':page/:limit/:searchName')
+  async getAll(
+    @Param('page') page: number,
+    @Param('limit') limit: number,
+  ) {
+    return await this.sparePartService.customGetAllSparePart(
+      page,
+      limit,
+    );
+  }
+
+  @ApiBearerAuth()
+  @Get('need-add-more')
+  async getAllSparePareNeedAddMore() {
+    return await this.sparePartService.getAllSparePartNeedAddMore();
+  }
+
 
   @ApiResponse({
     type: SparePartResponseDto.SparePartGetOne,
@@ -43,7 +63,7 @@ export class SparePartController {
     @Param('id') id: string,
     @Body() body: SparePartRequestDto.SparePartUpdateDto,
   ) {
-    return await this.sparePartService.update(
+    return await this.sparePartService.customUpdate(
       id,
       SparePartRequestDto.SparePartUpdateDto.plainToClass(body),
     );

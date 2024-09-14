@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -27,11 +28,11 @@ export class SparePartController {
     status: 200,
     description: 'Get all SpareParts',
   })
-  @Get(':page/:limit/:searchName')
+  @Get(':page/:limit')
   async getAll(
     @Param('page') page: number,
     @Param('limit') limit: number,
-    @Param('searchName') searchName: string,
+    @Query('searchName') searchName: string,
   ) {
     return await this.sparePartService.customGetAllSparePart(
       page,
