@@ -77,7 +77,7 @@ export class SparePartService extends BaseService<SparePartEntity> {
     if (data?.quantity && data.quantity > sparePart.quantity) {
       const tasks = await this.taskRepository.find({
         where: { status: TaskStatus.AWAITING_SPARE_SPART },
-        relations: ['issues', 'issues.spareParts', 'issues.spareParts.sparePart'],
+        relations: ['issues', 'issues.issueSpareParts', 'issues.issueSpareParts.sparePart'],
       });
   
       // Sắp xếp task theo priority và createdAt
