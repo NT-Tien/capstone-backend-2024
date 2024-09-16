@@ -83,7 +83,7 @@ export namespace TaskRequestDto {
     @ApiProperty()
     @IsOptional()
     @Expose()
-    fixer: string; // account id
+    fixer?: string; // account id
   }
 
   export class TaskAssignFixerDto extends BaseDTO {

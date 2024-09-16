@@ -189,31 +189,31 @@ export class TaskService extends BaseService<TaskEntity> {
     task.status = TaskStatus.COMPLETED;
     const result = await this.taskRepository.save(task);
 
-    const request = await this.requestRepository.findOne({
-      where: { id: task.request.id },
-      relations: ['issues', 'tasks'],
-      select: {
-        issues: {
-          id: true,
-          status: true,
-        },
-        tasks: {
-          id: true,
-          status: true
-        }
-      },
-    });
+    // const request = await this.requestRepository.findOne({
+    //   where: { id: task.request.id },
+      // relations: ['issues', 'tasks'],
+      // select: {
+      //   issues: {
+      //     id: true,
+      //     status: true,
+      //   },
+      //   tasks: {
+      //     id: true,
+      //     status: true
+      //   }
+      // },
+    // });
 
-    const hasUncompletedIssue = request.issues.find((issue) => {
-      return issue.status === IssueStatus.PENDING;
-    });
-    const hasUncompletedTask = request.tasks.find((task) => {
-      return task.status !== TaskStatus.COMPLETED;
-    })
-    if (!hasUncompletedIssue && !hasUncompletedTask) {
-      request.status = RequestStatus.HEAD_CONFIRM;
-      await this.requestRepository.save(request);
-    }
+    // const hasUncompletedIssue = request.issues.find((issue) => {
+    //   return issue.status === IssueStatus.PENDING;
+    // });
+    // const hasUncompletedTask = request.tasks.find((task) => {
+    //   return task.status !== TaskStatus.COMPLETED;
+    // })
+    // if (!hasUncompletedIssue && !hasUncompletedTask) {
+    //   request.status = RequestStatus.HEAD_CONFIRM;
+    //   await this.requestRepository.save(request);
+    // }
 
 
     return result;
