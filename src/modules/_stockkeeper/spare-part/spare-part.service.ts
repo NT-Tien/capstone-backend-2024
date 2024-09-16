@@ -90,6 +90,8 @@ export class SparePartService extends BaseService<SparePartEntity> {
   
       // Số lượng phụ tùng sau khi cập nhật
       let updatedQuantity = sparePart.quantity;
+      console.log('updatedQuantity', updatedQuantity);
+      
   
       // Duyệt qua từng task đã sắp xếp
       for (const task of tasks) {
@@ -103,7 +105,7 @@ export class SparePartService extends BaseService<SparePartEntity> {
               // Tính toán số lượng phụ tùng cần thêm cho nhiệm vụ
               const quantityNeedToAdd = issueSparePart.quantity - issueSparePart.sparePart.quantity;
   
-              if (quantityNeedToAdd > 0 && updatedQuantity < data.quantity) {
+              if (quantityNeedToAdd > 0 && updatedQuantity <= data.quantity) {
                 const quantityToAdd = Math.min(quantityNeedToAdd, data.quantity - updatedQuantity);
                 issueSparePart.sparePart.quantity += quantityToAdd;
                 updatedQuantity += quantityToAdd;
@@ -113,7 +115,8 @@ export class SparePartService extends BaseService<SparePartEntity> {
             }
           }
         }
-  
+        console.log('isTaskUpdated', isTaskUpdated);
+        
         // Nếu task đã được cập nhật phụ tùng
         if (isTaskUpdated) {
           // Kiểm tra nếu tất cả phụ tùng trong task đã đủ số lượng
@@ -141,7 +144,8 @@ export class SparePartService extends BaseService<SparePartEntity> {
         // Nếu số lượng phụ tùng đã cập nhật hết thì dừng lại
         if (updatedQuantity >= data.quantity) break;
       }
-  
+      console.log('updatedQuantity', updatedQuantity);
+      
       // Cập nhật lại số lượng phụ tùng cuối cùng sau khi xử lý
       sparePart.quantity = updatedQuantity;
       await this.sparePartRepository.save(sparePart);
