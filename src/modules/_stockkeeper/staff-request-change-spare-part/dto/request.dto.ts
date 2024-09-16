@@ -46,9 +46,9 @@ export namespace StaffRequestChangeSparePartRequestDto {
     // @IsNotEmpty()
     // fixer: string;
 
-    // @ApiProperty()
-    // @IsNotEmpty()
-    // stockkeeper: string;
+    @ApiProperty()
+    @IsNotEmpty()
+    stockkeeper: string;
 
     @ApiProperty()
     @IsNotEmpty()
