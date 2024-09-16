@@ -153,14 +153,13 @@ export class SparePartService extends BaseService<SparePartEntity> {
     const issuesReady = task.issues.filter(
       (issue) => issue.fixType === FixItemType.REPLACE, // Chỉ lọc các issue loại REPLACE
     );
-    console.log(task);
     
     // Kiểm tra từng issue có loại REPLACE
     for (const issue of issuesReady) {
       // Nếu issue có trạng thái là PENDING thì không thể tiếp tục
-      if (issue.status === IssueStatus.PENDING) {
-        return false;
-      }
+      // if (issue.status === IssueStatus.PENDING) {
+      //   return false;
+      // }
 
       // Kiểm tra từng spare part của issue
       for (const issueSparePart of issue.issueSpareParts) {
@@ -191,7 +190,6 @@ export class SparePartService extends BaseService<SparePartEntity> {
         if (currentSparePart) {
           // Trừ số lượng phụ tùng theo yêu cầu của issue
           currentSparePart.quantity -= issueSparePart.quantity;
-
           // Cập nhật lại số lượng phụ tùng sau khi trừ
           await this.sparePartRepository.save(currentSparePart);
         }
