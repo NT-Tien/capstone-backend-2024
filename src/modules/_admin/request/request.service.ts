@@ -88,7 +88,9 @@ export class RequestService extends BaseService<RequestEntity> {
         'requester',
         'issues',
       ],
-      order: { createdAt: status === RequestStatus.PENDING ? 'ASC' : 'DESC' },
+      order: {
+        createdAt: 'DESC'
+      },
       skip: (page - 1) * limit,
       take: limit,
     });

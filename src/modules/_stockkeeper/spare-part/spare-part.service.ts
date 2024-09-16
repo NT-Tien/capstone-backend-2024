@@ -115,9 +115,9 @@ export class SparePartService extends BaseService<SparePartEntity> {
     }
 
     // Cập nhật số lượng mới của spare part
-    let result = await super.update(id, data);
+    const updatedSparePart = await super.update(id, data);
 
-    // Chỉ xử lý nếu số lượng mới lớn hơn số lượng hiện tại
+    // Chỉ xử lý nếu số lượng mới lớn hơn hoặc bằng số lượng hiện tại
     if (data?.quantity && data.quantity >= sparePart.quantity) {
       const tasks = await this.taskRepository.find({
         where: { status: TaskStatus.AWAITING_SPARE_SPART },
@@ -136,49 +136,33 @@ export class SparePartService extends BaseService<SparePartEntity> {
         return b.createdAt.getTime() - a.createdAt.getTime();
       });
 
-      // Số lượng phụ tùng sau khi cập nhật
-      let updatedQuantity = result.quantity;
-
-      // Duyệt qua từng task để check và cập nhật trạng thái
+      // Duyệt qua từng task để kiểm tra và cập nhật trạng thái
       for (const task of tasks) {
-        // Kiểm tra và cập nhật trạng thái task
-        const isReady = await this.updateTaskToAwaitingFixer(task);
-
-        if (isReady) {
-          // Trừ số lượng đã sử dụng từ kho
-          for (const issue of task.issues) {
-            if (issue.fixType === FixItemType.REPLACE) {
-              for (const issueSparePart of issue.issueSpareParts) {
-                if (issueSparePart.sparePart.id === sparePart.id) {
-                  updatedQuantity -= issueSparePart.quantity;
-                }
-              }
-            }
-          }
-        }
+        // Sử dụng hàm updateTaskToAwaitingFixer để kiểm tra và trừ số lượng phụ tùng nếu task sẵn sàng
+        await this.updateTaskToAwaitingFixer(task);
       }
-
-      // Cập nhật lại số lượng phụ tùng cuối cùng sau khi xử lý
-      sparePart.quantity = updatedQuantity;
-      await this.sparePartRepository.save(sparePart);
     }
 
-    return result;
+    return updatedSparePart;
   }
+
 
 
   async updateTaskToAwaitingFixer(task: TaskEntity) {
     // Duyệt qua các issue có fixType là REPLACE
-    const issuesReady = task.issues
-      .filter(issue => issue.fixType === FixItemType.REPLACE); // Chỉ lọc các issue loại REPLACE
-
+    const issuesReady = task.issues.filter(
+      (issue) => issue.fixType === FixItemType.REPLACE, // Chỉ lọc các issue loại REPLACE
+    );
+    console.log(task);
+    
+    // Kiểm tra từng issue có loại REPLACE
     for (const issue of issuesReady) {
-      // Kiểm tra trạng thái của issue không phải là PENDING
+      // Nếu issue có trạng thái là PENDING thì không thể tiếp tục
       if (issue.status === IssueStatus.PENDING) {
         return false;
       }
 
-      // Kiểm tra từng spare part trong issue xem có đủ số lượng không
+      // Kiểm tra từng spare part của issue
       for (const issueSparePart of issue.issueSpareParts) {
         const sparePart = issueSparePart.sparePart;
 
@@ -194,12 +178,35 @@ export class SparePartService extends BaseService<SparePartEntity> {
       }
     }
 
-    // Nếu tất cả các kiểm tra đều hợp lệ, cập nhật trạng thái của task
+    // Nếu tất cả các kiểm tra đều hợp lệ, tiến hành trừ số lượng phụ tùng trong kho
+    for (const issue of issuesReady) {
+      for (const issueSparePart of issue.issueSpareParts) {
+        const sparePart = issueSparePart.sparePart;
+
+        // Lấy số lượng phụ tùng hiện tại trong kho
+        const currentSparePart = await this.sparePartRepository.findOne({
+          where: { id: sparePart.id },
+        });
+
+        if (currentSparePart) {
+          // Trừ số lượng phụ tùng theo yêu cầu của issue
+          currentSparePart.quantity -= issueSparePart.quantity;
+
+          // Cập nhật lại số lượng phụ tùng sau khi trừ
+          await this.sparePartRepository.save(currentSparePart);
+        }
+      }
+    }
+
+    // Tất cả các phụ tùng đã đủ, cập nhật trạng thái của task thành AWAITING_FIXER
     task.status = TaskStatus.AWAITING_FIXER;
+    console.log('Task', task, 'is ready for fixer');
+    
     await this.taskRepository.save(task);
 
-    return true; // Tất cả các issue đã sẵn sàng
+    return true; // Task đã sẵn sàng
   }
+
 
 
 
