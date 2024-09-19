@@ -5,6 +5,7 @@ import {
   Headers,
   Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -31,6 +32,22 @@ export class TaskController {
   @Get(':page/:limit')
   getAll(@Param('page') page: number, @Param('limit') limit: number) {
     return this.taskService.customGetAllTask(page, limit);
+  }
+
+  @ApiBearerAuth()
+  @Get('/search/:page/:limit')
+  getAllTasks(
+    @Param('page') page: number,
+    @Param('limit') limit: number,
+    @Query() searchDto: TaskRequestDto.TaskSearchQueryDto,
+    @Query() orderDto: TaskRequestDto.TaskOrderQueryDto,
+  ) {
+    return this.taskService.getAllTasksWithSearchAndOrder(
+      page,
+      limit,
+      searchDto,
+      orderDto,
+    )
   }
 
   @ApiBearerAuth()
@@ -66,17 +83,20 @@ export class TaskController {
     return this.taskService.confirmReceipt(taskId, user.id);
   }
 
-    // confirm receipt receive spare parts
-    @ApiBearerAuth()
-    @ApiResponse({
-      type: TaskResponseDto.TaskUpdate,
-      status: 200,
-      description: 'Confirm receipt spare parts return',
-    })
-    @Post('return-task-sparepart/:taskId')
-    receiveSparePartsReturn(@Param('taskId') taskId: UUID, @Headers('user') user: any) {
-      return this.taskService.confirmReceipt(taskId, user.id);
-    }
+  // confirm receipt receive spare parts
+  @ApiBearerAuth()
+  @ApiResponse({
+    type: TaskResponseDto.TaskUpdate,
+    status: 200,
+    description: 'Confirm receipt spare parts return',
+  })
+  @Post('return-task-sparepart/:taskId')
+  receiveSparePartsReturn(
+    @Param('taskId') taskId: UUID,
+    @Headers('user') user: any,
+  ) {
+    return this.taskService.confirmReceipt(taskId, user.id);
+  }
 
   // pending spare part
   @ApiBearerAuth()
