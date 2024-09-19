@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from 'src/common/base/service.base';
-import { FixItemType, IssueStatus } from 'src/entities/issue.entity';
+import { FixItemType } from 'src/entities/issue.entity';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { TaskEntity, TaskStatus } from 'src/entities/task.entity';
 import { Repository } from 'typeorm';
+import { SparePartRequestDto } from './dto/request.dto';
+import { IssueSparePartEntity } from 'src/entities/issue-spare-part.entity';
 
 @Injectable()
 export class SparePartService extends BaseService<SparePartEntity> {
@@ -17,19 +19,136 @@ export class SparePartService extends BaseService<SparePartEntity> {
     super(sparePartRepository);
   }
 
+  async incrementQuantitySpareParts(
+    dto: SparePartRequestDto.ImportSparePartDto,
+  ) {
+    const spareParts = dto.spareParts;
+
+    const updatedSpareParts = await Promise.allSettled(
+      spareParts.map(async (part) => {
+        const current = await this.sparePartRepository.findOne({
+          where: {
+            name: part.sparePartName,
+            machineModel: {
+              name: part.machineModelName,
+            },
+          },
+          relations: ['machineModel'],
+        });
+
+        if (!current) {
+          return Promise.reject({
+            sparePart: part,
+            message: 'Spare part not found',
+          });
+        }
+
+        try {
+          const updated = await this.customUpdate(current.id, {
+            quantity: part.quantity + current.quantity,
+          });
+
+          return Promise.resolve(updated);
+        } catch (error) {
+          return Promise.reject({
+            sparePart: part,
+            message: error.message,
+          });
+        }
+      }),
+    );
+
+    const returnValue: {
+      success: SparePartEntity[];
+      failed: any[];
+    } = {
+      success: [],
+      failed: [],
+    };
+
+    for (const part of updatedSpareParts) {
+      if (part.status === 'fulfilled') {
+        returnValue.success.push(part.value);
+      } else {
+        returnValue.failed.push(part.reason);
+      }
+    }
+
+    return returnValue;
+  }
+
   async customGetAllSparePart(
     page: number,
     limit: number,
+    filterDto?: SparePartRequestDto.AllSparePartsFilterDto,
+    orderDto?: SparePartRequestDto.AllSparePartsOrderDto,
   ): Promise<[SparePartEntity[], number]> {
-    return this.sparePartRepository.findAndCount({
-      where: {
-        deletedAt: null,
-      },
-      order: { createdAt: 'DESC' },
-      relations: ['machineModel'],
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+    console.log(filterDto.name);
+    const query = this.sparePartRepository
+      .createQueryBuilder('sparePart')
+      .leftJoinAndSelect('sparePart.machineModel', 'machineModel')
+      .where('sparePart.deletedAt IS NULL');
+
+    if (filterDto?.id) {
+      query.andWhere('sparePart.id = :id', {
+        id: filterDto.id,
+      });
+    }
+
+    if (filterDto?.minQuantity) {
+      query.andWhere('sparePart.quantity >= :minQuantity', {
+        minQuantity: filterDto.minQuantity,
+      });
+    }
+
+    if (filterDto?.maxQuantity) {
+      query.andWhere('sparePart.quantity <= :maxQuantity', {
+        maxQuantity: filterDto.maxQuantity,
+      });
+    }
+
+    if (filterDto?.machineModelId) {
+      query.andWhere('machineModel.id = :machineModelId', {
+        machineModelId: filterDto.machineModelId,
+      });
+    }
+
+    if (filterDto?.name) {
+      query.andWhere('sparePart.name LIKE :name', {
+        name: `%${filterDto.name}%`,
+      });
+    }
+
+    if (orderDto?.orderBy && orderDto?.order) {
+      if (orderDto.orderBy === 'name') {
+        query.orderBy(`sparePart.name`, orderDto.order);
+      } else if (orderDto.orderBy === 'quantity') {
+        query.orderBy(`sparePart.quantity`, orderDto.order);
+      } else if (orderDto.orderBy === 'createdAt') {
+        query.orderBy(`sparePart.createdAt`, orderDto.order);
+      } else if (orderDto.orderBy === 'updatedAt') {
+        query.orderBy(`sparePart.updatedAt`, orderDto.order);
+      } else {
+        query.orderBy(`sparePart.updatedAt`, 'DESC');
+      }
+    } else {
+      query.orderBy(`sparePart.updatedAt`, 'DESC');
+    }
+
+    query.skip((page - 1) * limit).take(limit);
+
+    const [data, total] = await query.getManyAndCount();
+
+    return [data, total];
+    // return this.sparePartRepository.findAndCount({
+    //   where: {
+    //     deletedAt: null,
+    //   },
+    //   order: { createdAt: 'DESC' },
+    //   relations: ['machineModel'],
+    //   skip: (page - 1) * limit,
+    //   take: limit,
+    // });
   }
 
   async getAllSparePartNeedAddMore() {
@@ -146,14 +265,12 @@ export class SparePartService extends BaseService<SparePartEntity> {
     return updatedSparePart;
   }
 
-
-
   async updateTaskToAwaitingFixer(task: TaskEntity) {
     // Duyệt qua các issue có fixType là REPLACE
     const issuesReady = task.issues.filter(
       (issue) => issue.fixType === FixItemType.REPLACE, // Chỉ lọc các issue loại REPLACE
     );
-    
+
     // Kiểm tra từng issue có loại REPLACE
     for (const issue of issuesReady) {
       // Nếu issue có trạng thái là PENDING thì không thể tiếp tục
@@ -171,7 +288,10 @@ export class SparePartService extends BaseService<SparePartEntity> {
         });
 
         // Nếu không tìm thấy phụ tùng hoặc số lượng trong kho không đủ
-        if (!currentSparePart || currentSparePart.quantity < issueSparePart.quantity) {
+        if (
+          !currentSparePart ||
+          currentSparePart.quantity < issueSparePart.quantity
+        ) {
           return false; // Không đủ phụ tùng cho task
         }
       }
@@ -199,13 +319,53 @@ export class SparePartService extends BaseService<SparePartEntity> {
     // Tất cả các phụ tùng đã đủ, cập nhật trạng thái của task thành AWAITING_FIXER
     task.status = TaskStatus.AWAITING_FIXER;
     console.log('Task', task, 'is ready for fixer');
-    
+
     await this.taskRepository.save(task);
 
     return true; // Task đã sẵn sàng
   }
 
+  async getToday() {
+    const query = this.taskRepository
+      .createQueryBuilder('task')
+      .where(
+        "task.fixerDate BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '1 day' - INTERVAL '1 second'",
+      )
+      .leftJoinAndSelect('task.fixer', 'fixer')
+      .leftJoinAndSelect('task.issues', 'issues')
+      .leftJoinAndSelect('issues.issueSpareParts', 'issueSpareParts')
+      .leftJoinAndSelect('issueSpareParts.sparePart', 'sparePart');
 
+    const data = await query.getMany();
 
+    const map: Record<
+      string,
+      {
+        sparePart: SparePartEntity;
+        quantity: number;
+        task: TaskEntity[];
+      }
+    > = {};
 
+    for (const task of data) {
+      const { issues, ...rawTask } = task;
+      for (const issue of task.issues) {
+        for (const issueSparePart of issue.issueSpareParts) {
+          if (!map[issueSparePart.sparePart.id]) {
+            map[issueSparePart.sparePart.id] = {
+              sparePart: issueSparePart.sparePart,
+              quantity: issueSparePart.quantity,
+              task: [rawTask as any],
+            };
+          } else {
+            map[issueSparePart.sparePart.id].quantity +=
+              issueSparePart.quantity;
+            map[issueSparePart.sparePart.id].task.push(rawTask as any);
+          }
+        }
+      }
+    }
+
+    return Object.values(map);
+  }
 }

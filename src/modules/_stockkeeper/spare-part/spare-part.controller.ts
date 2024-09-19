@@ -1,36 +1,45 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 // import { CacheTTL } from '@nestjs/cache-manager';
-import { SparePartService } from './spare-part.service';
-import { SparePartResponseDto } from './dto/response.dto';
-import { SparePartRequestDto } from './dto/request.dto';
 import { StockkeeperGuard } from 'src/modules/auth/guards/stockkeeper.guard';
+import { SparePartRequestDto } from './dto/request.dto';
+import { SparePartResponseDto } from './dto/response.dto';
+import { SparePartService } from './spare-part.service';
 
 @ApiTags('stockkeeper: spare-part')
 @UseGuards(StockkeeperGuard)
 @Controller('stockkeeper/spare-part')
 export class SparePartController {
-  constructor(private readonly sparePartService: SparePartService) { }
+  constructor(private readonly sparePartService: SparePartService) {}
 
+  @ApiBearerAuth()
+  @Post('/import')
+  async importSpareParts(@Body() dto: SparePartRequestDto.ImportSparePartDto) {
+    return await this.sparePartService.incrementQuantitySpareParts(dto);
+  }
 
   @ApiBearerAuth()
   @Get(':page/:limit')
   async getAll(
     @Param('page') page: number,
     @Param('limit') limit: number,
+    @Query() filterDto?: SparePartRequestDto.AllSparePartsFilterDto,
+    @Query() orderDto?: SparePartRequestDto.AllSparePartsOrderDto,
   ) {
     return await this.sparePartService.customGetAllSparePart(
       page,
       limit,
+      filterDto,
+      orderDto,
     );
   }
 
@@ -39,7 +48,6 @@ export class SparePartController {
   async getAllSparePareNeedAddMore() {
     return await this.sparePartService.getAllSparePartNeedAddMore();
   }
-
 
   @ApiResponse({
     type: SparePartResponseDto.SparePartGetOne,
@@ -67,5 +75,11 @@ export class SparePartController {
       id,
       SparePartRequestDto.SparePartUpdateDto.plainToClass(body),
     );
+  }
+
+  @ApiBearerAuth()
+  @Get("/today")
+  async getToday() {
+    return await this.sparePartService.getToday();
   }
 }

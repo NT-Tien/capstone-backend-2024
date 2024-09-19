@@ -18,6 +18,89 @@ export class TaskService extends BaseService<TaskEntity> {
     super(taskRepository);
   }
 
+  async getAllTasksWithSearchAndOrder(
+    page: number,
+    limit: number,
+    searchDto: TaskRequestDto.TaskSearchQueryDto,
+    orderDto: TaskRequestDto.TaskOrderQueryDto,
+  ) {
+    const query = this.taskRepository
+      .createQueryBuilder('task')
+      .leftJoinAndSelect('task.fixer', 'fixer')
+      .leftJoinAndSelect('task.device', 'device')
+      .leftJoinAndSelect('device.machineModel', 'machineModel')
+      .where('task.deletedAt IS NULL');
+
+    if (searchDto.id) {
+      query.andWhere('task.id = :id', { id: searchDto.id });
+    }
+
+    if (searchDto.name) {
+      query.andWhere('task.name LIKE :name', { name: `%${searchDto.name}%` });
+    }
+
+    if (searchDto.priority) {
+      query.andWhere('task.priority = :priority', {
+        priority: searchDto.priority,
+      });
+    }
+
+    if (searchDto.status) {
+      query.andWhere('task.status = :status', { status: searchDto.status });
+    }
+
+    if (searchDto.deviceId) {
+      query.andWhere('task.device = :deviceId', {
+        deviceId: searchDto.deviceId,
+      });
+    }
+
+    if (searchDto.requestId) {
+      query.andWhere('task.request = :requestId', {
+        requestId: searchDto.requestId,
+      });
+    }
+
+    if (searchDto.fixerName) {
+      query.andWhere('fixer.username = :fixerName', {
+        fixerName: searchDto.fixerName,
+      });
+    }
+
+    if (searchDto.confirmReceipt) {
+      query.andWhere('task.confirmReceipt = :confirmReceipt', {
+        confirmReceipt: searchDto.confirmReceipt,
+      });
+    }
+
+    if (searchDto.machineModelId) {
+      query.andWhere('machineModel.id = :machineModelId', {
+        machineModelId: searchDto.machineModelId,
+      });
+    }
+
+    if (searchDto.fixerDate) {
+      query.andWhere('DATE(task.fixerDate) = :fixerDate', {
+        fixerDate: searchDto.fixerDate,
+      });
+    }
+
+    if (searchDto.totalTime) {
+      query.andWhere('task.totalTime = :totalTime', {
+        totalTime: searchDto.totalTime,
+      });
+    }
+
+    if (orderDto.order && orderDto.orderBy) {
+      query.orderBy(`task.${orderDto.orderBy}`, orderDto.order);
+    }
+
+    return await query
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+  }
+
   async customGetAllTask(
     page: number,
     limit: number,
@@ -26,7 +109,13 @@ export class TaskService extends BaseService<TaskEntity> {
       where: {
         confirmReceipt: false,
       },
-      relations: ['fixer', 'device.machineModel', "issues", "issues.issueSpareParts", "issues.issueSpareParts.sparePart"],
+      relations: [
+        'fixer',
+        'device.machineModel',
+        'issues',
+        'issues.issueSpareParts',
+        'issues.issueSpareParts.sparePart',
+      ],
       order: { createdAt: 'DESC' },
       skip: (page - 1) * limit,
       take: limit,
@@ -120,7 +209,10 @@ export class TaskService extends BaseService<TaskEntity> {
             where: { id: issueSparePart.sparePart.id },
           });
           if (!sparePart) {
-            throw new HttpException('Spare part not found', HttpStatus.NOT_FOUND);
+            throw new HttpException(
+              'Spare part not found',
+              HttpStatus.NOT_FOUND,
+            );
           }
         }
       }
@@ -133,7 +225,10 @@ export class TaskService extends BaseService<TaskEntity> {
             where: { id: issueSparePart.sparePart.id },
           });
           if (!sparePart) {
-            throw new HttpException('Spare part not found', HttpStatus.NOT_FOUND);
+            throw new HttpException(
+              'Spare part not found',
+              HttpStatus.NOT_FOUND,
+            );
           }
           sparePart.quantity += issueSparePart.quantity;
           await this.sparePartRepository.save(sparePart);
