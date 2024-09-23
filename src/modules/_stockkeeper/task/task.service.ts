@@ -67,7 +67,10 @@ export class TaskService extends BaseService<TaskEntity> {
       });
     }
 
-    if (searchDto.confirmReceipt) {
+    if (
+      searchDto.confirmReceipt !== undefined &&
+      searchDto.confirmReceipt !== null
+    ) {
       query.andWhere('task.confirmReceipt = :confirmReceipt', {
         confirmReceipt: searchDto.confirmReceipt,
       });
@@ -153,7 +156,11 @@ export class TaskService extends BaseService<TaskEntity> {
     });
   }
 
-  async confirmReceipt(taskId: string, userId: string) {
+  async confirmReceipt(
+    taskId: string,
+    dto: TaskRequestDto.TaskConfirmReceiptDto,
+    userId: string,
+  ) {
     let task = await this.taskRepository.findOne({
       where: { id: taskId.trim() },
       relations: [
@@ -183,6 +190,7 @@ export class TaskService extends BaseService<TaskEntity> {
     // }
     task.confirmReceipt = true;
     task.confirmReceiptBY = userId;
+    task.confirmReceiptStockkeeperSignature = dto.signature;
     return await this.taskRepository.save(task);
   }
 

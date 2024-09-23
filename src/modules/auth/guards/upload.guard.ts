@@ -15,7 +15,12 @@ export class UploadGuard extends JWTGuard implements CanActivate {
     try {
       const request = context.switchToHttp().getRequest();
       const user = request?.headers?.user as any;
-      if (user && (user.role === Role.admin || user.role === Role.staff)) {
+      if (
+        user &&
+        (user.role === Role.admin ||
+          user.role === Role.staff ||
+          user.role === Role.stockkeeper)
+      ) {
         return true;
       } else return false;
     } catch (error) {

@@ -47,7 +47,7 @@ export class TaskController {
       limit,
       searchDto,
       orderDto,
-    )
+    );
   }
 
   @ApiBearerAuth()
@@ -79,8 +79,12 @@ export class TaskController {
     description: 'Confirm receipt',
   })
   @Post('receipt/:taskId')
-  receiveSpareParts(@Param('taskId') taskId: UUID, @Headers('user') user: any) {
-    return this.taskService.confirmReceipt(taskId, user.id);
+  receiveSpareParts(
+    @Param('taskId') taskId: UUID,
+    @Body() dto: TaskRequestDto.TaskConfirmReceiptDto,
+    @Headers('user') user: any,
+  ) {
+    return this.taskService.confirmReceipt(taskId, dto, user.id);
   }
 
   // confirm receipt receive spare parts
@@ -95,7 +99,7 @@ export class TaskController {
     @Param('taskId') taskId: UUID,
     @Headers('user') user: any,
   ) {
-    return this.taskService.confirmReceipt(taskId, user.id);
+    return this.taskService.confirmReceipt(taskId, null, user.id); 
   }
 
   // pending spare part
