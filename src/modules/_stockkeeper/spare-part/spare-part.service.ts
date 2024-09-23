@@ -7,6 +7,8 @@ import { TaskEntity, TaskStatus } from 'src/entities/task.entity';
 import { Repository } from 'typeorm';
 import { SparePartRequestDto } from './dto/request.dto';
 import { IssueSparePartEntity } from 'src/entities/issue-spare-part.entity';
+import { QueryRunner } from 'typeorm';
+
 
 @Injectable()
 export class SparePartService extends BaseService<SparePartEntity> {
@@ -324,6 +326,108 @@ export class SparePartService extends BaseService<SparePartEntity> {
 
     return true; // Task đã sẵn sàng
   }
+
+
+  async customUpdateTransaction(id: string, data: Partial<SparePartEntity>) {
+    // Khởi tạo query runner để bắt đầu transaction
+    const queryRunner = this.sparePartRepository.manager.connection.createQueryRunner();
+
+    // Bắt đầu transaction
+    await queryRunner.startTransaction('SERIALIZABLE');
+
+    try {
+      // Tìm spare part theo id
+      const sparePart = await queryRunner.manager.findOne(SparePartEntity, { where: { id } });
+      if (!sparePart) {
+        throw new Error('Spare part not found');
+      }
+
+      // Cập nhật số lượng mới của spare part
+      const updatedSparePart = await super.update(id, data);
+
+      // Chỉ xử lý nếu số lượng mới lớn hơn hoặc bằng số lượng hiện tại
+      if (data?.quantity && data.quantity >= sparePart.quantity) {
+        const tasks = await queryRunner.manager.find(TaskEntity, {
+          where: { status: TaskStatus.AWAITING_SPARE_SPART },
+          relations: [
+            'issues',
+            'issues.issueSpareParts',
+            'issues.issueSpareParts.sparePart',
+          ],
+        });
+
+        // Sắp xếp task theo priority và createdAt
+        tasks.sort((a, b) => {
+          if (a.priority !== b.priority) {
+            return a.priority ? -1 : 1;
+          }
+          return b.createdAt.getTime() - a.createdAt.getTime();
+        });
+
+        // Duyệt qua từng task để kiểm tra và cập nhật trạng thái
+        for (const task of tasks) {
+          await this.updateTaskToAwaitingFixerTransaction(task, queryRunner);
+        }
+      }
+
+      // Commit transaction khi mọi thứ đều thành công
+      await queryRunner.commitTransaction();
+
+      return updatedSparePart;
+    } catch (error) {
+      // Nếu có lỗi, rollback lại toàn bộ transaction
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      // Kết thúc query runner
+      await queryRunner.release();
+    }
+  }
+
+  async updateTaskToAwaitingFixerTransaction(task: TaskEntity, queryRunner: QueryRunner) {
+    // Duyệt qua các issue có fixType là REPLACE
+    const issuesReady = task.issues.filter(
+      (issue) => issue.fixType === FixItemType.REPLACE,
+    );
+
+    for (const issue of issuesReady) {
+      for (const issueSparePart of issue.issueSpareParts) {
+        const sparePart = issueSparePart.sparePart;
+
+        // Lấy số lượng phụ tùng hiện tại trong kho bằng queryRunner
+        const currentSparePart = await queryRunner.manager.findOne(SparePartEntity, {
+          where: { id: sparePart.id },
+        });
+
+        if (!currentSparePart || currentSparePart.quantity < issueSparePart.quantity) {
+          return false;
+        }
+      }
+    }
+
+    // Tiến hành trừ số lượng phụ tùng trong kho
+    for (const issue of issuesReady) {
+      for (const issueSparePart of issue.issueSpareParts) {
+        const sparePart = issueSparePart.sparePart;
+
+        const currentSparePart = await queryRunner.manager.findOne(SparePartEntity, {
+          where: { id: sparePart.id },
+        });
+
+        if (currentSparePart) {
+          currentSparePart.quantity -= issueSparePart.quantity;
+          await queryRunner.manager.save(SparePartEntity, currentSparePart);
+        }
+      }
+    }
+
+    // Cập nhật trạng thái của task
+    task.status = TaskStatus.AWAITING_FIXER;
+    await queryRunner.manager.save(TaskEntity, task);
+
+    return true;
+  }
+
 
   async getToday() {
     const query = this.taskRepository
