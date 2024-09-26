@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   Param,
   Post,
   Put,
@@ -18,7 +19,7 @@ import { RequestAddDeviceService } from './request-add-device.service';
 @UseGuards(AdminGuard)
 @Controller('admin/request-add-device')
 export class RequestAddDeviceController {
-  constructor(private readonly requestAddDeviceService: RequestAddDeviceService) {}
+  constructor(private readonly requestAddDeviceService: RequestAddDeviceService) { }
 
   @ApiBearerAuth()
   @Get()
@@ -52,9 +53,12 @@ export class RequestAddDeviceController {
 
   @ApiBearerAuth()
   @Post()
-  async create(@Body() body: RequestAddDeviceRequestDto.RequestAddDeviceCreateDto) {
+  async create(
+    @Body() body: RequestAddDeviceRequestDto.RequestAddDeviceCreateDto,
+    @Headers('user') user: any,
+  ) {
     return await this.requestAddDeviceService.create(
-      RequestAddDeviceRequestDto.RequestAddDeviceCreateDto.plainToClass(body),
+      RequestAddDeviceRequestDto.RequestAddDeviceCreateDto.plainToClass({ ...body, created_by: user.id }),
     );
   }
 

@@ -1,34 +1,42 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, ValidateIf } from 'class-validator';
+import { IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
-
-// @ManyToOne(() => TaskEntity, (task) => task.request)
-// task: TaskEntity;
-
-// @Column({ type: 'enum', enum: RequestAddDeviceStatus, default: RequestAddDeviceStatus.PENDING })
-// status: RequestAddDeviceStatus;
+import { RequestAddDeviceStatus } from 'src/entities/request_add_device';
 
 export namespace RequestAddDeviceRequestDto {
   export class RequestAddDeviceCreateDto extends BaseDTO {
     @ApiProperty()
     @IsNotEmpty()
-    task: string;
-
+    @Expose()
+    request: string;
+  
     @ApiProperty()
     @IsNotEmpty()
-    status: string;
+    @Expose()
+    status: RequestAddDeviceStatus;
+  
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
+    created_by: string;
+  
   }
 
   export class RequestAddDeviceUpdateDto extends BaseDTO {
     @ApiProperty()
-    @ValidateIf((o) => o.task !== undefined)
+    @IsOptional()
     @Expose()
-    task: string;
+    request: string;
+    
+    @ApiProperty()
+    @IsOptional()
+    @Expose()
+    new_device
 
     @ApiProperty()
-    @ValidateIf((o) => o.status !== undefined)
+    @IsOptional()
     @Expose()
-    status: string;
+    status: RequestAddDeviceStatus;
   }
 }

@@ -1,54 +1,37 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, ValidateIf } from 'class-validator';
+import { IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
+import { RequestAddDeviceStatus } from 'src/entities/request_add_device';
 
 export namespace RequestAddDeviceRequestDto {
   export class RequestAddDeviceCreateDto extends BaseDTO {
     @ApiProperty()
     @IsNotEmpty()
     @Expose()
-    name: string;
-
+    request: string;
+  
     @ApiProperty()
     @IsNotEmpty()
     @Expose()
-    instruction: string;
-
+    status: RequestAddDeviceStatus;
+  
     @ApiProperty()
-    @IsNotEmpty()
+    @IsOptional()
     @Expose()
-    width: number;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @Expose()
-    height: number;
+    created_by: string;
+  
   }
 
   export class RequestAddDeviceUpdateDto extends BaseDTO {
     @ApiProperty()
-    @IsNotEmpty()
-    @ValidateIf((object, value) => value !== undefined)
+    @IsOptional()
     @Expose()
-    name?: string;
+    request: string;
 
     @ApiProperty()
-    @IsNotEmpty()
-    @ValidateIf((object, value) => value !== undefined)
+    @IsOptional()
     @Expose()
-    instruction?: string;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @ValidateIf((object, value) => value !== undefined)
-    @Expose()
-    width?: number;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @ValidateIf((object, value) => value !== undefined)
-    @Expose()
-    height?: number;
+    status: RequestAddDeviceStatus;
   }
 }

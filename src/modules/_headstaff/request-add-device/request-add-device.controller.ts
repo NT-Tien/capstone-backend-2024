@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   Param,
   Post,
   Put,
@@ -52,9 +53,12 @@ export class RequestAddDeviceController {
 
   @ApiBearerAuth()
   @Post()
-  async create(@Body() body: RequestAddDeviceRequestDto.RequestAddDeviceCreateDto) {
+  async create(
+    @Body() body: RequestAddDeviceRequestDto.RequestAddDeviceCreateDto,
+    @Headers('user') user: any,
+  ) {
     return await this.requestAddDeviceService.create(
-      RequestAddDeviceRequestDto.RequestAddDeviceCreateDto.plainToClass(body),
+      RequestAddDeviceRequestDto.RequestAddDeviceCreateDto.plainToClass({ ...body, created_by: user.id }),
     );
   }
 
