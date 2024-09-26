@@ -1,6 +1,7 @@
 import { BaseEntity } from 'src/common/base/entity.base';
 import { Column, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
-import { TaskEntity } from './task.entity';
+import { MachineModelEntity } from './machine-model.entity';
+import { AccountEntity } from './account.entity';
 
 
 export enum RequestAddDeviceStatus {
@@ -17,10 +18,13 @@ export enum RequestAddDeviceStatus {
   },
 })
 export class RequestAddDeviceEntity extends BaseEntity {
-  @ManyToOne(() => TaskEntity, (task) => task.request)
-  task: TaskEntity;
+  @ManyToOne(() => MachineModelEntity, (machineModel) => machineModel.id)
+  machine_model: MachineModelEntity; // 
 
   @Column({ type: 'enum', enum: RequestAddDeviceStatus, default: RequestAddDeviceStatus.PENDING })
   status: RequestAddDeviceStatus;
+
+  @ManyToOne(() => AccountEntity, (account) => account.id)
+  created_by: string;
 
 }
