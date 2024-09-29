@@ -52,7 +52,7 @@ export class RequestService extends BaseService<RequestEntity> {
       .where('requester.deletedAt is null')
       .andWhere('requester.id = :id', { id: userId })
       .andWhere('request.createdAt BETWEEN :start AND :end', {
-        start: new Date(new Date().setDate(new Date().getDate() - 30)),
+        start: new Date(new Date().setDate(new Date().getDate() - (30 * 3))),
         end: new Date(),
       })
       .getMany();
