@@ -1,22 +1,65 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
 
 export namespace DeviceRequestDto {
+  export class DeviceFilterDto extends BaseDTO {
+    @ApiPropertyOptional()
+    @IsOptional()
+    @Expose()
+    id?: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @Expose()
+    areaId?: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @Expose()
+    machineModelId?: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @Expose()
+    positionX?: number;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @Expose()
+    positionY?: number;
+  }
+
+  export class DeviceOrderDto extends BaseDTO {
+    @ApiPropertyOptional({ enum: ['ASC', 'DESC'] })
+    @IsOptional()
+    @IsEnum(['ASC', 'DESC'])
+    @Expose()
+    order?: 'ASC' | 'DESC';
+
+    @ApiPropertyOptional({
+      enum: ['createdAt', 'updatedAt', 'position'],
+    })
+    @IsOptional()
+    @IsEnum(['createdAt', 'updatedAt', 'position'])
+    @Expose()
+    orderBy?: 'createdAt' | 'updatedAt' | 'position';
+  }
+
   export class DeviceCreateDto extends BaseDTO {
-    @ApiProperty()
-    @IsNotEmpty()
+    @ApiPropertyOptional()
+    @IsOptional()
     @Expose()
     area: string;
 
-    @ApiProperty()
-    @IsNotEmpty()
+    @ApiPropertyOptional()
+    @IsOptional()
     @Expose()
     positionX: number;
 
-    @ApiProperty()
-    @IsNotEmpty()
+    @ApiPropertyOptional()
+    @IsOptional()
     @Expose()
     positionY: number;
 
@@ -35,7 +78,7 @@ export namespace DeviceRequestDto {
     @Expose()
     operationStatus: number;
 
-    @ApiProperty()
+    @ApiPropertyOptional()
     @IsOptional()
     @Expose()
     status?: boolean;

@@ -64,11 +64,13 @@ export class TaskService extends BaseService<TaskEntity> {
       .leftJoinAndSelect('task.issues', 'issues')
       .leftJoinAndSelect('issues.issueSpareParts', 'issueSpareParts')
       .leftJoinAndSelect('task.request', 'request')
-      .leftJoinAndSelect("request.tasks", "tasks") // so that staff can find the "send to warranty" request
-      .leftJoinAndSelect("tasks.issues", 'taskIssues')
-      .leftJoinAndSelect("taskIssues.typeError", 'taskIssueTypeError')
+      .leftJoinAndSelect('request.tasks', 'tasks') // so that staff can find the "send to warranty" request
+      .leftJoinAndSelect('tasks.issues', 'taskIssues')
+      .leftJoinAndSelect('taskIssues.typeError', 'taskIssueTypeError')
       .leftJoinAndSelect('issues.typeError', 'typeError')
       .leftJoinAndSelect('issueSpareParts.sparePart', 'sparePart')
+      .leftJoinAndSelect('task.device_renew', 'device_renew')
+      .leftJoinAndSelect('device_renew.machineModel', 'renewMachineModel')
       .where('task.id = :taskId', { taskId })
       .andWhere('fixer.id = :id', { id: userId })
       .getOne();
@@ -167,10 +169,7 @@ export class TaskService extends BaseService<TaskEntity> {
     return await this.taskRepository.save({ ...task, ...data });
   }
 
-  async staffRequestCanncelTask(
-    userId: string,
-    taskId: string,
-  ) {
+  async staffRequestCanncelTask(userId: string, taskId: string) {
     let task = await this.taskRepository.findOne({
       where: { id: taskId },
       relations: ['fixer'],

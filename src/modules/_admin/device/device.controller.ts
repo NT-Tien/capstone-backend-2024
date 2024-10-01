@@ -34,6 +34,18 @@ export class DeviceController {
   }
 
   @ApiBearerAuth()
+  @Get("/all/:page/:limit")
+  async getAllFilteredAndSorted(
+    @Param('page') page: number,
+    @Param('limit') limit: number,
+    @Query() filter: DeviceRequestDto.DeviceFilterDto,
+    @Query() order: DeviceRequestDto.DeviceOrderDto,
+  ) {
+    return this.deviceService.getAllFilteredAndSorted(page, limit, filter, order);
+  }
+  
+
+  @ApiBearerAuth()
   @Get('get-all-by-area-id/:areaId')
   getAllTaskInfoByAreaId(
     @Param('areaId') areaID: string,

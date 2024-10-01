@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { IsArray, IsDateString, IsNotEmpty, IsOptional } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
@@ -41,6 +41,11 @@ export namespace TaskRequestDto {
     @IsOptional()
     @Expose()
     fixerDate: Date;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @Expose()
+    renewDeviceId?: string;
 
     // @ApiProperty()
     // @IsOptional()

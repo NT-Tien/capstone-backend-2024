@@ -5,13 +5,19 @@ import {
   Get,
   Headers,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 // import { CacheTTL } from '@nestjs/cache-manager';
 import { RequestService } from './request.service';
 import { RequestResponseDto } from './dto/response.dto';
@@ -23,7 +29,7 @@ import { AdminGuard } from 'src/modules/auth/guards/admin.guard';
 @UseGuards(AdminGuard)
 @Controller('admin/request')
 export class RequestController {
-  constructor(private readonly requestService: RequestService) { }
+  constructor(private readonly requestService: RequestService) {}
 
   @ApiBearerAuth()
   @ApiResponse({
@@ -40,20 +46,37 @@ export class RequestController {
     @Query('time') time: number = 1,
     @Query('all') all: boolean = false,
   ) {
-    console.log(all, typeof all)
+    console.log(all, typeof all);
     if (all) {
       const result = await this.requestService.test_all();
       console.log(JSON.stringify(result, null, 2));
-      return result
+      return result;
     } else {
       return await this.requestService.customHeadStaffGetAllRequest(
         user?.id,
         page,
         limit,
         status,
-        time
+        time,
       );
     }
+  }
+
+  @ApiOperation({ summary: 'Get all requests with filter and sort' })
+  @ApiBearerAuth()
+  @Get('/all/:page/:limit')
+  async getAllRequests(
+    @Param('page', ParseIntPipe) page: number,
+    @Param('limit', ParseIntPipe) limit: number,
+    @Query() filterDto: RequestRequestDto.RequestAllFilteredDto,
+    @Query() orderDto: RequestRequestDto.RequestAllOrderedDto,
+  ) {
+    return this.requestService.all_filtered_sorted(
+      page,
+      limit,
+      filterDto,
+      orderDto,
+    );
   }
 
   // @ApiResponse({
@@ -79,11 +102,13 @@ export class RequestController {
     description: 'Get one Request',
   })
   @ApiBearerAuth()
-  @Get(':id')
+  @Get('one/:id')
   async getOne(@Headers('user') user: any, @Param('id') id: string) {
-    console.log(user?.id, id);
+    console.log("admin_request_one",user?.id, id);
 
-    return await this.requestService.customHeadStaffGetOneRequest(user?.id, id);
+    const response = await this.requestService.customHeadStaffGetOneRequest(user?.id, id);
+    console.log(JSON.stringify(response, null, 2))
+    return response
   }
 
   // @ApiBearerAuth()

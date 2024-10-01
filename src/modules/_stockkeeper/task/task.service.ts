@@ -152,6 +152,8 @@ export class TaskService extends BaseService<TaskEntity> {
         'issues.typeError',
         'issues.issueSpareParts',
         'issues.issueSpareParts.sparePart',
+        'device_renew',
+        'device_renew.machineModel',
       ],
     });
   }
