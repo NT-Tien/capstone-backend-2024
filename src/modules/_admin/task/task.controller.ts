@@ -1,14 +1,12 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
-  Headers,
   Param,
-  Post,
+  ParseIntPipe,
   Put,
   Query,
-  UseGuards,
+  UseGuards
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -17,18 +15,17 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 // import { CacheTTL } from '@nestjs/cache-manager';
-import { TaskService } from './task.service';
-import { TaskResponseDto } from './dto/response.dto';
-import { TaskRequestDto } from './dto/request.dto';
 import { TaskStatus } from 'src/entities/task.entity';
 import { AdminGuard } from 'src/modules/auth/guards/admin.guard';
-import { time } from 'console';
+import { TaskRequestDto } from './dto/request.dto';
+import { TaskResponseDto } from './dto/response.dto';
+import { TaskService } from './task.service';
 
 @ApiTags('admin: task')
 @UseGuards(AdminGuard)
 @Controller('admin/task')
 export class TaskController {
-  constructor(private readonly taskService: TaskService) { }
+  constructor(private readonly taskService: TaskService) {}
 
   @ApiBearerAuth()
   @ApiResponse({
@@ -50,6 +47,23 @@ export class TaskController {
     return await this.taskService.customGetAllTask(page, limit, status, time);
   }
 
+  @ApiOperation({ summary: 'Get all tasks with filter and order' })
+  @ApiBearerAuth()
+  @Get('/all/:page/:limit')
+  async getAllWithFilterAndOrder(
+    @Param('page', ParseIntPipe) page: number,
+    @Param('limit', ParseIntPipe) limit: number,
+    @Query() filter: TaskRequestDto.TaskFilterDto,
+    @Query() order: TaskRequestDto.TaskOrderDto,
+  ) {
+    return this.taskService.getAllTasksWithFilterAndOrder(
+      page,
+      limit,
+      filter,
+      order,
+    );
+  }
+
   @ApiBearerAuth()
   @ApiResponse({
     type: TaskResponseDto.TaskGetAll,
@@ -57,9 +71,7 @@ export class TaskController {
     description: 'Get all Tasks',
   })
   @Get('get-all-by-area-id/:areaId')
-  getAllTaskInfoByAreaId(
-    @Param('areaId') areaID: string
-  ) {
+  getAllTaskInfoByAreaId(@Param('areaId') areaID: string) {
     return this.taskService.getAllInfoTaskByAreaId(areaID);
   }
 

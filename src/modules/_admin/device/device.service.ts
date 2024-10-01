@@ -5,6 +5,7 @@ import { DeviceEntity } from 'src/entities/device.entity';
 import { RequestStatus } from 'src/entities/request.entity';
 import { TaskStatus } from 'src/entities/task.entity';
 import { Repository } from 'typeorm';
+import { DeviceRequestDto } from './dto/request.dto';
 
 @Injectable()
 export class DeviceService extends BaseService<DeviceEntity> {
@@ -38,10 +39,7 @@ export class DeviceService extends BaseService<DeviceEntity> {
             id: areaId,
           },
         },
-        relations: [
-          'requests',
-          'requests.tasks',
-        ],
+        relations: ['requests', 'requests.tasks'],
       }),
     ]).then(([devices]) => {
       let total_requests = 0;
@@ -70,8 +68,8 @@ export class DeviceService extends BaseService<DeviceEntity> {
       let close_task_request_cancelled = 0;
 
       // filter requests by time (1: this week, 2: last month, 3: this year)
-      devices = devices.map(device => {
-        device.requests = device.requests.filter(request => {
+      devices = devices.map((device) => {
+        device.requests = device.requests.filter((request) => {
           const requestTime = new Date(request.createdAt).getTime();
           const currentTime = new Date().getTime();
           switch (time) {
@@ -85,11 +83,11 @@ export class DeviceService extends BaseService<DeviceEntity> {
               return true;
           }
         });
-        return device
+        return device;
       });
 
-      devices.forEach(device => {
-        device.requests.forEach(request => {
+      devices.forEach((device) => {
+        device.requests.forEach((request) => {
           total_requests++;
           switch (request.status) {
             case RequestStatus.PENDING:
@@ -114,7 +112,7 @@ export class DeviceService extends BaseService<DeviceEntity> {
               rejected_requests++;
               break;
           }
-          request.tasks.forEach(task => {
+          request.tasks.forEach((task) => {
             total_tasks++;
             switch (task.status) {
               case TaskStatus.AWAITING_SPARE_SPART:
@@ -175,8 +173,64 @@ export class DeviceService extends BaseService<DeviceEntity> {
           staff_request_cancelled,
           head_staff_confirm_staff_request_cancelled,
           close_task_request_cancelled,
-        }
+        },
       };
     });
+  }
+
+  async getAllFilteredAndSorted(
+    page: number,
+    limit: number,
+    filter: DeviceRequestDto.DeviceFilterDto,
+    order: DeviceRequestDto.DeviceOrderDto,
+  ) {
+    const query = this.deviceRepository
+      .createQueryBuilder('device')
+      .leftJoinAndSelect('device.machineModel', 'machineModel')
+      .leftJoinAndSelect('device.area', 'area');
+
+    if (filter.id) {
+      query.andWhere('device.id = :id', {
+        id: filter.id,
+      });
+    }
+
+    if (filter.areaId) {
+      query.andWhere('device.area = :areaId', {
+        areaId: filter.areaId,
+      });
+    }
+
+    if (filter.machineModelId) {
+      query.andWhere('device.machineModel = :machineModelId', {
+        machineModelId: filter.machineModelId,
+      });
+    }
+
+    if (filter.positionX && (filter.positionX as any) !== "NaN") {
+      query.andWhere('device.positionX = :positionX', {
+        positionX: filter.positionX,
+      });
+    }
+
+    if (filter.positionY && (filter.positionY as any) !== "NaN") {
+      query.andWhere('device.positionY = :positionY', {
+        positionY: filter.positionY,
+      });
+    }
+
+    if (order.order && order.orderBy) {
+      if (order.orderBy === 'position') {
+        query.orderBy(`device.positionX`, order.order);
+        query.addOrderBy(`device.positionY`, order.order);
+      } else {
+        query.orderBy(`device.${order.orderBy}`, order.order);
+      }
+    }
+
+    return await query
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
   }
 }

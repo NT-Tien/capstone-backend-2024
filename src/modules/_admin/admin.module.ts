@@ -8,6 +8,7 @@ import { TypeErrorHeadModule } from './type-error-head/type-error-head.module';
 import { TaskModule } from './task/task.module';
 import { RequestModule } from './request/request.module';
 import { RequestAddDeviceModule } from './request-add-device/request-add-device.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { RequestAddDeviceModule } from './request-add-device/request-add-device.
     TaskModule,
     RequestModule,
     RequestAddDeviceModule,
+    UserModule,
   ],
 })
 export class AdminModule {}

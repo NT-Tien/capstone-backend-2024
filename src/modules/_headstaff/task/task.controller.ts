@@ -26,7 +26,7 @@ import { TaskStatus } from 'src/entities/task.entity';
 @UseGuards(HeadStaffGuard)
 @Controller('head-staff/task')
 export class TaskController {
-  constructor(private readonly taskService: TaskService) { }
+  constructor(private readonly taskService: TaskService) {}
 
   @ApiBearerAuth()
   @ApiResponse({
@@ -102,15 +102,22 @@ export class TaskController {
   }
 
   @ApiBearerAuth()
+  @Put('/assign-renew-device/:taskId/:renewDeviceId')
+  async assignRenewDevice(
+    @Param('taskId') taskId: string,
+    @Param('renewDeviceId') renewDeviceId: string,
+  ) {
+    return await this.taskService.assignRenewDevice(taskId, renewDeviceId);
+  }
+
+  @ApiBearerAuth()
   @ApiResponse({
     type: TaskResponseDto.TaskUpdate,
     status: 200,
     description: 'Update a Task status to awaiting fixer',
   })
   @Put('update-task-to-awatting-fixer/:id')
-  async updateTaskStausToAwaitingFixer(
-    @Param('id') taskId: string,
-  ) {
+  async updateTaskStausToAwaitingFixer(@Param('id') taskId: string) {
     return await this.taskService.updateTaskStausToAwaitingFixer(taskId);
   }
 

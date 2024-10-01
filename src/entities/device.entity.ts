@@ -8,7 +8,9 @@ import { RequestEntity } from './request.entity';
   name: 'DEVICE',
 })
 export class DeviceEntity extends BaseEntity {
-  @ManyToOne(() => AreaEntity, (area) => area.id)
+  @ManyToOne(() => AreaEntity, (area) => area.id, {
+    nullable: true,
+  })
   area: AreaEntity;
 
   @OneToMany(() => RequestEntity, (request) => request.device)
@@ -17,11 +19,13 @@ export class DeviceEntity extends BaseEntity {
   @Column({
     name: 'position_x',
     type: 'int',
+    nullable: true,
   })
   positionX: number;
 
   @Column({
     name: 'position_y',
+    nullable: true,
     type: 'int',
   })
   positionY: number;

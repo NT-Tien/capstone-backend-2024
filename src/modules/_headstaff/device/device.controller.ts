@@ -28,9 +28,10 @@ export class DeviceController {
     status: 200,
     description: 'Get all Devices not have position',
   })
-  @Get()
+  @Get("/all/no-position")
   async getAll() {
-    return await this.deviceService.getAllWithRelations();
+    console.log("RECEIVED")
+    return await this.deviceService.getAllWithRelationsNoPosition();
   }
 
   // @ApiResponse({

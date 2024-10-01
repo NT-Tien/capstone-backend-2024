@@ -8,6 +8,7 @@ import { TaskRequestDto } from './dto/request.dto';
 import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
 import { IssueStatus } from 'src/entities/issue.entity';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
+import { DeviceEntity } from 'src/entities/device.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -20,6 +21,8 @@ export class TaskService extends BaseService<TaskEntity> {
     private readonly accountRepository: Repository<AccountEntity>,
     @InjectRepository(RequestEntity)
     private readonly requestRepository: Repository<RequestEntity>,
+    @InjectRepository(DeviceEntity)
+    private readonly deviceRepository: Repository<DeviceEntity>,
   ) {
     super(taskRepository);
   }
@@ -45,6 +48,39 @@ export class TaskService extends BaseService<TaskEntity> {
       skip: (page - 1) * limit,
       take: limit,
     });
+  }
+
+  async assignRenewDevice(taskId: string, renewDeviceId: string) {
+    const task = await this.taskRepository.findOne({
+      where: { id: taskId },
+      relations: ['device', 'device.area', 'device.machineModel'],
+    });
+    if (!task) {
+      throw new Error('Task not found or invalid status');
+    }
+    const newDevice = await this.deviceRepository.findOne({
+      where: { id: renewDeviceId },
+    });
+    if (!newDevice) {
+      throw new Error('Device not found');
+    }
+    task.device_renew = newDevice;
+
+    // change the position of the old device to the new device
+    newDevice.positionX = task.device.positionX;
+    newDevice.positionY = task.device.positionY;
+    newDevice.area = task.device.area;
+
+    await this.deviceRepository.save(newDevice);
+
+    // remove old device
+    task.device.positionX = null;
+    task.device.positionY = null;
+    task.device.status = false;
+
+    await this.deviceRepository.save(task.device);
+
+    return await this.taskRepository.save(task);
   }
 
   async customGetAllTaskDashboard(
@@ -73,6 +109,8 @@ export class TaskService extends BaseService<TaskEntity> {
         'issues.typeError',
         'issues.issueSpareParts',
         'issues.issueSpareParts.sparePart',
+        'device_renew',
+        'device_renew.machineModel',
       ],
     });
   }
@@ -137,10 +175,14 @@ export class TaskService extends BaseService<TaskEntity> {
     // check task status is awaiting spare part and spare part quantity is enough
     const task = await this.taskRepository.findOne({
       where: { id: taskId },
-      relations: ['issues', 'issues.issueSpareParts', "issues.issueSpareParts.sparePart"],
+      relations: [
+        'issues',
+        'issues.issueSpareParts',
+        'issues.issueSpareParts.sparePart',
+      ],
     });
     let issues = task.issues;
-    // check issueSpareParts of each issues is enought 
+    // check issueSpareParts of each issues is enought
     for (let issue of issues) {
       for (let issueSparePart of issue.issueSpareParts) {
         const sparePart = await this.sparePartRepository.findOne({
@@ -191,17 +233,17 @@ export class TaskService extends BaseService<TaskEntity> {
 
     // const request = await this.requestRepository.findOne({
     //   where: { id: task.request.id },
-      // relations: ['issues', 'tasks'],
-      // select: {
-      //   issues: {
-      //     id: true,
-      //     status: true,
-      //   },
-      //   tasks: {
-      //     id: true,
-      //     status: true
-      //   }
-      // },
+    // relations: ['issues', 'tasks'],
+    // select: {
+    //   issues: {
+    //     id: true,
+    //     status: true,
+    //   },
+    //   tasks: {
+    //     id: true,
+    //     status: true
+    //   }
+    // },
     // });
 
     // const hasUncompletedIssue = request.issues.find((issue) => {
@@ -214,7 +256,6 @@ export class TaskService extends BaseService<TaskEntity> {
     //   request.status = RequestStatus.HEAD_CONFIRM;
     //   await this.requestRepository.save(request);
     // }
-
 
     return result;
   }

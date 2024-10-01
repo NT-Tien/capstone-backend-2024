@@ -14,14 +14,15 @@ export class DeviceService extends BaseService<DeviceEntity> {
   }
 
   // get all with relations
-  async getAllWithRelations(): Promise<DeviceEntity[]> {
-    return this.deviceRepository.find({
-      where: {
-        positionX : null,
-        positionY : null,
-      },
-      relations: ['area', 'machineModel', 'machineModel.spareParts'],
-    });
+  async getAllWithRelationsNoPosition(): Promise<DeviceEntity[]> {
+    const query = this.deviceRepository
+      .createQueryBuilder('device')
+      .leftJoinAndSelect('device.machineModel', 'machineModel');
+
+    query.where('device.positionX IS NULL');
+    query.andWhere('device.positionY IS NULL');
+
+    return query.getMany();
   }
 
   // get one with relations
