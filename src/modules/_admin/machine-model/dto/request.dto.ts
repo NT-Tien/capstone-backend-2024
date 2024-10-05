@@ -1,9 +1,15 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, ValidateIf } from 'class-validator';
+import { IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
 
 export namespace MachineModelRequestDto {
+  export class MachineModelBasicAllQuery extends BaseDTO {
+    @ApiPropertyOptional({ type: 'boolean' })
+    @IsOptional()
+    @Expose()
+    withDevices?: string;
+  }
   export class MachineModelCreateDto extends BaseDTO {
     @ApiProperty()
     @IsNotEmpty()

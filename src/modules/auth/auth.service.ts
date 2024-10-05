@@ -8,6 +8,8 @@ import { AuthRequestDto } from './dto/request.dto';
 
 @Injectable()
 export class AuthService {
+  skipTime: boolean = true;
+
   constructor(
     private readonly jwtService: JwtService,
     @InjectRepository(AccountEntity)
@@ -60,7 +62,10 @@ export class AuthService {
       throw new HttpException('Token is required', HttpStatus.BAD_REQUEST);
     }
     const decodedToken = await this.decodeToken(token);
-    if (decodedToken.username && decodedToken.exp < Date.now()) {
+    if (
+      decodedToken.username &&
+      (this.skipTime ? true : decodedToken.exp < Date.now())
+    ) {
       const account = await this.repositoryAccount.findOne({
         where: { username: decodedToken.username },
       });
@@ -76,7 +81,10 @@ export class AuthService {
     if (!token)
       throw new HttpException('Token is required', HttpStatus.BAD_REQUEST);
     const decodedToken = await this.decodeToken(token);
-    if (decodedToken.username && decodedToken.exp < Date.now()) {
+    if (
+      decodedToken.username &&
+      (this.skipTime ? true : decodedToken.exp < Date.now())
+    ) {
       const account = await this.repositoryAccount.findOne({
         where: { username: decodedToken.username },
       });
@@ -93,7 +101,10 @@ export class AuthService {
     if (!token)
       throw new HttpException('Token is required', HttpStatus.BAD_REQUEST);
     const decodedToken = await this.decodeToken(token);
-    if (decodedToken.username && decodedToken.exp < Date.now()) {
+    if (
+      decodedToken.username &&
+      (this.skipTime ? true : decodedToken.exp < Date.now())
+    ) {
       const account = await this.repositoryAccount.findOne({
         where: { username: decodedToken.username },
       });
@@ -110,7 +121,10 @@ export class AuthService {
     if (!token)
       throw new HttpException('Token is required', HttpStatus.BAD_REQUEST);
     const decodedToken = await this.decodeToken(token);
-    if (decodedToken.username && decodedToken.exp < Date.now()) {
+    if (
+      decodedToken.username &&
+      (this.skipTime ? true : decodedToken.exp < Date.now())
+    ) {
       const account = await this.repositoryAccount.findOne({
         where: { username: decodedToken.username },
       });
@@ -127,7 +141,10 @@ export class AuthService {
     if (!token)
       throw new HttpException('Token is required', HttpStatus.BAD_REQUEST);
     const decodedToken = await this.decodeToken(token);
-    if (decodedToken.username && decodedToken.exp < Date.now()) {
+    if (
+      decodedToken.username &&
+      (this.skipTime ? true : decodedToken.exp < Date.now())
+    ) {
       const account = await this.repositoryAccount.findOne({
         where: { username: decodedToken.username },
       });
@@ -144,7 +161,10 @@ export class AuthService {
     if (!token)
       throw new HttpException('Token is required', HttpStatus.BAD_REQUEST);
     const decodedToken = await this.decodeToken(token);
-    if (decodedToken.username && decodedToken.exp < Date.now()) {
+    if (
+      decodedToken.username &&
+      (this.skipTime ? true : decodedToken.exp < Date.now())
+    ) {
       const account = await this.repositoryAccount.findOne({
         where: { username: decodedToken.username },
       });
@@ -161,7 +181,10 @@ export class AuthService {
     if (!token)
       throw new HttpException('Token is required', HttpStatus.BAD_REQUEST);
     const decodedToken = await this.decodeToken(token);
-    if (decodedToken.username && decodedToken.exp < Date.now()) {
+    if (
+      decodedToken.username &&
+      (this.skipTime ? true : decodedToken.exp < Date.now())
+    ) {
       const account = await this.repositoryAccount.findOne({
         where: { username: decodedToken.username },
       });
