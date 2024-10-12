@@ -15,6 +15,11 @@ export namespace TaskRequestDto {
     @Expose()
     type: 'all' | 'fix' | 'warranty' | 'renew';
 
+    @ApiPropertyOptional()
+    @IsOptional()
+    @Expose()
+    areaId?: string
+
     @ApiProperty()
     @IsNotEmpty()
     @Expose()
@@ -61,6 +66,11 @@ export namespace TaskRequestDto {
     @IsOptional()
     @Expose()
     requestId?: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @Expose()
+    areaId?: string
 
     @ApiPropertyOptional()
     @IsOptional()

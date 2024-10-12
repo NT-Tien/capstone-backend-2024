@@ -32,6 +32,7 @@ export class TaskService extends BaseService<TaskEntity> {
       .leftJoinAndSelect('task.request', 'request')
       .leftJoinAndSelect('task.fixer', 'fixer')
       .leftJoinAndSelect('task.device', 'device')
+      .leftJoinAndSelect('device.area', 'area')
       .leftJoinAndSelect('device.machineModel', 'machineModel')
       .where('task.deletedAt IS NULL');
 
@@ -51,6 +52,12 @@ export class TaskService extends BaseService<TaskEntity> {
 
     if (searchDto.status) {
       query.andWhere('task.status = :status', { status: searchDto.status });
+    }
+
+    if(searchDto.areaId) {
+      query.andWhere('area.id = :areaId', {
+        areaId: searchDto.areaId,
+      });
     }
 
     if (searchDto.deviceId) {
@@ -196,6 +203,8 @@ export class TaskService extends BaseService<TaskEntity> {
     const query = this.taskRepository
       .createQueryBuilder('task')
       .leftJoinAndSelect('task.request', 'request')
+      .leftJoinAndSelect('task.device', 'device')
+      .leftJoinAndSelect('device.area', 'area')
       .leftJoinAndSelect('task.issues', 'issues')
       .leftJoinAndSelect('issues.issueSpareParts', 'issueSpareParts');
 
@@ -224,13 +233,19 @@ export class TaskService extends BaseService<TaskEntity> {
       }
     }
     console.log(dto.startDate, dto.endDate);
-    // query.andWhere('request.createdAt >= :startDate', {
-    //   startDate: dto.startDate,
-    // });
+    query.andWhere('request.createdAt >= :startDate', {
+      startDate: dto.startDate,
+    });
 
-    // query.andWhere('request.createdAt <= :endDate', {
-    //   endDate: dto.endDate,
-    // });
+    query.andWhere('request.createdAt <= :endDate', {
+      endDate: dto.endDate,
+    });
+
+    if(dto.areaId) {
+      query.andWhere('area.id = :areaId', {
+        areaId: dto.areaId,
+      });
+    }
 
     return {
       [TaskStatus.AWAITING_SPARE_SPART]: await query
