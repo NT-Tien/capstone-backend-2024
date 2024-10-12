@@ -79,6 +79,20 @@ export class RequestController {
     );
   }
 
+  @ApiOperation({ summary: 'Get many requests by ids' })
+  @ApiBearerAuth()
+  @Post('/many-by-ids')
+  async getMany(@Body() data: RequestRequestDto.RequestGetManyByIdsDto) {
+    return await this.requestService.getMany(data);
+  }
+
+  @ApiOperation({ summary: 'Get request dashboard information' })
+  @ApiBearerAuth()
+  @Get('/dashboard-info')
+  async getDashboard(@Query() dto: RequestRequestDto.DashboardInfo) {
+    return await this.requestService.getDashboardInfo(dto);
+  }
+
   // @ApiResponse({
   //   type: RequestResponseDto.RequestGetAll,
   //   status: 200,
@@ -104,11 +118,14 @@ export class RequestController {
   @ApiBearerAuth()
   @Get('one/:id')
   async getOne(@Headers('user') user: any, @Param('id') id: string) {
-    console.log("admin_request_one",user?.id, id);
+    console.log('admin_request_one', user?.id, id);
 
-    const response = await this.requestService.customHeadStaffGetOneRequest(user?.id, id);
-    console.log(JSON.stringify(response, null, 2))
-    return response
+    const response = await this.requestService.customHeadStaffGetOneRequest(
+      user?.id,
+      id,
+    );
+    console.log(JSON.stringify(response, null, 2));
+    return response;
   }
 
   // @ApiBearerAuth()

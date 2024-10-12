@@ -29,6 +29,7 @@ export class TaskService extends BaseService<TaskEntity> {
   ) {
     const query = this.taskRepository
       .createQueryBuilder('task')
+      .leftJoinAndSelect('task.request', 'request')
       .leftJoinAndSelect('task.fixer', 'fixer')
       .leftJoinAndSelect('task.device', 'device')
       .leftJoinAndSelect('device.machineModel', 'machineModel')
@@ -55,6 +56,12 @@ export class TaskService extends BaseService<TaskEntity> {
     if (searchDto.deviceId) {
       query.andWhere('task.device = :deviceId', {
         deviceId: searchDto.deviceId,
+      });
+    }
+
+    if(searchDto.is_warranty !== undefined && searchDto.is_warranty !== null) {
+      query.andWhere('request.is_warranty = :is_warranty', {
+        is_warranty: searchDto.is_warranty,
       });
     }
 
@@ -183,5 +190,92 @@ export class TaskService extends BaseService<TaskEntity> {
       },
       relations: ['request'],
     });
+  }
+
+  async getDashboardInfo(dto: TaskRequestDto.DashboardInfoDto) {
+    const query = this.taskRepository
+      .createQueryBuilder('task')
+      .leftJoinAndSelect('task.request', 'request')
+      .leftJoinAndSelect('task.issues', 'issues')
+      .leftJoinAndSelect('issues.issueSpareParts', 'issueSpareParts');
+
+    switch (dto.type) {
+      case 'warranty': {
+        query.where('request.is_warranty = :is_warranty', { is_warranty: true });
+        break;
+      }
+      case 'renew': {
+        query.where('request.is_renew = :is_renew', {
+          is_renew: true,
+        });
+        break;
+      }
+      case 'fix': {
+        query.where('request.is_warranty = :is_warranty', {
+          is_warranty: false,
+        });
+        query.andWhere('request.is_renew = :is_renew', {
+          is_renew: false,
+        });
+        break;
+      }
+      case 'all': {
+        break;
+      }
+    }
+    console.log(dto.startDate, dto.endDate);
+    // query.andWhere('request.createdAt >= :startDate', {
+    //   startDate: dto.startDate,
+    // });
+
+    // query.andWhere('request.createdAt <= :endDate', {
+    //   endDate: dto.endDate,
+    // });
+
+    return {
+      [TaskStatus.AWAITING_SPARE_SPART]: await query
+        .andWhere('task.status = :status', {
+          status: TaskStatus.AWAITING_SPARE_SPART,
+        })
+        .getCount(),
+      [TaskStatus.AWAITING_FIXER]: await query
+        .andWhere('task.status = :status', {
+          status: TaskStatus.AWAITING_FIXER,
+        })
+        .getCount(),
+      [TaskStatus.ASSIGNED]: await query
+        .andWhere('task.status = :status', {
+          status: TaskStatus.ASSIGNED,
+        })
+        .getCount(),
+      // 'spare-part-fetched': await query
+      //   .andWhere('task.status = :status', {
+      //     status: TaskStatus.ASSIGNED,
+      //   })
+      //   .andWhere('task.confirmReceipt = :confirmReceipt', {
+      //     confirmReceipt: true,
+      //   })
+      //   .getCount(),
+      [TaskStatus.IN_PROGRESS]: await query
+        .andWhere('task.status = :status', {
+          status: TaskStatus.IN_PROGRESS,
+        })
+        .getCount(),
+      [TaskStatus.HEAD_STAFF_CONFIRM]: await query
+        .andWhere('task.status = :status', {
+          status: TaskStatus.HEAD_STAFF_CONFIRM,
+        })
+        .getCount(),
+      [TaskStatus.COMPLETED]: await query
+        .andWhere('task.status = :status', {
+          status: TaskStatus.COMPLETED,
+        })
+        .getCount(),
+      [TaskStatus.CANCELLED]: await query
+        .andWhere('task.status = :status', {
+          status: TaskStatus.CANCELLED,
+        })
+        .getCount(),
+    };
   }
 }

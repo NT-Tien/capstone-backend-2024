@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from 'src/common/base/service.base';
 import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
-import { Between, Repository } from 'typeorm';
+import { Between, In, Repository } from 'typeorm';
 import { RequestRequestDto } from './dto/request.dto';
 import { AccountEntity, Role } from 'src/entities/account.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
@@ -76,6 +76,12 @@ export class RequestService extends BaseService<RequestEntity> {
       });
     }
 
+    if (filterDto.is_seen !== undefined && filterDto.is_seen !== null) {
+      query.andWhere('request.is_seen = :is_seen', {
+        is_seen: filterDto.is_seen,
+      });
+    }
+
     if (filterDto.machineModelId) {
       query.andWhere('machineModel.id = :machineModelId', {
         machineModelId: filterDto.machineModelId,
@@ -144,6 +150,32 @@ export class RequestService extends BaseService<RequestEntity> {
       .skip((page - 1) * limit)
       .take(limit)
       .getManyAndCount();
+  }
+
+  async getMany(dto: RequestRequestDto.RequestGetManyByIdsDto) {
+    return this.requestRepository.find({
+      where: {
+        id: In(dto.ids),
+      },
+      relations: [
+        'device',
+        'device.area',
+        'device.machineModel',
+        'device.machineModel.typeErrors',
+        'tasks',
+        'tasks.fixer',
+        'tasks.issues',
+        'tasks.issues.typeError',
+        'tasks.request',
+        'tasks.device',
+        'tasks.device.area',
+        'tasks.device.machineModel',
+        'requester',
+        'issues',
+        'issues.task',
+        'issues.typeError',
+      ],
+    });
   }
 
   async customHeadStaffGetAllRequest(
@@ -251,5 +283,107 @@ export class RequestService extends BaseService<RequestEntity> {
       where: { id: userId },
     });
     return await this.requestRepository.save({ id, ...data, checker: account });
+  }
+
+  async getDashboardInfo(dto: RequestRequestDto.DashboardInfo) {
+    const query = this.requestRepository
+      .createQueryBuilder('request')
+      .leftJoinAndSelect('request.device', 'device')
+      .leftJoinAndSelect('device.area', 'area');
+
+    switch (dto.type) {
+      case 'warranty': {
+        query.where('request.is_warranty = :is_warranty', {
+          is_warranty: true,
+        });
+        break;
+      }
+      case 'renew': {
+        query.where('request.is_renew = :is_renew', {
+          is_renew: true,
+        });
+        break;
+      }
+      case 'fix': {
+        query.where('request.is_warranty = :is_warranty', {
+          is_warranty: false,
+        });
+        query.andWhere('request.is_renew = :is_renew', {
+          is_renew: false,
+        });
+        break;
+      }
+      case 'all': {
+        break;
+      }
+    }
+
+    query.andWhere('request.createdAt >= :startDate', {
+      startDate: dto.startDate,
+    });
+
+    query.andWhere('request.createdAt <= :endDate', {
+      endDate: dto.endDate,
+    });
+
+    if (dto.areaId) {
+      query.andWhere('area.id = :areaId', {
+        areaId: dto.areaId,
+      });
+    }
+
+    return {
+      [RequestStatus.PENDING]: await query
+        .andWhere('request.status = :status', {
+          status: RequestStatus.PENDING,
+        })
+        .getCount(),
+      not_seen: await query
+        .andWhere('request.is_seen = :is_seen', {
+          is_seen: false,
+        })
+        .andWhere('request.status = :status', {
+          status: RequestStatus.PENDING,
+        })
+        .getCount(),
+      has_seen: await query
+        .andWhere('request.is_seen = :is_seen', {
+          is_seen: true,
+        })
+        .andWhere('request.status = :status', {
+          status: RequestStatus.PENDING,
+        })
+        .getCount(),
+      [RequestStatus.APPROVED]: await query
+        .andWhere('request.status = :status', {
+          status: RequestStatus.APPROVED,
+        })
+        .getCount(),
+      [RequestStatus.REJECTED]: await query
+        .andWhere('request.status = :status', {
+          status: RequestStatus.REJECTED,
+        })
+        .getCount(),
+      [RequestStatus.CLOSED]: await query
+        .andWhere('request.status = :status', {
+          status: RequestStatus.CLOSED,
+        })
+        .getCount(),
+      [RequestStatus.HEAD_CONFIRM]: await query
+        .andWhere('request.status = :status', {
+          status: RequestStatus.HEAD_CONFIRM,
+        })
+        .getCount(),
+      [RequestStatus.HEAD_CANCEL]: await query
+        .andWhere('request.status = :status', {
+          status: RequestStatus.HEAD_CANCEL,
+        })
+        .getCount(),
+      [RequestStatus.IN_PROGRESS]: await query
+        .andWhere('request.status = :status', {
+          status: RequestStatus.IN_PROGRESS,
+        })
+        .getCount(),
+    };
   }
 }

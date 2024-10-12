@@ -52,7 +52,7 @@ export class RequestService extends BaseService<RequestEntity> {
       .where('requester.deletedAt is null')
       .andWhere('requester.id = :id', { id: userId })
       .andWhere('request.createdAt BETWEEN :start AND :end', {
-        start: new Date(new Date().setDate(new Date().getDate() - (30 * 3))),
+        start: new Date(new Date().setDate(new Date().getDate() - 30 * 3)),
         end: new Date(),
       })
       .getMany();
@@ -105,7 +105,13 @@ export class RequestService extends BaseService<RequestEntity> {
     });
     // push notify to head-staff
     this.headStaffGateWay.server.emit('new-request', result);
-    return this.requestRepository.create(newRequest);
+    const createdRequest = this.requestRepository.create(newRequest);
+    return this.requestRepository.findOne({
+      where: {
+        id: createdRequest.id,
+      },
+      relations: ['device', 'device.area', 'device.machineModel', 'requester'],
+    });
   }
 
   async confirmRequest(
