@@ -56,7 +56,7 @@ export class SparePartController {
   })
   @ApiBearerAuth()
   @Get(':id')
-  async getOneFor(@Param('id') id: string) {
+  async getOne(@Param('id') id: string) {
     return await this.sparePartService.getOne(id);
   }
 
