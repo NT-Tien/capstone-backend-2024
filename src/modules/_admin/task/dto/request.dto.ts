@@ -6,6 +6,30 @@ import { RequestStatus } from 'src/entities/request.entity';
 import { TaskStatus } from 'src/entities/task.entity';
 
 export namespace TaskRequestDto {
+  export class DashboardInfoDto extends BaseDTO {
+    @ApiProperty({
+      enum: ['all', 'fix', 'warranty', 'renew'],
+    })
+    @IsEnum(['all', 'fix', 'warranty', 'renew'])
+    @IsNotEmpty()
+    @Expose()
+    type: 'all' | 'fix' | 'warranty' | 'renew';
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @Expose()
+    areaId?: string
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    startDate: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    endDate: string;
+  }
   export class TaskFilterDto extends BaseDTO {
     @ApiPropertyOptional()
     @IsOptional()
@@ -46,6 +70,11 @@ export namespace TaskRequestDto {
     @ApiPropertyOptional()
     @IsOptional()
     @Expose()
+    areaId?: string
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @Expose()
     fixerName?: string;
 
     @ApiPropertyOptional({ type: 'boolean' })
@@ -62,6 +91,11 @@ export namespace TaskRequestDto {
     @IsOptional()
     @Expose()
     totalTime?: number;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @Expose()
+    is_warranty?: boolean;
   }
 
   export class TaskOrderDto extends BaseDTO {

@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -28,8 +29,10 @@ export class MachineModelController {
     description: 'Get all MachineModels',
   })
   @Get()
-  async getAll() {
-    return await this.machineModelService.getAll();
+  async getAll(
+    @Query() query: MachineModelRequestDto.MachineModelBasicAllQuery,
+  ) {
+    return await this.machineModelService.getAllBasic(query);
   }
 
   // @ApiResponse({
@@ -57,7 +60,7 @@ export class MachineModelController {
   @ApiBearerAuth()
   @Get(':id')
   async getOneFor(@Param('id') id: string) {
-    return await this.machineModelService.getOne(id);
+    return await this.machineModelService.getOneWithRelations(id);
   }
 
   @ApiBearerAuth()
