@@ -226,7 +226,7 @@ export class TaskService extends BaseService<TaskEntity> {
         query.andWhere('request.is_renew = :is_renew', {
           is_renew: false,
         });
-        query.andWhere('issue.fixType = :fixType', {
+        query.andWhere('issues.fixType = :fixType', {
           fixType: 'REPAIR',
         });
         break;
@@ -238,7 +238,7 @@ export class TaskService extends BaseService<TaskEntity> {
         query.andWhere('request.is_renew = :is_renew', {
           is_renew: false,
         });
-        query.andWhere('issue.fixType = :fixType', {
+        query.andWhere('issues.fixType = :fixType', {
           fixType: 'REPLACE',
         });
         break;
