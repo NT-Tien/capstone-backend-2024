@@ -219,12 +219,27 @@ export class TaskService extends BaseService<TaskEntity> {
         });
         break;
       }
-      case 'fix': {
+      case 'fix-sp': {
         query.where('request.is_warranty = :is_warranty', {
           is_warranty: false,
         });
         query.andWhere('request.is_renew = :is_renew', {
           is_renew: false,
+        });
+        query.andWhere('issue.fixType = :fixType', {
+          fixType: 'REPAIR',
+        });
+        break;
+      }
+      case 'fix-rpl-sp': {
+        query.where('request.is_warranty = :is_warranty', {
+          is_warranty: false,
+        });
+        query.andWhere('request.is_renew = :is_renew', {
+          is_renew: false,
+        });
+        query.andWhere('issue.fixType = :fixType', {
+          fixType: 'REPLACE',
         });
         break;
       }

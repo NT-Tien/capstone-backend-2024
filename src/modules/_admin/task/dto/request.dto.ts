@@ -8,12 +8,12 @@ import { TaskStatus } from 'src/entities/task.entity';
 export namespace TaskRequestDto {
   export class DashboardInfoDto extends BaseDTO {
     @ApiProperty({
-      enum: ['all', 'fix', 'warranty', 'renew'],
+      enum: ['all', 'fix-sp', 'fix-rpl-sp', 'warranty', 'renew'],
     })
-    @IsEnum(['all', 'fix', 'warranty', 'renew'])
+    @IsEnum(['all', 'fix-sp', 'fix-rpl-sp', 'warranty', 'renew'])
     @IsNotEmpty()
     @Expose()
-    type: 'all' | 'fix' | 'warranty' | 'renew';
+    type: 'all' | 'fix-sp' | 'fix-rpl-sp' | 'warranty' | 'renew';
 
     @ApiPropertyOptional()
     @IsOptional()
