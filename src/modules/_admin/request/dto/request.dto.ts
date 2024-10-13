@@ -5,6 +5,38 @@ import { BaseDTO } from 'src/common/base/dto.base';
 import { RequestStatus } from 'src/entities/request.entity';
 
 export namespace RequestRequestDto {
+  export class DashboardInfo extends BaseDTO {
+    @ApiProperty({
+      enum: ['all', 'fix', 'warranty', 'renew'],
+    })
+    @IsEnum(['all', 'fix', 'warranty', 'renew'])
+    @IsNotEmpty()
+    @Expose()
+    type: 'all' | 'fix' | 'warranty' | 'renew';
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @Expose()
+    areaId?: string
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    startDate: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    endDate: string;
+  }
+
+  export class RequestGetManyByIdsDto extends BaseDTO {
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    ids: string[];
+  }
+
   export class RequestAllFilteredDto extends BaseDTO {
     @ApiPropertyOptional()
     @IsOptional()
@@ -20,6 +52,11 @@ export namespace RequestRequestDto {
     @IsOptional()
     @Expose()
     status?: RequestStatus;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @Expose()
+    is_seen?: boolean;
 
     @ApiPropertyOptional()
     @IsOptional()

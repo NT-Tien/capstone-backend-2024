@@ -119,4 +119,13 @@ export class TaskController {
       TaskRequestDto.TaskUpdateDto.plainToClass(body),
     );
   }
+
+  @ApiOperation({summary: "Get task dashboard info"})
+  @ApiBearerAuth()
+  @Get('/dashboard-info')
+  async dashboardInfo(
+    @Query() dto: TaskRequestDto.DashboardInfoDto
+  ) {
+    return await this.taskService.getDashboardInfo(dto);
+  }
 }

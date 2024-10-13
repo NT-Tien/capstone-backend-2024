@@ -158,7 +158,18 @@ export class RequestService extends BaseService<RequestEntity> {
     // });
     // push notify to head-staff
     // this.headStaffGateWay.server.emit('new-request', result);
-    return this.requestRepository.create(newRequest);
+    const createdRequest = this.requestRepository.create(newRequest)
+    
+    return this.requestRepository.findOne({
+      where: {
+        id: createdRequest.id
+      },
+      relations: [
+        'device',
+        'device.area',
+        'device.machineModel',
+      ]
+    })
   }
 
   async updateStatus(
