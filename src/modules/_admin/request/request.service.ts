@@ -166,6 +166,7 @@ export class RequestService extends BaseService<RequestEntity> {
         'tasks.fixer',
         'tasks.issues',
         'tasks.issues.typeError',
+        'tasks.issues.issueSpareParts',
         'tasks.request',
         'tasks.device',
         'tasks.device.area',

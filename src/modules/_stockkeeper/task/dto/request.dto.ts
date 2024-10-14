@@ -6,6 +6,17 @@ import { RequestStatus } from 'src/entities/request.entity';
 import { TaskStatus } from 'src/entities/task.entity';
 
 export namespace TaskRequestDto {
+  export class StockkeeperReturnSparePart extends BaseDTO {
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    stockkeeper_signature: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    staff_signature: string;
+  }
   export class TaskConfirmReceiptDto extends BaseDTO {
     @ApiProperty()
     @IsNotEmpty()
