@@ -278,14 +278,14 @@ export class TaskService extends BaseService<TaskEntity> {
           status: TaskStatus.ASSIGNED,
         })
         .getCount(),
-      // 'spare-part-fetched': await query
-      //   .andWhere('task.status = :status', {
-      //     status: TaskStatus.ASSIGNED,
-      //   })
-      //   .andWhere('task.confirmReceipt = :confirmReceipt', {
-      //     confirmReceipt: true,
-      //   })
-      //   .getCount(),
+      'spare-part-fetched': await query
+        .andWhere('task.status = :status', {
+          status: TaskStatus.ASSIGNED,
+        })
+        .andWhere('task.confirmReceipt = :confirmReceipt', {
+          confirmReceipt: true,
+        })
+        .getCount(),
       [TaskStatus.IN_PROGRESS]: await query
         .andWhere('task.status = :status', {
           status: TaskStatus.IN_PROGRESS,

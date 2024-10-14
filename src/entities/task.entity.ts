@@ -228,4 +228,18 @@ export class TaskEntity extends BaseEntity {
     nullable: true,
   })
   stockkeeperNoteId?: string;
+
+  @Column({
+    name: 'returnSpareParts_stockkeeper_signature',
+    type: "text",
+    nullable: true,
+  })
+  returnSpareParts_stockkeeper_signature?: string;
+
+  @Column({
+    name: 'returnSpareParts_staff_signature',
+    type: "text",
+    nullable: true,
+  })
+  returnSpareParts_staff_signature?: string;
 }

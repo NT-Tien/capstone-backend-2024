@@ -71,4 +71,25 @@ export class IssueEntity extends BaseEntity {
     nullable: true,
   })
   videosVerify?: string;
+
+  @Column({
+    name: "fail_reason",
+    type: "text",
+    nullable: true
+  })
+  failReason?: string;
+
+  @Column({
+    name: 'return_spare_parts_stockkeeper_signature',
+    type: 'text',
+    nullable: true,
+  })
+  returnSparePartsStockkeeperSignature?: string
+
+  @Column({
+    name: 'return_spare_parts_staff_signature',
+    type: 'text',
+    nullable: true,
+  })
+  returnSparePartsStaffSignature?: string
 }
