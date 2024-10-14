@@ -54,6 +54,7 @@ export class DeviceService extends BaseService<DeviceEntity> {
       let closed_requests = 0;
       let head_confirm_requests = 0;
       let rejected_requests = 0;
+      let head_cancel_requests = 0;
 
       // status of tasks
       let awaiting_spare_spart = 0;
@@ -70,18 +71,22 @@ export class DeviceService extends BaseService<DeviceEntity> {
       // filter requests by time (1: this week, 2: last month, 3: this year)
       devices = devices.map((device) => {
         device.requests = device.requests.filter((request) => {
-          const requestTime = new Date(request.createdAt).getTime();
-          const currentTime = new Date().getTime();
-          switch (time) {
-            case 1:
-              return requestTime >= currentTime - 7 * 24 * 60 * 60 * 1000;
-            case 2:
-              return requestTime >= currentTime - 30 * 24 * 60 * 60 * 1000;
-            case 3:
-              return requestTime >= currentTime - 365 * 24 * 60 * 60 * 1000;
-            default:
-              return true;
-          }
+          const endDate = new Date('2024-09-07T02:24:40.298Z');
+          const startDate = new Date();
+          startDate.setDate(startDate.getDate() + 1);
+          return new Date(request.createdAt) >= endDate && new Date(request.createdAt) <= startDate;
+          // const requestTime = new Date(request.createdAt).getTime();
+          //   const currentTime = new Date().getTime();
+          //   switch (time) {
+          //     case 1:
+          //       return requestTime >= currentTime - 7 * 24 * 60 * 60 * 1000;
+          //     case 2:
+          //       return requestTime >= currentTime - 30 * 24 * 60 * 60 * 1000;
+          //     case 3:
+          //       return requestTime >= currentTime - 365 * 24 * 60 * 60 * 1000;
+          //     default:
+          //       return true;
+          //   }
         });
         return device;
       });
@@ -107,6 +112,9 @@ export class DeviceService extends BaseService<DeviceEntity> {
               break;
             case RequestStatus.HEAD_CONFIRM:
               head_confirm_requests++;
+              break;
+            case RequestStatus.HEAD_CANCEL:
+              head_cancel_requests++;
               break;
             case RequestStatus.REJECTED:
               rejected_requests++;
@@ -160,6 +168,7 @@ export class DeviceService extends BaseService<DeviceEntity> {
           in_progress_requests,
           closed_requests,
           head_confirm_requests,
+          head_cancel_requests,
           rejected_requests,
         },
         task: {
@@ -207,13 +216,13 @@ export class DeviceService extends BaseService<DeviceEntity> {
       });
     }
 
-    if (filter.positionX && (filter.positionX as any) !== "NaN") {
+    if (filter.positionX && (filter.positionX as any) !== 'NaN') {
       query.andWhere('device.positionX = :positionX', {
         positionX: filter.positionX,
       });
     }
 
-    if (filter.positionY && (filter.positionY as any) !== "NaN") {
+    if (filter.positionY && (filter.positionY as any) !== 'NaN') {
       query.andWhere('device.positionY = :positionY', {
         positionY: filter.positionY,
       });
