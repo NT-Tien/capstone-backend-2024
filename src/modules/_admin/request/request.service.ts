@@ -339,22 +339,6 @@ export class RequestService extends BaseService<RequestEntity> {
           status: RequestStatus.PENDING,
         })
         .getCount(),
-      not_seen: await query
-        .andWhere('request.is_seen = :is_seen', {
-          is_seen: false,
-        })
-        .andWhere('request.status = :status', {
-          status: RequestStatus.PENDING,
-        })
-        .getCount(),
-      has_seen: await query
-        .andWhere('request.is_seen = :is_seen', {
-          is_seen: true,
-        })
-        .andWhere('request.status = :status', {
-          status: RequestStatus.PENDING,
-        })
-        .getCount(),
       [RequestStatus.APPROVED]: await query
         .andWhere('request.status = :status', {
           status: RequestStatus.APPROVED,
@@ -383,6 +367,22 @@ export class RequestService extends BaseService<RequestEntity> {
       [RequestStatus.IN_PROGRESS]: await query
         .andWhere('request.status = :status', {
           status: RequestStatus.IN_PROGRESS,
+        })
+        .getCount(),
+      not_seen: await query
+        .andWhere('request.is_seen = :is_seen', {
+          is_seen: false,
+        })
+        .andWhere('request.status = :status', {
+          status: RequestStatus.PENDING,
+        })
+        .getCount(),
+      has_seen: await query
+        .andWhere('request.is_seen = :is_seen', {
+          is_seen: true,
+        })
+        .andWhere('request.status = :status', {
+          status: RequestStatus.PENDING,
         })
         .getCount(),
     };
