@@ -35,7 +35,11 @@ export class IssueController {
 
   @ApiBearerAuth()
   @Put(':issueId/failed')
-  failIssue(@Param('id') issueId: UUID, @Headers('user') user: any) {
-    throw new Error('Method not implemented.');
+  failIssue(
+    @Param('issueId') issueId: UUID,
+    @Body() dto: IssueRequestDto.FailIssue,
+    @Headers('user') user: any,
+  ) {
+    return this.issueService.failIssue(user.id, issueId, dto);
   }
 }

@@ -85,7 +85,8 @@ export class RequestService extends BaseService<RequestEntity> {
       .leftJoinAndSelect('request.device', 'device')
       .andWhere('device.deletedAt is null')
       .andWhere('device.id = :id', { id: data.device })
-      .andWhere('request.status = :status', { status: RequestStatus.PENDING })
+      // .andWhere('request.status = :status', { status: RequestStatus.PENDING })
+      .andWhere('request.status IN (:...statuses)', { statuses: [RequestStatus.PENDING, RequestStatus.IN_PROGRESS] })
       .getOne();
     if (request) {
       throw new HttpException('Request is duplicate', HttpStatus.BAD_REQUEST);

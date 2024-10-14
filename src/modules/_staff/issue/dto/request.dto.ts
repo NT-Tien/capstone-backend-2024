@@ -15,4 +15,11 @@ export namespace IssueRequestDto {
     @Expose()
     videosVerify?: string;
   }
+
+  export class FailIssue extends BaseDTO {
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    failReason: string;
+  }
 }

@@ -33,4 +33,25 @@ export class IssueService extends BaseService<IssueEntity> {
     issue.videosVerify = dto.videosVerify;
     return this.issueRepository.save(issue);
   }
+
+  async failIssue(
+    userId: string,
+    issueId: string,
+    dto: IssueRequestDto.FailIssue,
+  ) {
+    const issue = await this.issueRepository.findOne({
+      where: {
+        id: issueId,
+      },
+      relations: ['task', 'task.fixer'],
+    });
+    if (!issue || issue?.task?.fixer.id !== userId) {
+      throw new HttpException('Issue not found', HttpStatus.NOT_FOUND);
+    }
+    console.log(issueId, dto, userId, issue)
+    
+    issue.status = IssueStatus.FAILED;
+    issue.failReason = dto.failReason;
+    return this.issueRepository.save(issue);
+  }
 }

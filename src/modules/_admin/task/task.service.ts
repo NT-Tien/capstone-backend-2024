@@ -54,7 +54,7 @@ export class TaskService extends BaseService<TaskEntity> {
       query.andWhere('task.status = :status', { status: searchDto.status });
     }
 
-    if(searchDto.areaId) {
+    if (searchDto.areaId) {
       query.andWhere('area.id = :areaId', {
         areaId: searchDto.areaId,
       });
@@ -66,7 +66,7 @@ export class TaskService extends BaseService<TaskEntity> {
       });
     }
 
-    if(searchDto.is_warranty !== undefined && searchDto.is_warranty !== null) {
+    if (searchDto.is_warranty !== undefined && searchDto.is_warranty !== null) {
       query.andWhere('request.is_warranty = :is_warranty', {
         is_warranty: searchDto.is_warranty,
       });
@@ -200,17 +200,109 @@ export class TaskService extends BaseService<TaskEntity> {
   }
 
   async getDashboardInfo(dto: TaskRequestDto.DashboardInfoDto) {
+    // let tasks = await this.taskRepository.find({
+    //   relations: [
+    //     'request',
+    //     'device',
+    //     'device.area',
+    //     'issues',
+    //     'issues.typeError',
+    //     'issues.issueSpareParts',
+    //   ],
+    // });
+
+    // switch (dto.type) {
+    //   case 'warranty': {
+    //     tasks = tasks.filter(
+    //       (task) => task.request.is_warranty === true,
+    //       // !!task.issues.find(
+    //       //   (issue) =>
+    //       //     issue.typeError.id === 'bc4b133f-3911-464a-a3fd-1850bd88ead9' ||
+    //       //     issue.typeError.id === '2d45b02b-f4b7-470b-815f-817628fee1fd',
+    //       // ),
+    //     );
+    //     break;
+    //   }
+    //   case 'renew': {
+    //     tasks = tasks.filter(
+    //       (task) =>
+    //         !!task.issues.find(
+    //           (issue) =>
+    //             issue.typeError.id === '2dd17dcc-c571-4248-ac8b-3a77ef2a12bc',
+    //         ),
+    //     );
+    //     break;
+    //   }
+    //   case 'fix-sp':
+    //   case 'fix-rpl-sp': {
+    //     tasks = tasks.filter((task) =>
+    //       task.issues.find(
+    //         (issue) =>
+    //           issue.typeError.id !== '2dd17dcc-c571-4248-ac8b-3a77ef2a12bc' &&
+    //           issue.typeError.id !== 'bc4b133f-3911-464a-a3fd-1850bd88ead9' &&
+    //           issue.typeError.id !== '2d45b02b-f4b7-470b-815f-817628fee1fd',
+    //       ),
+    //     );
+    //     break;
+    //   }
+    //   case 'all': {
+    //     break;
+    //   }
+    // }
+
+    // tasks = tasks.filter(
+    //   (task) =>
+    //     new Date(task.request.createdAt) >= new Date(dto.startDate) &&
+    //     new Date(task.request.createdAt) <= new Date(dto.endDate),
+    // );
+
+    // if (dto.areaId) {
+    //   tasks = tasks.filter((task) => task.device.area.id === dto.areaId);
+    // }
+
+    // console.log(dto)
+
+    // return {
+    //   [TaskStatus.AWAITING_SPARE_SPART]: tasks.filter(
+    //     (task) => task.status === TaskStatus.AWAITING_SPARE_SPART,
+    //   ).length,
+    //   [TaskStatus.AWAITING_FIXER]: tasks.filter(
+    //     (task) => task.status === TaskStatus.AWAITING_FIXER,
+    //   ).length,
+    //   [TaskStatus.ASSIGNED]: tasks.filter(
+    //     (task) => task.status === TaskStatus.ASSIGNED,
+    //   ).length,
+    //   [TaskStatus.IN_PROGRESS]: tasks.filter(
+    //     (task) => task.status === TaskStatus.IN_PROGRESS,
+    //   ).length,
+    //   [TaskStatus.HEAD_STAFF_CONFIRM]: tasks.filter(
+    //     (task) => task.status === TaskStatus.HEAD_STAFF_CONFIRM,
+    //   ).length,
+    //   [TaskStatus.COMPLETED]: tasks.filter(
+    //     (task) => task.status === TaskStatus.COMPLETED,
+    //   ).length,
+    //   [TaskStatus.CANCELLED]: tasks.filter(
+    //     (task) => task.status === TaskStatus.CANCELLED,
+    //   ).length,
+    //   'spare-part-fetched': tasks.filter(
+    //     (task) => task.status === TaskStatus.ASSIGNED && task.confirmReceipt,
+    //   ).length,
+    // };
+
     const query = this.taskRepository
       .createQueryBuilder('task')
       .leftJoinAndSelect('task.request', 'request')
       .leftJoinAndSelect('task.device', 'device')
       .leftJoinAndSelect('device.area', 'area')
       .leftJoinAndSelect('task.issues', 'issues')
+      .leftJoinAndSelect('issues.typeError', 'typeError')
       .leftJoinAndSelect('issues.issueSpareParts', 'issueSpareParts');
 
     switch (dto.type) {
       case 'warranty': {
-        query.where('request.is_warranty = :is_warranty', { is_warranty: true });
+        query.where('request.is_warranty = :is_warranty', {
+          is_warranty: true,
+        });
         break;
       }
       case 'renew': {
@@ -226,9 +318,6 @@ export class TaskService extends BaseService<TaskEntity> {
         query.andWhere('request.is_renew = :is_renew', {
           is_renew: false,
         });
-        // query.andWhere('issues.fixType = :fixType', {
-        //   fixType: 'REPAIR',
-        // });
         break;
       }
       case 'fix-rpl-sp': {
@@ -237,9 +326,6 @@ export class TaskService extends BaseService<TaskEntity> {
         });
         query.andWhere('request.is_renew = :is_renew', {
           is_renew: false,
-        });
-        query.andWhere('issues.fixType = :fixType', {
-          fixType: 'REPLACE',
         });
         break;
       }
@@ -256,7 +342,7 @@ export class TaskService extends BaseService<TaskEntity> {
       endDate: dto.endDate,
     });
 
-    if(dto.areaId) {
+    if (dto.areaId) {
       query.andWhere('area.id = :areaId', {
         areaId: dto.areaId,
       });
@@ -278,14 +364,6 @@ export class TaskService extends BaseService<TaskEntity> {
           status: TaskStatus.ASSIGNED,
         })
         .getCount(),
-      // 'spare-part-fetched': await query
-      //   .andWhere('task.status = :status', {
-      //     status: TaskStatus.ASSIGNED,
-      //   })
-      //   .andWhere('task.confirmReceipt = :confirmReceipt', {
-      //     confirmReceipt: true,
-      //   })
-      //   .getCount(),
       [TaskStatus.IN_PROGRESS]: await query
         .andWhere('task.status = :status', {
           status: TaskStatus.IN_PROGRESS,
@@ -304,6 +382,14 @@ export class TaskService extends BaseService<TaskEntity> {
       [TaskStatus.CANCELLED]: await query
         .andWhere('task.status = :status', {
           status: TaskStatus.CANCELLED,
+        })
+        .getCount(),
+      'spare-part-fetched': await query
+        .andWhere('task.status = :status', {
+          status: TaskStatus.ASSIGNED,
+        })
+        .andWhere('task.confirmReceipt = :confirmReceipt', {
+          confirmReceipt: true,
         })
         .getCount(),
     };

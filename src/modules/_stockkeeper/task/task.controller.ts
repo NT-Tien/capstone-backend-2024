@@ -8,7 +8,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 // import { CacheTTL } from '@nestjs/cache-manager';
 import { UUID } from 'crypto';
 import { StockkeeperGuard } from 'src/modules/auth/guards/stockkeeper.guard';
@@ -116,5 +116,16 @@ export class TaskController {
     @Headers('user') user: any,
   ) {
     return this.taskService.pendingSparePart(taskId, body, user.id);
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({summary: "return spare parts"})
+  @Post('return-spare-part/:taskId')
+  returnSparePart(
+    @Param('taskId') taskId: UUID,
+    @Body() body: TaskRequestDto.StockkeeperReturnSparePart,
+    @Headers('user') user: any,
+  ) {
+    throw new Error('Method not implemented.');
   }
 }
