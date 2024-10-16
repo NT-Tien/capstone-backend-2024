@@ -52,10 +52,6 @@ export enum TaskStatus {
   /**
    *
    */
-  STAFF_REQUEST_CANCELLED = 'STAFF_REQUEST_CANCELLED',
-  /**
- *
- */
   CANCELLED = 'CANCELLED',
 }
 
@@ -198,4 +194,10 @@ export class TaskEntity extends BaseEntity {
   })
   stockkeeperNoteId?: string;
 
+  @Column({
+    name: 'last_issues_data',
+    type: 'jsonb',
+    nullable: true,
+  })
+  last_issues_data?: any;
 }

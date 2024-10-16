@@ -168,7 +168,9 @@ export class TaskService extends BaseService<TaskEntity> {
     if (!task || task.fixer.id !== userId) {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
     }
-    task.status = TaskStatus.HEAD_STAFF_CONFIRM;
+    task.status = TaskStatus.COMPLETED;
+    let issues = await this.issueRepository.find({ where: { task: task } });
+    task.last_issues_data = issues;
     return await this.taskRepository.save({ ...task, ...data });
   }
 
@@ -180,7 +182,7 @@ export class TaskService extends BaseService<TaskEntity> {
     if (!task || task.fixer.id !== userId) {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
     }
-    task.status = TaskStatus.STAFF_REQUEST_CANCELLED;
+    // task.status = TaskStatus.STAFF_REQUEST_CANCELLED;
     return await this.taskRepository.save(task);
   }
 

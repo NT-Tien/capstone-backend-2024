@@ -144,9 +144,6 @@ export class DeviceService extends BaseService<DeviceEntity> {
               case TaskStatus.CANCELLED:
                 cancelled++;
                 break;
-              case TaskStatus.STAFF_REQUEST_CANCELLED:
-                staff_request_cancelled++;
-                break;
             }
           });
         });
