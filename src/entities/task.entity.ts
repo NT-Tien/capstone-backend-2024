@@ -57,14 +57,6 @@ export enum TaskStatus {
  *
  */
   CANCELLED = 'CANCELLED',
-  /**
- * when all spare part in issue have status FAILED is returned
- */
-  CANCELLED_AND_RETURN_SPARE_PART = 'CANCELLED_AND_RETURN_SPARE_PART',
-  /**
-   * when all spare part in issue have status FAILED is returned
-   */
-  CONFRIM_RECEIPT_RETURN_SPARE_PART = 'CONFRIM_RECEIPT_RETURN_SPARE_PART',
 }
 
 @Entity({
@@ -150,18 +142,6 @@ export class TaskEntity extends BaseEntity {
   })
   imagesVerify?: string[];
 
-  // get imagesVerify(): string[] {
-  //     return this._imagesVerify;
-  // }
-
-  // set imagesVerify(images: string[]) {
-  //     const maxLength = 3;
-  //     if (images.length > maxLength) {
-  //         throw new Error(`Độ dài của mảng không thể vượt quá ${maxLength}`);
-  //     }
-  //     this._imagesVerify = images;
-  // }
-
   @Column({
     name: 'videos_verify',
     type: 'text',
@@ -195,21 +175,14 @@ export class TaskEntity extends BaseEntity {
     type: 'text',
     nullable: true,
   })
-  confirmReceiptBY?: string; // store account id of stockkeeper who confirm get renew device
+  confirmReceiptBY?: string; 
 
   @Column({
     name: 'confirm_send_by',
     type: 'text',
     nullable: true,
   })
-  confirmSendBy?: string; // store account id of stockkeeper who confirm get renew device
-
-  @Column({
-    name: 'confirm_recieve_return_spare_part',
-    type: 'text',
-    nullable: true,
-  })
-  confirm_recieve_return_spare_part?: string; // store account id of stockkeeper who confirm get renew device
+  confirmSendBy?: string;
 
   @Column({
     name: 'stockkeeper_note',
@@ -224,19 +197,5 @@ export class TaskEntity extends BaseEntity {
     nullable: true,
   })
   stockkeeperNoteId?: string;
-
-  @Column({
-    name: 'returnSpareParts_stockkeeper_signature',
-    type: "text",
-    nullable: true,
-  })
-  returnSpareParts_stockkeeper_signature?: string;
-
-  @Column({
-    name: 'returnSpareParts_staff_signature',
-    type: "text",
-    nullable: true,
-  })
-  returnSpareParts_staff_signature?: string;
 
 }
