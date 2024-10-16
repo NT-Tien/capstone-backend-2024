@@ -48,7 +48,7 @@ export enum TaskStatus {
   /**
    *
    */
-  HEAD_STAFF_CONFIRM = 'HEAD_DEPARTMENT_CONFIRM',
+  HEAD_STAFF_CONFIRM = 'HEAD_STAFF_CONFIRM',
   /**
    *
    */

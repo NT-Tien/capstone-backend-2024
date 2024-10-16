@@ -61,9 +61,12 @@ export class TaskService extends BaseService<TaskEntity> {
       .leftJoinAndSelect('device.area', 'area')
       .leftJoinAndSelect('device.machineModel', 'machineModel')
       .leftJoinAndSelect('task.fixer', 'fixer')
+      .addSelect(['fixer.id', 'fixer.username'])
       .leftJoinAndSelect('task.issues', 'issues')
       .leftJoinAndSelect('issues.issueSpareParts', 'issueSpareParts')
       .leftJoinAndSelect('task.request', 'request')
+      .leftJoin('request.requester', 'requester')
+      .addSelect(['requester.id', 'requester.username'])
       .leftJoinAndSelect('request.tasks', 'tasks') // so that staff can find the "send to warranty" request
       .leftJoinAndSelect('tasks.issues', 'taskIssues')
       .leftJoinAndSelect('taskIssues.typeError', 'taskIssueTypeError')
