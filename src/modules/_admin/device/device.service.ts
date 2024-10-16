@@ -147,9 +147,6 @@ export class DeviceService extends BaseService<DeviceEntity> {
               case TaskStatus.STAFF_REQUEST_CANCELLED:
                 staff_request_cancelled++;
                 break;
-              case TaskStatus.HEAD_STAFF_CONFIRM_STAFF_REQUEST_CANCELLED:
-                head_staff_confirm_staff_request_cancelled++;
-                break;
               case TaskStatus.CONFRIM_RECEIPT_RETURN_SPARE_PART:
                 close_task_request_cancelled++;
                 break;

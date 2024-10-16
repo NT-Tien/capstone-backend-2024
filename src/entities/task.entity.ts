@@ -56,15 +56,11 @@ export enum TaskStatus {
   /**
    *
    */
-  CANCELLED = 'CANCELLED',
-  /**
-   *
-   */
   STAFF_REQUEST_CANCELLED = 'STAFF_REQUEST_CANCELLED',
   /**
-   *
-   */
-  HEAD_STAFF_CONFIRM_STAFF_REQUEST_CANCELLED = 'HEAD_STAFF_CONFIRM_STAFF_REQUEST_CANCELLED',
+ *
+ */
+  CANCELLED = 'CANCELLED',
   /**
    * when all spare part in issue have status FAILED is returned
    */
