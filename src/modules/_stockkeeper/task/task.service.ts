@@ -191,7 +191,7 @@ export class TaskService extends BaseService<TaskEntity> {
     //   }
     // }
     task.confirmReceipt = true;
-    task.confirmReceiptBY = userId;
+    task.confirmSendBy = userId;
     task.confirmReceiptStockkeeperSignature = dto.signature;
     return await this.taskRepository.save(task);
   }
@@ -246,7 +246,7 @@ export class TaskService extends BaseService<TaskEntity> {
       }
     }
     task.confirm_recieve_return_spare_part = userId;
-    task.status = TaskStatus.CONFRIM_RECEIPT_RETURN_SPARE_PART;
+    task.status = TaskStatus.CANCELLED;
     return await this.taskRepository.save(task);
   }
 

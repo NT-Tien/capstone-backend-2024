@@ -104,7 +104,7 @@ export class TaskService extends BaseService<TaskEntity> {
       }
     }
     task.confirmReceipt = true;
-    task.confirmRecieveBy = userId;
+    task.confirmReceiptBY = userId;
     return await this.taskRepository.save(task);
   }
 

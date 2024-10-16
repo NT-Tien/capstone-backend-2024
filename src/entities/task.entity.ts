@@ -13,6 +13,21 @@ import { AccountEntity } from './account.entity';
 import { DeviceEntity } from './device.entity';
 
 export enum TaskStatus {
+  // /**
+  //  * !only apply for case renew device , after get new device head staff assign to fixer, update status to ASSIGNED
+  //  */
+  // IN_PROGRESS_WARRANTY_DONE = 'IN_PROGRESS_WARRANTY_DONE', // ADMIN update status to IN_PROGRESS_RENEW_DEVICE_DONE
+  // /**
+  // * !only apply for case renew device
+  // */
+  // IN_PROGRESS_RENEW_DEVICE = 'IN_PROGRESS_RENEW_DEVICE', // HEAD_STAFF update status to IN_PROGRESS_RENEW_DEVICE
+  // /**
+  //  * !only apply for case renew device , after get new device head staff assign to fixer, update status to ASSIGNED
+  //  */
+  // IN_PROGRESS_RENEW_DEVICE_DONE = 'IN_PROGRESS_RENEW_DEVICE_DONE', // ADMIN update status to IN_PROGRESS_RENEW_DEVICE_DONE
+  // /**
+  // * AWAITING_SPARE_SPART
+  // */
   AWAITING_SPARE_SPART = 'AWAITING_SPARE_SPART',
   /**
    * AWAITING_FIXER: khi nào còn chưa gán fixer thì dược update nội dung task, ngược lại chỉ có thể cancel task
@@ -33,7 +48,7 @@ export enum TaskStatus {
   /**
    *
    */
-  HEAD_STAFF_CONFIRM = 'HEAD_STAFF_CONFIRM',
+  HEAD_STAFF_CONFIRM = 'HEAD_DEPARTMENT_CONFIRM',
   /**
    *
    */
@@ -42,6 +57,10 @@ export enum TaskStatus {
  *
  */
   CANCELLED = 'CANCELLED',
+  /**
+ * when all spare part in issue have status FAILED is returned
+ */
+  CANCELLED_AND_RETURN_SPARE_PART = 'CANCELLED_AND_RETURN_SPARE_PART',
   /**
    * when all spare part in issue have status FAILED is returned
    */
@@ -179,11 +198,11 @@ export class TaskEntity extends BaseEntity {
   confirmReceiptBY?: string; // store account id of stockkeeper who confirm get renew device
 
   @Column({
-    name: 'confirm_recieve',
+    name: 'confirm_send_by',
     type: 'text',
     nullable: true,
   })
-  confirmRecieveBy?: string; // store account id of stockkeeper who confirm get renew device
+  confirmSendBy?: string; // store account id of stockkeeper who confirm get renew device
 
   @Column({
     name: 'confirm_recieve_return_spare_part',
@@ -219,4 +238,5 @@ export class TaskEntity extends BaseEntity {
     nullable: true,
   })
   returnSpareParts_staff_signature?: string;
+
 }
