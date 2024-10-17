@@ -71,22 +71,22 @@ export class DeviceService extends BaseService<DeviceEntity> {
       // filter requests by time (1: this week, 2: last month, 3: this year)
       devices = devices.map((device) => {
         device.requests = device.requests.filter((request) => {
-          const endDate = new Date('2024-09-07T02:24:40.298Z');
-          const startDate = new Date();
-          startDate.setDate(startDate.getDate() + 1);
-          return new Date(request.createdAt) >= endDate && new Date(request.createdAt) <= startDate;
-          // const requestTime = new Date(request.createdAt).getTime();
-          //   const currentTime = new Date().getTime();
-          //   switch (time) {
-          //     case 1:
-          //       return requestTime >= currentTime - 7 * 24 * 60 * 60 * 1000;
-          //     case 2:
-          //       return requestTime >= currentTime - 30 * 24 * 60 * 60 * 1000;
-          //     case 3:
-          //       return requestTime >= currentTime - 365 * 24 * 60 * 60 * 1000;
-          //     default:
-          //       return true;
-          //   }
+          // const endDate = new Date('2024-09-07T02:24:40.298Z');
+          // const startDate = new Date();
+          // startDate.setDate(startDate.getDate() + 1);
+          // return new Date(request.createdAt) >= endDate && new Date(request.createdAt) <= startDate;
+          const requestTime = new Date(request.createdAt).getTime();
+            const currentTime = new Date().getTime();
+            switch (time) {
+              case 1:
+                return requestTime >= currentTime - 7 * 24 * 60 * 60 * 1000;
+              case 2:
+                return requestTime >= currentTime - 30 * 24 * 60 * 60 * 1000;
+              case 3:
+                return requestTime >= currentTime - 365 * 24 * 60 * 60 * 1000;
+              default:
+                return true;
+            }
         });
         return device;
       });
