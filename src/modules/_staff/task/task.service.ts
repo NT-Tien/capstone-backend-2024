@@ -161,16 +161,24 @@ export class TaskService extends BaseService<TaskEntity> {
     taskId: string,
     data: TaskRequestDto.TaskConfirmDoneDto,
   ) {
+    console.log("1st check")
     let task = await this.taskRepository.findOne({
       where: { id: taskId },
-      relations: ['fixer'],
+      relations: ['fixer', 'issues'],
     });
+    console.log("2nd check")
     if (!task || task.fixer.id !== userId) {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
     }
-    task.status = TaskStatus.COMPLETED;
-    let issues = await this.issueRepository.find({ where: { task: task } });
-    task.last_issues_data = issues;
+
+    task.status = TaskStatus.HEAD_STAFF_CONFIRM;
+    console.log("3rd check")
+    // let issues = await this.issueRepository.find({ where: { task: {
+    //   id: 
+    // } } });
+    console.log("4th check")
+    task.last_issues_data = JSON.stringify(task.issues);
+    console.log("5th check")
     return await this.taskRepository.save({ ...task, ...data });
   }
 

@@ -21,7 +21,12 @@ export namespace TaskRequestDto {
     @ApiProperty()
     @IsNotEmpty()
     @Expose()
-    signature: string;
+    staff_signature: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    stockkeeper_signature: string
   }
   export class TaskSearchQueryDto extends BaseDTO {
     @ApiPropertyOptional()

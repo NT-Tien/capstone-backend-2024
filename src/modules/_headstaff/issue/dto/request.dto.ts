@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { IsArray, IsNotEmpty, IsOptional } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
+import { IssueStatus } from 'src/entities/issue.entity';
 
 export namespace IssueRequestDto {
   export class IssueCreateDto extends BaseDTO {
@@ -97,6 +98,11 @@ export namespace IssueRequestDto {
     @IsOptional()
     @Expose()
     videosVerify?: string;
+
+    @ApiProperty({enum: IssueStatus})
+    @IsOptional()
+    @Expose()
+    status?: IssueStatus
   }
 }
 export namespace IssueSparePartRequestDto {

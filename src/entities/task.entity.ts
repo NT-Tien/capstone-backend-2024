@@ -164,7 +164,7 @@ export class TaskEntity extends BaseEntity {
     type: 'text',
     default: false,
   })
-  confirmReceiptStaffSignature?: boolean;
+  confirmReceiptStaffSignature?: string;
 
   @Column({
     name: 'confirm_receipt_by',
@@ -200,4 +200,11 @@ export class TaskEntity extends BaseEntity {
     nullable: true,
   })
   last_issues_data?: any;
+
+  @Column({
+    name: 'return_spare_part_data',
+    type: 'jsonb',
+    nullable: true,
+  })
+  return_spare_part_data?: any;
 }
