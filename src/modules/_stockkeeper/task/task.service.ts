@@ -5,15 +5,15 @@ import { TaskEntity, TaskStatus } from 'src/entities/task.entity';
 import { Repository } from 'typeorm';
 import { TaskRequestDto } from './dto/request.dto';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
-import { IssueStatus } from 'src/entities/issue.entity';
+import { IssueEntity, IssueStatus } from 'src/entities/issue.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
   constructor(
     @InjectRepository(TaskEntity)
     private readonly taskRepository: Repository<TaskEntity>,
-    @InjectRepository(SparePartEntity)
-    private readonly sparePartRepository: Repository<SparePartEntity>,
+    @InjectRepository(IssueEntity)
+    private readonly issueRepository: Repository<IssueEntity>,
   ) {
     super(taskRepository);
   }
@@ -192,7 +192,8 @@ export class TaskService extends BaseService<TaskEntity> {
     // }
     task.confirmReceipt = true;
     task.confirmSendBy = userId;
-    task.confirmReceiptStockkeeperSignature = dto.signature;
+    task.confirmReceiptStockkeeperSignature = dto.stockkeeper_signature;
+    task.confirmReceiptStaffSignature = dto.staff_signature;
     return await this.taskRepository.save(task);
   }
 
@@ -212,5 +213,37 @@ export class TaskService extends BaseService<TaskEntity> {
     task.stockkeeperNote = payload.stockkeeperNote;
     task.stockkeeperNoteId = userId;
     return await this.taskRepository.save(task);
+  }
+
+  async returnSparePart(
+    taskId: string,
+    dto: TaskRequestDto.StockkeeperReturnSparePart,
+    user: any,
+  ) {
+    const task = await this.taskRepository.findOne({
+      where: { id: taskId },
+      relations: ['issues', 'issues.issueSpareParts'],
+    });
+
+    if (!task) {
+      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+    }
+
+    const failedIssues = task.issues.filter(
+      (issue) => issue.status === IssueStatus.FAILED,
+    );
+    const returnedSpareParts = failedIssues.map(
+      (issue) => issue.issueSpareParts,
+    );
+    task.return_spare_part_data = returnedSpareParts;
+
+    failedIssues.forEach(async (issue) => {
+      issue.returnSparePartsStaffSignature = dto.staff_signature;
+      issue.returnSparePartsStockkeeperSignature = dto.stockkeeper_signature;
+
+      await this.issueRepository.save(issue);
+    });
+
+    return this.taskRepository.save(task)
   }
 }

@@ -122,10 +122,10 @@ export class TaskController {
   @ApiOperation({summary: "return spare parts"})
   @Post('return-spare-part/:taskId')
   returnSparePart(
-    @Param('taskId') taskId: UUID,
+    @Param('taskId') taskId: string,
     @Body() body: TaskRequestDto.StockkeeperReturnSparePart,
     @Headers('user') user: any,
   ) {
-    throw new Error('Method not implemented.');
+    return this.taskService.returnSparePart(taskId, body, user);
   }
 }
