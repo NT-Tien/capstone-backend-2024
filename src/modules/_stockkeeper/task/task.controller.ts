@@ -128,4 +128,15 @@ export class TaskController {
   ) {
     return this.taskService.returnSparePart(taskId, body, user);
   }
+
+  @ApiBearerAuth()
+  @ApiOperation({summary: "Cancel task"})
+  @Post('cancel/:taskId')
+  cancelTask(
+    @Param('taskId') taskId: string,
+    @Body() body: TaskRequestDto.StockkeeperCancelTask,
+    @Headers('user') user: any,
+  ) {
+    return this.taskService.cancelTask(taskId, body, user);
+  }
 }

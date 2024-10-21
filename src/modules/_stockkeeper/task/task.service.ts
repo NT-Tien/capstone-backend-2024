@@ -244,6 +244,35 @@ export class TaskService extends BaseService<TaskEntity> {
       await this.issueRepository.save(issue);
     });
 
-    return this.taskRepository.save(task)
+    return this.taskRepository.save(task);
+  }
+
+  async cancelTask(
+    taskId: string,
+    body: TaskRequestDto.StockkeeperCancelTask,
+    user: any,
+  ) {
+    let task = await this.taskRepository.findOne({
+      where: { id: taskId.trim() },
+      relations: ['issues', 'issues.issueSpareParts', 'issues.typeError'],
+    });
+
+    if (!task) {
+      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+    }
+
+    task.status = TaskStatus.CANCELLED;
+    task.cancelReason = body.reason;
+    task.cancelBy = user.id;
+    task.last_issues_data = JSON.stringify(task.issues);
+    const result = await this.taskRepository.save(task);
+    
+
+    for (let issue of task.issues) {
+      issue.task = null;
+      await this.issueRepository.save(issue);
+    }
+
+    return result
   }
 }

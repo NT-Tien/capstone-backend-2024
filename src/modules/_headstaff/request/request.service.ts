@@ -39,7 +39,7 @@ export class RequestService extends BaseService<RequestEntity> {
       },
     });
   }
-  
+
   async customHeadStaffGetAllRequest(
     userId: string,
     page: number,
@@ -106,7 +106,7 @@ export class RequestService extends BaseService<RequestEntity> {
         'issues.typeError',
         'issues.issueSpareParts',
         'issues.issueSpareParts.sparePart',
-        "feedback"
+        'feedback',
       ],
     });
   }
@@ -158,18 +158,14 @@ export class RequestService extends BaseService<RequestEntity> {
     // });
     // push notify to head-staff
     // this.headStaffGateWay.server.emit('new-request', result);
-    const createdRequest = this.requestRepository.create(newRequest)
-    
+    const createdRequest = this.requestRepository.create(newRequest);
+
     return this.requestRepository.findOne({
       where: {
-        id: createdRequest.id
+        id: createdRequest.id,
       },
-      relations: [
-        'device',
-        'device.area',
-        'device.machineModel',
-      ]
-    })
+      relations: ['device', 'device.area', 'device.machineModel'],
+    });
   }
 
   async updateStatus(
@@ -181,5 +177,29 @@ export class RequestService extends BaseService<RequestEntity> {
       where: { id: userId },
     });
     return await this.requestRepository.save({ id, ...data, checker: account });
+  }
+
+  async getStatistics(): Promise<{
+    [key in RequestStatus]: number;
+  }> {
+    const result = await this.requestRepository
+      .createQueryBuilder('request')
+      .select('status')
+      .addSelect('COUNT(*) as count')
+      .groupBy('request.status')
+      .addGroupBy('request.createdAt')
+      .getRawMany();
+      
+      console.log(result)
+
+    const returnValue = result.reduce(
+      (acc, cur) => {
+        acc[cur.status] = acc[cur.status] ? acc[cur.status] + 1 : 1;
+        return acc;
+      },
+      {} as { [key: string]: number },
+    );
+
+    return returnValue
   }
 }

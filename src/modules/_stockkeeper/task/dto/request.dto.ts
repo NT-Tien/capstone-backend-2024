@@ -165,4 +165,11 @@ export namespace TaskRequestDto {
   export class StockkeeperPendingSparePart extends BaseDTO {
     stockkeeperNote: string;
   }
+
+  export class StockkeeperCancelTask extends BaseDTO {
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    reason: string
+  }
 }

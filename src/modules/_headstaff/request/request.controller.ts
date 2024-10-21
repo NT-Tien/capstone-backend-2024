@@ -10,7 +10,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 // import { CacheTTL } from '@nestjs/cache-manager';
 import { RequestService } from './request.service';
 import { RequestResponseDto } from './dto/response.dto';
@@ -43,6 +43,16 @@ export class RequestController {
       limit,
       status,
     );
+  }
+
+  @ApiOperation({summary: "Get all requests with filters and sorters"})
+  @ApiBearerAuth()
+  @Get('/filtered/:page/:limit')
+  async getAllFilteredSorted(
+    @Param('page') page: number,
+    @Param('limit') limit: number,
+  ) {
+
   }
 
   // @ApiResponse({
@@ -106,6 +116,13 @@ export class RequestController {
   ) {
     // create task for request before update status
     return await this.requestService.updateStatus(user.id, id, data);
+  }
+
+  @ApiOperation({summary: "Get request statistics"})
+  @ApiBearerAuth()
+  @Get("/statistics")
+  async statistics() {
+    return this.requestService.getStatistics();
   }
 
   // @ApiBearerAuth()
