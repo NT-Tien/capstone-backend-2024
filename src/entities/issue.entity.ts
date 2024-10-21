@@ -14,6 +14,7 @@ export enum IssueStatus {
   PENDING = 'PENDING',
   FAILED = 'FAILED',
   RESOLVED = 'RESOLVED',
+  CANCELLED = 'CANCELLED',
 }
 
 @Entity({
@@ -92,4 +93,11 @@ export class IssueEntity extends BaseEntity {
     nullable: true,
   })
   returnSparePartsStaffSignature?: string
+
+  @Column({
+    name: "task_history",
+    type: "jsonb",
+    nullable: true
+  })
+  taskHistory?: any
 }

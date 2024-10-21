@@ -207,4 +207,18 @@ export class TaskEntity extends BaseEntity {
     nullable: true,
   })
   return_spare_part_data?: any;
+
+  @Column({
+    name: "cancel_reason",
+    type: "text",
+    nullable: true
+  })
+  cancelReason?: string;
+
+  @Column({
+    name: "cancel_by",
+    type: "text",
+    nullable: true
+  })
+  cancelBy?: string;
 }
