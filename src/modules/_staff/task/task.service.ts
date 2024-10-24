@@ -190,7 +190,7 @@ export class TaskService extends BaseService<TaskEntity> {
     if (!task || task.fixer.id !== userId) {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
     }
-    // task.status = TaskStatus.STAFF_REQUEST_CANCELLED;
+    task.status = TaskStatus.CANCELLED;
     return await this.taskRepository.save(task);
   }
 
