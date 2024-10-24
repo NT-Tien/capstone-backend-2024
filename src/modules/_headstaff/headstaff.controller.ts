@@ -45,6 +45,7 @@ export class HeadStaffDashboardController {
             this.taskService.customGetAllTaskDashboard(TaskStatus.AWAITING_SPARE_SPART),
             this.taskService.customGetAllTaskDashboard(TaskStatus.IN_PROGRESS),
             this.taskService.customGetAllTaskDashboard(TaskStatus.HEAD_STAFF_CONFIRM),
+            this.taskService.customGetAllTaskDashboard(TaskStatus.COMPLETED),
         ]).then(results => {
             const pendingRequests = results[0][1];
             const checkedRequests = results[1][1];
@@ -58,6 +59,7 @@ export class HeadStaffDashboardController {
             const awaitingSparePartTasks = results[9][1]
             const inProgressTasks = results[10][1]
             const headStaffConfirmTasks = results[11][1]
+            const completedTasks = results[12][1]
             return {
                 pendingRequests,
                 checkedRequests,
@@ -71,6 +73,7 @@ export class HeadStaffDashboardController {
                 awaitingSparePartTasks,
                 inProgressTasks,
                 headStaffConfirmTasks,
+                completedTasks,
             };
 
         });
