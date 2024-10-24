@@ -8,6 +8,7 @@ import { AccountEntity } from 'src/entities/account.entity';
 import { RequestEntity } from 'src/entities/request.entity';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
+import { IssueEntity } from 'src/entities/issue.entity';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { DeviceEntity } from 'src/entities/device.entity';
       RequestEntity,
       SparePartEntity,
       DeviceEntity,
+      IssueEntity
     ]),
     AuthModule,
   ],
