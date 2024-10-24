@@ -150,6 +150,13 @@ export class TaskController {
   }
 
   @ApiBearerAuth()
+  @ApiOperation({summary: "Cancel a task"})
+  @Put('cancel/:id')
+  async cancelTask(@Param('id') id: string, @Headers('user') user: any,) {
+    return await this.taskService.cancelTask(id, user);
+  }
+
+  @ApiBearerAuth()
   @ApiResponse({
     type: TaskResponseDto.TaskDelete,
     status: 200,

@@ -6,7 +6,7 @@ import { TaskEntity, TaskStatus } from 'src/entities/task.entity';
 import { Repository } from 'typeorm';
 import { TaskRequestDto } from './dto/request.dto';
 import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
-import { IssueStatus } from 'src/entities/issue.entity';
+import { IssueEntity, IssueStatus } from 'src/entities/issue.entity';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
 
@@ -23,6 +23,8 @@ export class TaskService extends BaseService<TaskEntity> {
     private readonly requestRepository: Repository<RequestEntity>,
     @InjectRepository(DeviceEntity)
     private readonly deviceRepository: Repository<DeviceEntity>,
+    @InjectRepository(IssueEntity)
+    private readonly issueRepository: Repository<IssueEntity>
   ) {
     super(taskRepository);
   }
@@ -258,5 +260,25 @@ export class TaskService extends BaseService<TaskEntity> {
     // }
 
     return result;
+  }
+
+  async cancelTask(id: string, user: any) {
+    const task = await this.taskRepository.findOne({
+      where: {
+        id,
+      },
+      relations: ['issues', 'issues.issueSpareParts']
+    })
+
+    task.status = TaskStatus.CANCELLED;
+    task.cancelBy = user.id;
+    task.last_issues_data = JSON.stringify(task.issues);
+
+    task.issues.forEach(async(issue) => {
+      issue.task = null
+      await this.issueRepository.save(issue)
+    })
+
+    return await this.taskRepository.save(task);
   }
 }
