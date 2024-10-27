@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import * as dotenv from 'dotenv';
@@ -8,6 +8,7 @@ import { AccountEntity } from '../../entities/account.entity';
 
 dotenv.config();
 
+@Global()
 @Module({
   imports: [
     JwtModule.register({
