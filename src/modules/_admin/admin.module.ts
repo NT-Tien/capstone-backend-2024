@@ -9,6 +9,7 @@ import { TaskModule } from './task/task.module';
 import { RequestModule } from './request/request.module';
 import { RequestAddDeviceModule } from './request-add-device/request-add-device.module';
 import { UserModule } from './user/user.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
