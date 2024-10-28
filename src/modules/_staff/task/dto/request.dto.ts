@@ -4,6 +4,31 @@ import { IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
 
 export namespace TaskRequestDto {
+
+  export class TaskAllCount extends BaseDTO {
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    month: number;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    year: number;
+  }
+
+  export class TaskAllByDate extends BaseDTO {
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    start_date: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    end_date: string;
+  }
+
   export class TaskCreateDto extends BaseDTO {
     @ApiProperty()
     @IsNotEmpty()

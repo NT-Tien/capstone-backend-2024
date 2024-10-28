@@ -5,7 +5,7 @@ import { AccountEntity, Role } from 'src/entities/account.entity';
 import { IssueSparePartEntity } from 'src/entities/issue-spare-part.entity';
 import { IssueEntity, IssueStatus } from 'src/entities/issue.entity';
 import { TaskEntity, TaskStatus } from 'src/entities/task.entity';
-import { In, Repository } from 'typeorm';
+import { Between, In, Repository } from 'typeorm';
 import { TaskRequestDto } from './dto/request.dto';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
@@ -46,6 +46,40 @@ export class TaskService extends BaseService<TaskEntity> {
       .leftJoinAndSelect('task.issues', 'issues')
       .andWhere('fixer.id = :id', { id: userId })
       .getMany();
+  }
+
+  async staffGetAllTaskByDate(userId: string, dto: TaskRequestDto.TaskAllByDate) {
+    let account = await this.accountRepository.findOne({
+      where: { id: userId },
+    });
+    if (!account || account.deletedAt || account.role !== Role.staff) {
+      throw new HttpException('Account is not valid', HttpStatus.BAD_REQUEST);
+    }
+    const startOfDay = new Date(dto.start_date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(dto.end_date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    return this.taskRepository.find({
+      where: {
+        fixer: { id: userId },
+        fixerDate: Between(startOfDay, endOfDay),
+      },
+      relations: ['device', 'device.area', 'fixer', 'issues', 'issues.typeError'],
+    })
+  }
+
+  async staffGetAllTaskCounts(userId: string, dto: TaskRequestDto.TaskAllCount) {
+    const startOfMonth = new Date(dto.year, dto.month - 1, 1);
+    const endOfMonth = new Date(dto.year, dto.month, 0, 23, 59, 59, 999);
+    return this.taskRepository.createQueryBuilder('task')
+      .select('task.fixer_date', 'fixer_date')
+      .addSelect('COUNT(1)','count')
+      .where('task.fixerId = :id', { id: userId })
+      .andWhere('task.fixer_date < :endOfMonth', { endOfMonth })
+      .andWhere('task.fixer_date >= :startOfMonth', { startOfMonth })
+      .groupBy('task.fixer_date')
+      .getRawMany();
   }
 
   async customStaffGetTaskDetail(userId: string, taskId: string) {

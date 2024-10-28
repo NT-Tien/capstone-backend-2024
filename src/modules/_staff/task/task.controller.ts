@@ -7,9 +7,10 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 // import { CacheTTL } from '@nestjs/cache-manager';
 import { TaskService } from './task.service';
 import { TaskResponseDto } from './dto/response.dto';
@@ -37,6 +38,20 @@ export class TaskController {
     console.log(user);
 
     return this.taskService.staffGetAllTask(user.id);
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Get all staff's task by date"})
+  @Get("/all-by-date")
+  getAllByDate(@Headers('user') user: any, @Query() dto: TaskRequestDto.TaskAllByDate) {
+    return this.taskService.staffGetAllTaskByDate(user.id, dto);
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Get staff's task counts"})
+  @Get("/all-counts")
+  getAllCounts(@Headers('user') user: any, @Query() dto: TaskRequestDto.TaskAllCount) {
+    return this.taskService.staffGetAllTaskCounts(user.id, dto);
   }
 
   @ApiBearerAuth()
