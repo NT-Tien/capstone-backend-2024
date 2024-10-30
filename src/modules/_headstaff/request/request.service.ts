@@ -176,7 +176,25 @@ export class RequestService extends BaseService<RequestEntity> {
     const account = await this.accountRepository.findOne({
       where: { id: userId },
     });
-    return await this.requestRepository.save({ id, ...data, checker: account });
+
+    let result = await this.requestRepository.save({ id, ...data, checker: account });
+
+    if(!result) throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
+
+    // if(
+    //   // some fields changed
+    //   true
+    // ){
+    //   // create new notify
+    //   // let notify = await this.notifyService.create({
+    //   //   roleReceiver: Role.head,
+    //   //   requestId: id,
+    //   // });
+    //   // push notify to head-staff
+    //   this.headStaffGateWay.server.emit('', notify);
+    // }
+
+    return result;
   }
 
   async getStatistics(): Promise<{

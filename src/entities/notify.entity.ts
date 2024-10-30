@@ -4,6 +4,12 @@ import { BaseEntity } from 'src/common/base/entity.base';
 
 @Entity()
 export class NotifyEntity extends BaseEntity {
+
+  @ManyToOne(() => AccountEntity, (acc) => acc.id, {
+    nullable: true,
+  })
+  fromUser: AccountEntity;
+
   @ManyToOne(() => AccountEntity, (acc) => acc.id, {
     nullable: true,
   })
@@ -30,6 +36,13 @@ export class NotifyEntity extends BaseEntity {
     nullable: true,
   })
   requestId: string;
+
+  @Column({
+    name: 'content',
+    type: 'text',
+    nullable: true,
+  })
+  content: string;
 
   @Column({
     name: 'status',
