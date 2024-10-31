@@ -94,10 +94,12 @@ export class TaskController {
   async update(
     @Param('id') id: string,
     @Body() body: TaskRequestDto.TaskUpdateDto,
+    @Headers('user') user: any,
   ) {
-    return await this.taskService.update(
+    return await this.taskService.updateTask(
       id,
       TaskRequestDto.TaskUpdateDto.plainToClass(body),
+      user.id
     );
   }
 

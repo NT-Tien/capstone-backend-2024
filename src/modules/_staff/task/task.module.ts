@@ -9,6 +9,7 @@ import { AccountEntity } from 'src/entities/account.entity';
 import { IssueEntity } from 'src/entities/issue.entity';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { RequestEntity } from 'src/entities/request.entity';
+import { NotifyModule } from 'src/modules/notify/notify.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { RequestEntity } from 'src/entities/request.entity';
       RequestEntity,
     ]),
     AuthModule,
+    NotifyModule
   ],
   controllers: [TaskController],
   providers: [TaskService],

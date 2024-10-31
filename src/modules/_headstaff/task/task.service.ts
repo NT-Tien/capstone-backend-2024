@@ -9,6 +9,7 @@ import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
 import { IssueEntity, IssueStatus } from 'src/entities/issue.entity';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
+import { StaffGateway } from 'src/modules/notify/roles/notify.staff';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -24,7 +25,8 @@ export class TaskService extends BaseService<TaskEntity> {
     @InjectRepository(DeviceEntity)
     private readonly deviceRepository: Repository<DeviceEntity>,
     @InjectRepository(IssueEntity)
-    private readonly issueRepository: Repository<IssueEntity>
+    private readonly issueRepository: Repository<IssueEntity>,
+    private readonly staffGateway: StaffGateway
   ) {
     super(taskRepository);
   }
@@ -267,18 +269,34 @@ export class TaskService extends BaseService<TaskEntity> {
       where: {
         id,
       },
-      relations: ['issues', 'issues.issueSpareParts']
-    })
+      relations: ['issues', 'issues.issueSpareParts'],
+    });
 
     task.status = TaskStatus.CANCELLED;
     task.cancelBy = user.id;
     task.last_issues_data = JSON.stringify(task.issues);
 
-    task.issues.forEach(async(issue) => {
-      issue.task = null
-      await this.issueRepository.save(issue)
-    })
+    task.issues.forEach(async (issue) => {
+      issue.task = null;
+      await this.issueRepository.save(issue);
+    });
 
     return await this.taskRepository.save(task);
+  }
+
+  async updateTask(id: string, entity: TaskRequestDto.TaskUpdateDto, userId: string) {
+    const response = await this.taskRepository.update(id, entity as any).then(() => this.getOne(id));
+    const responseEntity = await this.taskRepository.findOne({
+      where: {
+        id: response.id,
+      },
+      relations: ['request', 'fixer', 'request.requester', 'device', 'device.area', 'device.machineModel'],
+    })
+
+    if(entity.fixer !== null && entity.fixer !== undefined) {
+      this.staffGateway.emit_task_assigned(responseEntity, userId, responseEntity.fixer.id)
+    }
+
+    return response
   }
 }

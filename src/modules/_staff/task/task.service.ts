@@ -9,6 +9,7 @@ import { Between, In, Repository } from 'typeorm';
 import { TaskRequestDto } from './dto/request.dto';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
+import { HeadStaffGateway } from 'src/modules/notify/roles/notify.head-staff';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -25,6 +26,7 @@ export class TaskService extends BaseService<TaskEntity> {
     private readonly sparePartRepository: Repository<SparePartEntity>,
     @InjectRepository(RequestEntity)
     private readonly requestRepository: Repository<RequestEntity>,
+    private readonly headStaffGateway: HeadStaffGateway
   ) {
     super(taskRepository);
   }
@@ -186,7 +188,17 @@ export class TaskService extends BaseService<TaskEntity> {
       );
     }
     task.status = TaskStatus.IN_PROGRESS;
-    return await this.taskRepository.save(task);
+    const save = await this.taskRepository.save(task);
+    const response = await this.taskRepository.findOne({
+      where: {
+        id: save.id,
+      },
+      relations: ["request", "request.requester", "fixer", "device", "device.area", "device.machineModel"]
+    })
+
+    this.headStaffGateway.emit_task_started(response, userId);
+
+    return save
   }
 
   // confirm completion

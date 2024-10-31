@@ -392,6 +392,14 @@ export class TaskService extends BaseService<TaskEntity> {
           confirmReceipt: true,
         })
         .getCount(),
+      'spare-part-unfetched': await query
+        .andWhere('task.status = :status', {
+          status: TaskStatus.ASSIGNED,
+        })
+        .andWhere('task.confirmReceipt = :confirmReceipt', {
+          confirmReceipt: false,
+        })
+        .getCount(),
     };
   }
 }
