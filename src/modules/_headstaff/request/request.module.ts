@@ -7,6 +7,7 @@ import { AccountEntity } from 'src/entities/account.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
 import { AuthModule } from 'src/modules/auth/auth.module';
 import { NotifyEntity } from 'src/entities/notify.entity';
+import { NotifyModule } from 'src/modules/notify/notify.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { NotifyEntity } from 'src/entities/notify.entity';
       NotifyEntity,
     ]),
     AuthModule,
+    NotifyModule
   ],
   controllers: [RequestController],
   providers: [RequestService],

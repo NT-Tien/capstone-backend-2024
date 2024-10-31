@@ -8,9 +8,14 @@ import { NotifyController } from './notify.controller';
 import { NotifyService } from './notify.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotifyEntity } from 'src/entities/notify.entity';
+import { HeadStaffNotifyService } from './services/head-staff.notify.service';
+import { AccountEntity } from 'src/entities/account.entity';
+import { HeadNotifySevice } from './services/head.notify.service';
+import { AccountService } from '../_headstaff/account/account.service';
+import { StaffNotifyService } from './services/staff.notify.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([NotifyEntity]), AuthModule],
+  imports: [TypeOrmModule.forFeature([NotifyEntity, AccountEntity]), AuthModule],
   controllers: [NotifyController],
   providers: [
     HeadStaffGateway,
@@ -18,6 +23,10 @@ import { NotifyEntity } from 'src/entities/notify.entity';
     StaffGateway,
     StockKeeperGateway,
     NotifyService,
+    HeadStaffNotifyService,
+    HeadNotifySevice,
+    AccountService,
+    StaffNotifyService,
   ],
   exports: [
     HeadStaffGateway,

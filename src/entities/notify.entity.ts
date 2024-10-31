@@ -2,6 +2,11 @@ import { Column, Entity, ManyToOne, Unique } from 'typeorm';
 import { AccountEntity, Role } from './account.entity';
 import { BaseEntity } from 'src/common/base/entity.base';
 
+export enum NotifyType {
+  REQUEST = 'request',
+  TASK = 'task'
+}
+
 @Entity()
 export class NotifyEntity extends BaseEntity {
 
@@ -24,30 +29,37 @@ export class NotifyEntity extends BaseEntity {
   roleReceiver: Role;
 
   @Column({
-    name: 'task_id',
-    type: 'uuid',
-    nullable: true,
-  })
-  taskId: string;
-
-  @Column({
-    name: 'request_id',
-    type: 'uuid',
-    nullable: true,
-  })
-  requestId: string;
-
-  @Column({
-    name: 'content',
+    name: 'subject_id',
     type: 'text',
     nullable: true,
   })
-  content: string;
+  subjectId?: string;
 
   @Column({
-    name: 'status',
+    name: 'type',
+    type: 'text',
+    nullable: true,
+  })
+  type: string;
+
+  @Column({
+    name: 'content',
+    type: 'jsonb',
+    nullable: true,
+  })
+  content: any;
+
+  @Column({
+    name: 'seen',
     type: 'boolean',
     default: false, // false is unread, true is read
   })
-  status: boolean;
+  seen: boolean;
+
+  @Column({
+    name: 'identifier',
+    type: 'text',
+    nullable: true,
+  })
+  identifier: string
 }

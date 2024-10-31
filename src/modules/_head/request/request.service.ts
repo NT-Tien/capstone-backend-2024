@@ -7,14 +7,13 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from 'src/common/base/service.base';
-import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
-import { Between, Repository } from 'typeorm';
-import { RequestRequestDto } from './dto/request.dto';
 import { AccountEntity, Role } from 'src/entities/account.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
+import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
 import { HeadStaffGateway } from 'src/modules/notify/roles/notify.head-staff';
-import { NotifyService } from 'src/modules/notify/notify.service';
+import { Repository } from 'typeorm';
 import { FeedbackEntity } from '../../../entities/feedback.entity';
+import { RequestRequestDto } from './dto/request.dto';
 
 @Injectable()
 export class RequestService extends BaseService<RequestEntity> {
@@ -28,7 +27,6 @@ export class RequestService extends BaseService<RequestEntity> {
     @InjectRepository(FeedbackEntity)
     private readonly feedbackRepository: Repository<FeedbackEntity>,
     private readonly headStaffGateWay: HeadStaffGateway,
-    private readonly notifyService: NotifyService,
   ) {
     super(requestRepository);
   }
@@ -98,21 +96,21 @@ export class RequestService extends BaseService<RequestEntity> {
       device: device,
       requester_note: data.requester_note,
     });
-
-    // create new notify
-    let result = await this.notifyService.create({
-      roleReceiver: Role.head,
-      requestId: newRequest.id,
-    });
-    // push notify to head-staff
-    this.headStaffGateWay.server.emit('new-request', result);
-    const createdRequest = this.requestRepository.create(newRequest);
-    return this.requestRepository.findOne({
+    
+    const result = await this.requestRepository.findOne({
       where: {
-        id: createdRequest.id,
+        id: newRequest.id,
       },
       relations: ['device', 'device.area', 'device.machineModel', 'requester'],
     });
+
+    // notify head staff
+    await this.headStaffGateWay.emit_request_create(
+      result,
+      userId,
+    );
+
+    return result
   }
 
   async confirmRequest(

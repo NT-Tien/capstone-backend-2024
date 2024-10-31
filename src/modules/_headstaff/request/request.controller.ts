@@ -45,16 +45,6 @@ export class RequestController {
     );
   }
 
-  @ApiOperation({summary: "Get all requests with filters and sorters"})
-  @ApiBearerAuth()
-  @Get('/filtered/:page/:limit')
-  async getAllFilteredSorted(
-    @Param('page') page: number,
-    @Param('limit') limit: number,
-  ) {
-
-  }
-
   // @ApiResponse({
   //   type: RequestResponseDto.RequestGetAll,
   //   status: 200,

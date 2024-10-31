@@ -9,6 +9,8 @@ import { RequestEntity } from 'src/entities/request.entity';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
 import { IssueEntity } from 'src/entities/issue.entity';
+import { StaffGateway } from 'src/modules/notify/roles/notify.staff';
+import { NotifyModule } from 'src/modules/notify/notify.module';
 
 @Module({
   imports: [
@@ -18,9 +20,10 @@ import { IssueEntity } from 'src/entities/issue.entity';
       RequestEntity,
       SparePartEntity,
       DeviceEntity,
-      IssueEntity
+      IssueEntity,
     ]),
     AuthModule,
+    NotifyModule
   ],
   controllers: [TaskController],
   providers: [TaskService],

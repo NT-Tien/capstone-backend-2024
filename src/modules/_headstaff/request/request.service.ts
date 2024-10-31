@@ -7,6 +7,7 @@ import { RequestRequestDto } from './dto/request.dto';
 import { AccountEntity, Role } from 'src/entities/account.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
 import { NotifyEntity } from 'src/entities/notify.entity';
+import { HeadGateway } from 'src/modules/notify/roles/notify.head';
 
 @Injectable()
 export class RequestService extends BaseService<RequestEntity> {
@@ -17,8 +18,7 @@ export class RequestService extends BaseService<RequestEntity> {
     private readonly accountRepository: Repository<AccountEntity>,
     @InjectRepository(DeviceEntity)
     private readonly deviceRepository: Repository<DeviceEntity>,
-    @InjectRepository(NotifyEntity)
-    private readonly notifyRepository: Repository<NotifyEntity>,
+    private readonly headGateway: HeadGateway
   ) {
     super(requestRepository);
   }
@@ -82,15 +82,6 @@ export class RequestService extends BaseService<RequestEntity> {
     if (!account || account.deletedAt || account.role !== Role.headstaff) {
       throw new HttpException('Account is not valid', HttpStatus.BAD_REQUEST);
     }
-    // update status notify
-    await this.notifyRepository.update(
-      {
-        requestId: id,
-      },
-      {
-        status: true,
-      },
-    );
     return this.requestRepository.findOne({
       where: { id },
       relations: [
@@ -181,18 +172,20 @@ export class RequestService extends BaseService<RequestEntity> {
 
     if(!result) throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
 
-    // if(
-    //   // some fields changed
-    //   true
-    // ){
-    //   // create new notify
-    //   // let notify = await this.notifyService.create({
-    //   //   roleReceiver: Role.head,
-    //   //   requestId: id,
-    //   // });
-    //   // push notify to head-staff
-    //   this.headStaffGateWay.server.emit('', notify);
-    // }
+    const response = await this.requestRepository.findOne({
+      where: {
+        id: result.id,
+      },
+      relations: ['device', 'device.area', 'device.machineModel', 'requester'],
+    })
+
+    // notify
+    if(data.status === RequestStatus.APPROVED) {
+      this.headGateway.emit_request_approved(response, userId);
+    }
+    if(data.status === RequestStatus.REJECTED) {
+      this.headGateway.emit_request_rejected(response, userId);
+    }
 
     return result;
   }
