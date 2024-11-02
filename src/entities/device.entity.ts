@@ -1,5 +1,5 @@
 import { BaseEntity } from 'src/common/base/entity.base';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
 import { MachineModelEntity } from './machine-model.entity';
 import { AreaEntity } from './area.entity';
 import { RequestEntity } from './request.entity';
@@ -7,6 +7,7 @@ import { RequestEntity } from './request.entity';
 @Entity({
   name: 'DEVICE',
 })
+// @Index(['area', 'positionX', 'positionY'], { unique: true })
 export class DeviceEntity extends BaseEntity {
   @ManyToOne(() => AreaEntity, (area) => area.id, {
     nullable: true,

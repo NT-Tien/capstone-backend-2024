@@ -76,17 +76,17 @@ export class DeviceService extends BaseService<DeviceEntity> {
           // startDate.setDate(startDate.getDate() + 1);
           // return new Date(request.createdAt) >= endDate && new Date(request.createdAt) <= startDate;
           const requestTime = new Date(request.createdAt).getTime();
-            const currentTime = new Date().getTime();
-            switch (time) {
-              case 1:
-                return requestTime >= currentTime - 7 * 24 * 60 * 60 * 1000;
-              case 2:
-                return requestTime >= currentTime - 30 * 24 * 60 * 60 * 1000;
-              case 3:
-                return requestTime >= currentTime - 365 * 24 * 60 * 60 * 1000;
-              default:
-                return true;
-            }
+          const currentTime = new Date().getTime();
+          switch (time) {
+            case 1:
+              return requestTime >= currentTime - 7 * 24 * 60 * 60 * 1000;
+            case 2:
+              return requestTime >= currentTime - 30 * 24 * 60 * 60 * 1000;
+            case 3:
+              return requestTime >= currentTime - 365 * 24 * 60 * 60 * 1000;
+            default:
+              return true;
+          }
         });
         return device;
       });
@@ -229,5 +229,31 @@ export class DeviceService extends BaseService<DeviceEntity> {
       .skip((page - 1) * limit)
       .take(limit)
       .getManyAndCount();
+  }
+
+  // check duplicate x, y position in area
+  async checkDuplicatePosition(positionX: number, positionY: number, areaId: string) {
+    return this.deviceRepository.findOne({
+      where: {
+        area: {
+          id: areaId,
+        },
+        positionX,
+        positionY,
+      },
+    });
+  }
+
+  async create(device: DeviceRequestDto.DeviceCreateDto) {
+    // check duplicate position
+    const duplicate = await this.checkDuplicatePosition(
+      device.positionX,
+      device.positionY,
+      device.area,
+    );
+    if (duplicate) {
+      throw new Error('Position is already exist');
+    }
+    return super.create(device);
   }
 }
