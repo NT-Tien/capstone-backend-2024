@@ -9,7 +9,6 @@ import { FeedbackEntity } from './feedback.entity';
 export enum RequestStatus {
   PENDING = 'PENDING', // use for request renew
   HEAD_CANCEL = 'HEAD_CANCEL',
-  CHECKED = 'CHECKED',
   APPROVED = 'APPROVED', // use for request renew
   IN_PROGRESS = 'IN_PROGRESS', // use for request renew
   CLOSED = 'CLOSED', // use for request renew

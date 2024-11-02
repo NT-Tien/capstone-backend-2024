@@ -50,28 +50,34 @@ export namespace RequestRequestDto {
 
     @ApiProperty()
     @IsOptional()
-    @Expose() 
+    @Expose()
     is_warranty: boolean;
 
     @ApiProperty()
     @IsOptional()
-    @Expose() 
+    @Expose()
     return_date_warranty: Date;
 
     @ApiProperty()
     @IsOptional()
-    @Expose() 
+    @Expose()
     is_rennew: boolean;
 
     @ApiProperty()
     @IsOptional()
-    @Expose() 
+    @Expose()
     is_request_add_device: boolean;
 
     @ApiProperty()
     @IsOptional()
-    @Expose() 
+    @Expose()
     is_renew_done: boolean; // for admin update
+  }
 
+  export class RequestApproveToWarranty extends BaseDTO {
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    note: string;
   }
 }

@@ -33,13 +33,12 @@ export class HeadStaffDashboardController {
         @Headers('user') user: any,
     ) {
         return Promise.all([
-            this.requestService.customHeadStaffGetAllRequestDashboard(user.id, RequestStatus.PENDING),
-            this.requestService.customHeadStaffGetAllRequestDashboard(user.id, RequestStatus.CHECKED),
-            this.requestService.customHeadStaffGetAllRequestDashboard(user.id, RequestStatus.APPROVED),
-            this.requestService.customHeadStaffGetAllRequestDashboard(user.id, RequestStatus.IN_PROGRESS),
-            this.requestService.customHeadStaffGetAllRequestDashboard(user.id, RequestStatus.CLOSED),
-            this.requestService.customHeadStaffGetAllRequestDashboard(user.id, RequestStatus.HEAD_CONFIRM),
-            this.requestService.customHeadStaffGetAllRequestDashboard(user.id, RequestStatus.REJECTED),
+            this.requestService.customHeadStaffGetAllRequestDashboard(user.id, RequestStatus.PENDING), // 0
+            this.requestService.customHeadStaffGetAllRequestDashboard(user.id, RequestStatus.APPROVED), // 1
+            this.requestService.customHeadStaffGetAllRequestDashboard(user.id, RequestStatus.IN_PROGRESS), // 2
+            this.requestService.customHeadStaffGetAllRequestDashboard(user.id, RequestStatus.CLOSED), // 3
+            this.requestService.customHeadStaffGetAllRequestDashboard(user.id, RequestStatus.HEAD_CONFIRM), // 4
+            this.requestService.customHeadStaffGetAllRequestDashboard(user.id, RequestStatus.REJECTED), // 5
             this.taskService.customGetAllTaskDashboard(TaskStatus.AWAITING_FIXER),
             this.taskService.customGetAllTaskDashboard(TaskStatus.ASSIGNED),
             this.taskService.customGetAllTaskDashboard(TaskStatus.AWAITING_SPARE_SPART),
@@ -48,21 +47,19 @@ export class HeadStaffDashboardController {
             this.taskService.customGetAllTaskDashboard(TaskStatus.COMPLETED),
         ]).then(results => {
             const pendingRequests = results[0][1];
-            const checkedRequests = results[1][1];
-            const approvedRequests = results[2][1]
-            const inProgressRequests = results[3][1]
-            const closedRequests = results[4][1]
-            const headConfirmRequests = results[5][1]
-            const rejectedRequests = results[6][1]
-            const awaitingFixerTasks = results[7][1]
-            const assignedTasks = results[8][1]
-            const awaitingSparePartTasks = results[9][1]
-            const inProgressTasks = results[10][1]
-            const headStaffConfirmTasks = results[11][1]
-            const completedTasks = results[12][1]
+            const approvedRequests = results[1][1]
+            const inProgressRequests = results[2][1]
+            const closedRequests = results[3][1]
+            const headConfirmRequests = results[4][1]
+            const rejectedRequests = results[5][1]
+            const awaitingFixerTasks = results[6][1]
+            const assignedTasks = results[7][1]
+            const awaitingSparePartTasks = results[8][1]
+            const inProgressTasks = results[9][1]
+            const headStaffConfirmTasks = results[10][1]
+            const completedTasks = results[11][1]
             return {
                 pendingRequests,
-                checkedRequests,
                 approvedRequests,
                 inProgressRequests,
                 closedRequests,
