@@ -10,7 +10,12 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 // import { CacheTTL } from '@nestjs/cache-manager';
 import { RequestService } from './request.service';
 import { RequestResponseDto } from './dto/response.dto';
@@ -84,7 +89,7 @@ export class RequestController {
   @Post()
   async create(
     @Headers('user') user: any,
-    @Body() body: RequestRequestDto.RequestCreateDto
+    @Body() body: RequestRequestDto.RequestCreateDto,
   ) {
     return await this.requestService.customHeadCreateRequest(
       user.id,
@@ -108,11 +113,22 @@ export class RequestController {
     return await this.requestService.updateStatus(user.id, id, data);
   }
 
-  @ApiOperation({summary: "Get request statistics"})
+  @ApiOperation({ summary: 'Get request statistics' })
   @ApiBearerAuth()
-  @Get("/statistics")
+  @Get('/statistics')
   async statistics() {
     return this.requestService.getStatistics();
+  }
+
+  @ApiOperation({ summary: 'Approve request - send warranty' })
+  @ApiBearerAuth()
+  @Put('/approve-warranty/:id')
+  async approveRequest(
+    @Param('id') id: string,
+    @Body() dto: RequestRequestDto.RequestApproveToWarranty,
+    @Headers('user') user: any,
+  ) {
+    return this.requestService.approveRequestToWarranty(id, dto, user.id);
   }
 
   // @ApiBearerAuth()

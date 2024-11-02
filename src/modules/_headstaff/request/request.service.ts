@@ -8,6 +8,10 @@ import { AccountEntity, Role } from 'src/entities/account.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
 import { NotifyEntity } from 'src/entities/notify.entity';
 import { HeadGateway } from 'src/modules/notify/roles/notify.head';
+import { FixItemType, IssueEntity } from 'src/entities/issue.entity';
+import { Warranty } from 'src/common/constants';
+import { TaskEntity, TaskStatus, TaskType } from 'src/entities/task.entity';
+import TaskNameGenerator from 'src/utils/taskname-generator';
 
 @Injectable()
 export class RequestService extends BaseService<RequestEntity> {
@@ -18,7 +22,11 @@ export class RequestService extends BaseService<RequestEntity> {
     private readonly accountRepository: Repository<AccountEntity>,
     @InjectRepository(DeviceEntity)
     private readonly deviceRepository: Repository<DeviceEntity>,
-    private readonly headGateway: HeadGateway
+    @InjectRepository(IssueEntity)
+    private readonly issueRepository: Repository<IssueEntity>,
+    @InjectRepository(TaskEntity)
+    private readonly taskRepository: Repository<TaskEntity>,
+    private readonly headGateway: HeadGateway,
   ) {
     super(requestRepository);
   }
@@ -168,22 +176,31 @@ export class RequestService extends BaseService<RequestEntity> {
       where: { id: userId },
     });
 
-    let result = await this.requestRepository.save({ id, ...data, checker: account });
+    let result = await this.requestRepository.save({
+      id,
+      ...data,
+      checker: account,
+    });
 
-    if(!result) throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
+    if (!result)
+      throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
 
     const response = await this.requestRepository.findOne({
       where: {
         id: result.id,
       },
       relations: ['device', 'device.area', 'device.machineModel', 'requester'],
-    })
+    });
 
-    // notify
-    if(data.status === RequestStatus.APPROVED) {
-      this.headGateway.emit_request_approved(response, userId);
-    }
-    if(data.status === RequestStatus.REJECTED) {
+    // // notify
+    // if (data.status === RequestStatus.APPROVED) {
+    //   if (data.is_warranty) {
+    //     this.headGateway.emit_request_approved_warranty(response, userId);
+    //   } else {
+    //     this.headGateway.emit_request_approved_fix(response, userId);
+    //   }
+    // }
+    if (data.status === RequestStatus.REJECTED) {
       this.headGateway.emit_request_rejected(response, userId);
     }
 
@@ -200,8 +217,8 @@ export class RequestService extends BaseService<RequestEntity> {
       .groupBy('request.status')
       .addGroupBy('request.createdAt')
       .getRawMany();
-      
-      console.log(result)
+
+    console.log(result);
 
     const returnValue = result.reduce(
       (acc, cur) => {
@@ -211,6 +228,86 @@ export class RequestService extends BaseService<RequestEntity> {
       {} as { [key: string]: number },
     );
 
-    return returnValue
+    return returnValue;
+  }
+
+  async approveRequestToWarranty(
+    id: string,
+    dto: RequestRequestDto.RequestApproveToWarranty,
+    userId: string,
+  ) {
+    const request = await this.requestRepository.findOneOrFail({
+      where: { id },
+      relations: ['device', 'device.area', 'device.machineModel', 'issues', 'requester'],
+    });
+
+    const issues = await this.issueRepository.save([
+      {
+        fixType: FixItemType.REPAIR,
+        request,
+        typeError: {
+          id: Warranty.disassemble,
+        },
+        description: dto.note,
+      },
+      {
+        fixType: FixItemType.REPAIR,
+        request,
+        typeError: {
+          id: Warranty.send,
+        },
+        description: dto.note,
+      },
+      {
+        fixType: FixItemType.REPAIR,
+        request,
+        typeError: {
+          id: Warranty.receive,
+        },
+        description: '',
+      },
+      {
+        fixType: FixItemType.REPAIR,
+        request,
+        typeError: {
+          id: Warranty.assemble,
+        },
+        description: '',
+      },
+    ]);
+
+    request.status = RequestStatus.APPROVED;
+    request.is_warranty = true;
+
+    const task = await this.taskRepository.save([
+      {
+        request,
+        issues: [issues[0], issues[1]],
+        operator: 0,
+        device: request.device,
+        totalTime: 60,
+        priority: false,
+        status: TaskStatus.AWAITING_FIXER,
+        name: TaskNameGenerator.generateWarranty(request),
+        type: TaskType.WARRANTY_RECEIVE,
+      },
+      {
+        request,
+        issues: [issues[2], issues[3]],
+        operator: 0,
+        device: request.device,
+        totalTime: 60,
+        priority: false,
+        status: TaskStatus.AWAITING_FIXER,
+        name: TaskNameGenerator.generateWarranty(request),
+        type: TaskType.WARRANTY_SEND,
+      },
+    ]);
+
+    this.headGateway.emit_request_approved_warranty(request, userId);
+
+    await this.requestRepository.save(request);
+
+    return request
   }
 }

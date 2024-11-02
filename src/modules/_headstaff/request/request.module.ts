@@ -8,6 +8,8 @@ import { DeviceEntity } from 'src/entities/device.entity';
 import { AuthModule } from 'src/modules/auth/auth.module';
 import { NotifyEntity } from 'src/entities/notify.entity';
 import { NotifyModule } from 'src/modules/notify/notify.module';
+import { IssueEntity } from 'src/entities/issue.entity';
+import { TaskEntity } from 'src/entities/task.entity';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { NotifyModule } from 'src/modules/notify/notify.module';
       RequestEntity,
       AccountEntity,
       DeviceEntity,
+      IssueEntity,
+      TaskEntity,
       NotifyEntity,
     ]),
     AuthModule,

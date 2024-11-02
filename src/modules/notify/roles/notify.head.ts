@@ -58,13 +58,24 @@ export class HeadGateway
     this.server.emit('dev', 'first handshake');
   }
 
-  async emit_request_approved(request: RequestEntity, senderId: string) {
+  async emit_request_approved_fix(request: RequestEntity, senderId: string) {
     const sender = await this.accountService.getOne(senderId);
     const response = await this.headNotifyService.requestApproved(
       request,
       sender,
       request.requester,
       HeadChannel.REQUEST_APPROVED,
+    );
+    this.server.emit(request.requester.id, response);
+  }
+
+  async emit_request_approved_warranty(request: RequestEntity, senderId: string) {
+    const sender = await this.accountService.getOne(senderId);
+    const response = await this.headNotifyService.requestApproved(
+      request,
+      sender,
+      request.requester,
+      HeadChannel.REQUEST_APPROVED_WARRANTY,
     );
     this.server.emit(request.requester.id, response);
   }

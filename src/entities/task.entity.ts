@@ -12,6 +12,13 @@ import { IssueEntity } from './issue.entity';
 import { AccountEntity } from './account.entity';
 import { DeviceEntity } from './device.entity';
 
+export enum TaskType {
+  FIX = 'FIX',
+  WARRANTY_SEND = 'WARRANTY_SEND',
+  WARRANTY_RECEIVE = 'WARRANTY_RECEIVE',
+  RENEW = 'RENEW',
+}
+
 export enum TaskStatus {
   // /**
   //  * !only apply for case renew device , after get new device head staff assign to fixer, update status to ASSIGNED
@@ -96,6 +103,14 @@ export class TaskEntity extends BaseEntity {
     type: 'text',
   })
   name: string;
+
+  // @Column({
+  //   name: "type",
+  //   type: "enum",
+  //   enum: TaskType,
+  //   default: TaskType.FIX
+  // })
+  // type: TaskType;
 
   @Column({
     name: 'status',

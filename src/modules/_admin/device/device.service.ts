@@ -98,9 +98,6 @@ export class DeviceService extends BaseService<DeviceEntity> {
             case RequestStatus.PENDING:
               pending_requests++;
               break;
-            case RequestStatus.CHECKED:
-              checked_requests++;
-              break;
             case RequestStatus.APPROVED:
               approved_requests++;
               break;

@@ -26,7 +26,7 @@ export class TaskService extends BaseService<TaskEntity> {
     private readonly sparePartRepository: Repository<SparePartEntity>,
     @InjectRepository(RequestEntity)
     private readonly requestRepository: Repository<RequestEntity>,
-    private readonly headStaffGateway: HeadStaffGateway
+    private readonly headStaffGateway: HeadStaffGateway,
   ) {
     super(taskRepository);
   }
@@ -50,7 +50,10 @@ export class TaskService extends BaseService<TaskEntity> {
       .getMany();
   }
 
-  async staffGetAllTaskByDate(userId: string, dto: TaskRequestDto.TaskAllByDate) {
+  async staffGetAllTaskByDate(
+    userId: string,
+    dto: TaskRequestDto.TaskAllByDate,
+  ) {
     let account = await this.accountRepository.findOne({
       where: { id: userId },
     });
@@ -67,16 +70,26 @@ export class TaskService extends BaseService<TaskEntity> {
         fixer: { id: userId },
         fixerDate: Between(startOfDay, endOfDay),
       },
-      relations: ['device', 'device.area', 'fixer', 'issues', 'issues.typeError'],
-    })
+      relations: [
+        'device',
+        'device.area',
+        'fixer',
+        'issues',
+        'issues.typeError',
+      ],
+    });
   }
 
-  async staffGetAllTaskCounts(userId: string, dto: TaskRequestDto.TaskAllCount) {
+  async staffGetAllTaskCounts(
+    userId: string,
+    dto: TaskRequestDto.TaskAllCount,
+  ) {
     const startOfMonth = new Date(dto.year, dto.month - 1, 1);
     const endOfMonth = new Date(dto.year, dto.month, 0, 23, 59, 59, 999);
-    return this.taskRepository.createQueryBuilder('task')
+    return this.taskRepository
+      .createQueryBuilder('task')
       .select('task.fixer_date', 'fixer_date')
-      .addSelect('COUNT(1)','count')
+      .addSelect('COUNT(1)', 'count')
       .where('task.fixerId = :id', { id: userId })
       .andWhere('task.fixer_date < :endOfMonth', { endOfMonth })
       .andWhere('task.fixer_date >= :startOfMonth', { startOfMonth })
@@ -174,10 +187,7 @@ export class TaskService extends BaseService<TaskEntity> {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
     }
     // update request status when task is started
-    if (
-      task.request.status === RequestStatus.CHECKED ||
-      task.request.status === RequestStatus.APPROVED
-    ) {
+    if (task.request.status === RequestStatus.APPROVED) {
       await this.requestRepository.update(
         {
           id: task.request.id,
@@ -193,12 +203,19 @@ export class TaskService extends BaseService<TaskEntity> {
       where: {
         id: save.id,
       },
-      relations: ["request", "request.requester", "fixer", "device", "device.area", "device.machineModel"]
-    })
+      relations: [
+        'request',
+        'request.requester',
+        'fixer',
+        'device',
+        'device.area',
+        'device.machineModel',
+      ],
+    });
 
     this.headStaffGateway.emit_task_started(response, userId);
 
-    return save
+    return save;
   }
 
   // confirm completion
@@ -207,24 +224,24 @@ export class TaskService extends BaseService<TaskEntity> {
     taskId: string,
     data: TaskRequestDto.TaskConfirmDoneDto,
   ) {
-    console.log("1st check")
+    console.log('1st check');
     let task = await this.taskRepository.findOne({
       where: { id: taskId },
       relations: ['fixer', 'issues'],
     });
-    console.log("2nd check")
+    console.log('2nd check');
     if (!task || task.fixer.id !== userId) {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
     }
 
     task.status = TaskStatus.HEAD_STAFF_CONFIRM;
-    console.log("3rd check")
+    console.log('3rd check');
     // let issues = await this.issueRepository.find({ where: { task: {
-    //   id: 
+    //   id:
     // } } });
-    console.log("4th check")
+    console.log('4th check');
     task.last_issues_data = JSON.stringify(task.issues);
-    console.log("5th check")
+    console.log('5th check');
     return await this.taskRepository.save({ ...task, ...data });
   }
 
