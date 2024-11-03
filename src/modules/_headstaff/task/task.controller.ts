@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -39,8 +40,9 @@ export class TaskController {
     @Param('page') page: number,
     @Param('limit') limit: number,
     @Param('status') status: TaskStatus,
+    @Query('order') order: number
   ) {
-    return this.taskService.customGetAllTask(page, limit, status);
+    return this.taskService.customGetAllTask(page, limit, status, order);
   }
 
   // @ApiResponse({

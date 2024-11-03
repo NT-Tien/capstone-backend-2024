@@ -35,7 +35,7 @@ export enum TaskStatus {
   // /**
   // * AWAITING_SPARE_SPART
   // */
-  AWAITING_SPARE_SPART = 'AWAITING_SPARE_SPART',
+  AWAITING_SPARE_SPART = 'AWAITING_SPARE_SPART', // not use anymore
   /**
    * AWAITING_FIXER: khi nào còn chưa gán fixer thì dược update nội dung task, ngược lại chỉ có thể cancel task
    */

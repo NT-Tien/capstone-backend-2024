@@ -8,6 +8,7 @@ export enum exportType {
 }
 export enum exportStatus {
   WAITING = 'WAITING',
+  DELAY = 'DELAY',
   ACCEPTED = 'ACCEPTED',
   EXPORTED = 'EXPORTED',
   CANCEL = 'CANCEL',
@@ -34,6 +35,13 @@ export class ExportWareHouse extends BaseEntity {
     enum: exportType,
   })
   export_type: exportType;
+
+  @Column({
+    name: 'reason_cancel',
+    type: 'text',
+    nullable: true,
+  })
+  reason_delay: string;
 
   @Column({
     name: 'reason_cancel',

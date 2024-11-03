@@ -11,6 +11,7 @@ import { DeviceEntity } from 'src/entities/device.entity';
 import { IssueEntity } from 'src/entities/issue.entity';
 import { StaffGateway } from 'src/modules/notify/roles/notify.staff';
 import { NotifyModule } from 'src/modules/notify/notify.module';
+import { ExportWareHouse } from 'src/entities/export-warehouse.entity';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { NotifyModule } from 'src/modules/notify/notify.module';
       SparePartEntity,
       DeviceEntity,
       IssueEntity,
+      ExportWareHouse,
     ]),
     AuthModule,
     NotifyModule

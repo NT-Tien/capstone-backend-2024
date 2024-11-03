@@ -10,6 +10,7 @@ import { IssueEntity, IssueStatus } from 'src/entities/issue.entity';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
 import { StaffGateway } from 'src/modules/notify/roles/notify.staff';
+import { ExportWareHouse } from 'src/entities/export-warehouse.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -26,6 +27,8 @@ export class TaskService extends BaseService<TaskEntity> {
     private readonly deviceRepository: Repository<DeviceEntity>,
     @InjectRepository(IssueEntity)
     private readonly issueRepository: Repository<IssueEntity>,
+    @InjectRepository(ExportWareHouse)
+    private readonly exportWareHouseRepository: Repository<ExportWareHouse>,
     private readonly staffGateway: StaffGateway
   ) {
     super(taskRepository);
@@ -35,6 +38,7 @@ export class TaskService extends BaseService<TaskEntity> {
     page: number,
     limit: number,
     status: TaskStatus,
+    order?: number
   ): Promise<[TaskEntity[], number]> {
     return this.taskRepository.findAndCount({
       where: {
@@ -48,7 +52,7 @@ export class TaskService extends BaseService<TaskEntity> {
         'device.area',
         'device.machineModel',
       ],
-      order: { createdAt: 'DESC' },
+      order: { createdAt: order == 1 ? 'DESC' : 'ASC' },
       skip: (page - 1) * limit,
       take: limit,
     });
@@ -212,7 +216,16 @@ export class TaskService extends BaseService<TaskEntity> {
   }
 
   async assignFixer(taskId: string, data: TaskRequestDto.TaskAssignFixerDto) {
-    const task = await this.taskRepository.findOne({ where: { id: taskId } });
+    const task = await this.taskRepository.findOne(
+      {
+        where: { id: taskId },
+        relations: [
+          'issues',
+          'issues.issueSpareParts',
+          'issues.issueSpareParts.sparePart'
+        ],
+      },
+    );
     if (!task || task.status !== TaskStatus.AWAITING_FIXER || task.fixer) {
       throw new Error('Task not found or invalid status');
     }
@@ -221,6 +234,10 @@ export class TaskService extends BaseService<TaskEntity> {
     });
     task.fixer = fixer;
     task.status = TaskStatus.ASSIGNED;
+    // create export warehouse
+    const exportWarehouse = new ExportWareHouse();
+    exportWarehouse.task = task;
+    // exportWarehouse.export_type = 
     return await this.taskRepository.save(task);
   }
 
@@ -293,7 +310,7 @@ export class TaskService extends BaseService<TaskEntity> {
       relations: ['request', 'fixer', 'request.requester', 'device', 'device.area', 'device.machineModel'],
     })
 
-    if(entity.fixer !== null && entity.fixer !== undefined) {
+    if (entity.fixer !== null && entity.fixer !== undefined) {
       this.staffGateway.emit_task_assigned(responseEntity, userId, responseEntity.fixer.id)
     }
 
