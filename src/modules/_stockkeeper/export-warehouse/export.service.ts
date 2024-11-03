@@ -13,6 +13,20 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
     super(exportWarehouseRepository);
   }
 
+  async getAll(): Promise<ExportWareHouse[]> {
+    return this.exportWarehouseRepository.find({
+      relations: ['task']
+    });
+  }
+
+  async getOne(id: string): Promise<ExportWareHouse> {
+    // relation with task
+    return this.exportWarehouseRepository.findOne({
+      where: { id },
+      relations: ['task']
+    });
+  }
+
 
   async update(id: string, data: any): Promise<ExportWareHouse> {
     // find the entity
