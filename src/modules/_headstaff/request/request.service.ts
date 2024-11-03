@@ -236,45 +236,55 @@ export class RequestService extends BaseService<RequestEntity> {
     dto: RequestRequestDto.RequestApproveToWarranty,
     userId: string,
   ) {
-    const request = await this.requestRepository.findOneOrFail({
+    let request = await this.requestRepository.findOne({
       where: { id },
-      relations: ['device', 'device.area', 'device.machineModel', 'issues', 'requester'],
+      relations: ['device', 'device.area', 'device.machineModel', 'requester'],
     });
 
-    const issues = await this.issueRepository.save([
-      {
-        fixType: FixItemType.REPAIR,
-        request,
-        typeError: {
-          id: Warranty.disassemble,
-        },
-        description: dto.note,
+    if(!request) {
+      throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
+    }
+
+    const disassembleIssue = await this.issueRepository.save({
+      fixType: FixItemType.REPAIR,
+      request: request,
+      typeError: {
+        id: Warranty.disassemble,
       },
-      {
-        fixType: FixItemType.REPAIR,
-        request,
-        typeError: {
-          id: Warranty.send,
-        },
-        description: dto.note,
+      description: dto.note,
+    })
+
+    const sendIssue = await this.issueRepository.save({
+      fixType: FixItemType.REPAIR,
+      request: request,
+      typeError: {
+        id: Warranty.send,
       },
-      {
-        fixType: FixItemType.REPAIR,
-        request,
-        typeError: {
-          id: Warranty.receive,
-        },
-        description: '',
+      description: dto.note,
+    })
+
+    const receiveIssue = await this.issueRepository.save({
+      fixType: FixItemType.REPAIR,
+      request: request,
+      typeError: {
+        id: Warranty.receive,
       },
-      {
-        fixType: FixItemType.REPAIR,
-        request,
-        typeError: {
-          id: Warranty.assemble,
-        },
-        description: '',
+      description: '',
+    })
+
+    const assembleIssue = await this.issueRepository.save({
+      fixType: FixItemType.REPAIR,
+      request: request,
+      typeError: {
+        id: Warranty.assemble,
       },
-    ]);
+      description: '',
+    })
+
+    request = await this.requestRepository.findOne({
+      where: { id },
+      relations: ['device', 'device.area', 'device.machineModel', 'requester', 'issues'],
+    })
 
     request.status = RequestStatus.APPROVED;
     request.is_warranty = true;
@@ -282,7 +292,7 @@ export class RequestService extends BaseService<RequestEntity> {
     const task = await this.taskRepository.save([
       {
         request,
-        issues: [issues[0], issues[1]],
+        issues: [disassembleIssue, sendIssue],
         operator: 0,
         device: request.device,
         totalTime: 60,
@@ -293,7 +303,7 @@ export class RequestService extends BaseService<RequestEntity> {
       },
       {
         request,
-        issues: [issues[2], issues[3]],
+        issues: [receiveIssue, assembleIssue],
         operator: 0,
         device: request.device,
         totalTime: 60,
