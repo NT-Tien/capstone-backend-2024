@@ -71,6 +71,7 @@ export class TaskService extends BaseService<TaskEntity> {
         fixerDate: Between(startOfDay, endOfDay),
       },
       relations: [
+        'export_warehouse_ticket',
         'device',
         'device.area',
         'fixer',
