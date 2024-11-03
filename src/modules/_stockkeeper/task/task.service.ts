@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { TaskRequestDto } from './dto/request.dto';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { IssueEntity, IssueStatus } from 'src/entities/issue.entity';
+import { exportStatus, ExportWareHouse } from 'src/entities/export-warehouse.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -14,6 +15,10 @@ export class TaskService extends BaseService<TaskEntity> {
     private readonly taskRepository: Repository<TaskEntity>,
     @InjectRepository(IssueEntity)
     private readonly issueRepository: Repository<IssueEntity>,
+    @InjectRepository(SparePartEntity)
+    private readonly SparePartEntityRepository: Repository<SparePartEntity>,
+    @InjectRepository(ExportWareHouse)
+    private readonly ExportWareHouseRepository: Repository<ExportWareHouse>,
   ) {
     super(taskRepository);
   }
@@ -178,18 +183,44 @@ export class TaskService extends BaseService<TaskEntity> {
     }
 
     // decrease spare part quantity in db
-    // for (let issue of task.issues) {
-    //   for (let issueSparePart of issue.issueSpareParts) {
-    //     let sparePart = await this.sparePartRepository.findOne({
-    //       where: { id: issueSparePart.sparePart.id },
-    //     });
-    //     if (!sparePart) {
-    //       throw new HttpException('Spare part not found', HttpStatus.NOT_FOUND);
-    //     }
-    //     sparePart.quantity -= issueSparePart.quantity;
-    //     await this.sparePartRepository.save(sparePart);
-    //   }
-    // }
+    for (let issue of task.issues) {
+      for (let issueSparePart of issue.issueSpareParts) {
+        let sparePart = await this.SparePartEntityRepository.findOne({
+          where: { id: issueSparePart.sparePart.id },
+        });
+        if (!sparePart) {
+          throw new HttpException('Spare part not found', HttpStatus.NOT_FOUND);
+        }
+        sparePart.quantity -= issueSparePart.quantity;
+        await this.SparePartEntityRepository.save(sparePart);
+      }
+    }
+
+    // update export warehouse
+    let exportWarehouse = await this.ExportWareHouseRepository.findOne({
+      where: { task: task.id as any },
+    });
+
+    if (exportWarehouse) {
+      exportWarehouse.status = exportStatus.EXPORTED;
+      await this.ExportWareHouseRepository.save(exportWarehouse);
+    } else {
+      // rollback spare part quantity
+      for (let issue of task.issues) {
+        for (let issueSparePart of issue.issueSpareParts) {
+          let sparePart = await this.SparePartEntityRepository.findOne({
+            where: { id: issueSparePart.sparePart.id },
+          });
+          if (!sparePart) {
+            throw new HttpException('Spare part not found', HttpStatus.NOT_FOUND);
+          }
+          sparePart.quantity += issueSparePart.quantity;
+          await this.SparePartEntityRepository.save(sparePart);
+        }
+      }
+      throw new HttpException('Export warehouse not found', HttpStatus.NOT_FOUND);
+    }
+
     task.confirmReceipt = true;
     task.confirmSendBy = userId;
     task.confirmReceiptStockkeeperSignature = dto.stockkeeper_signature;

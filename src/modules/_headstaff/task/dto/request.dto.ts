@@ -96,5 +96,15 @@ export namespace TaskRequestDto {
     @IsNotEmpty()
     @Expose()
     fixer: string; // account id
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    fixerDate: string; // account id
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    priority: boolean;
   }
 }

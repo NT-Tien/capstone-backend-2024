@@ -37,7 +37,7 @@ export class ExportWareHouse extends BaseEntity {
   export_type: exportType;
 
   @Column({
-    name: 'reason_cancel',
+    name: 'reason_delay',
     type: 'text',
     nullable: true,
   })

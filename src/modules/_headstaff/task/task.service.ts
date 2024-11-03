@@ -189,28 +189,28 @@ export class TaskService extends BaseService<TaskEntity> {
         'issues.issueSpareParts.sparePart',
       ],
     });
-    let issues = task.issues;
-    // check issueSpareParts of each issues is enought
-    for (let issue of issues) {
-      for (let issueSparePart of issue.issueSpareParts) {
-        const sparePart = await this.sparePartRepository.findOne({
-          where: { id: issueSparePart.sparePart.id },
-        });
-        if (sparePart.quantity < issueSparePart.quantity) {
-          throw new Error('Not enough spare part');
-        }
-      }
-    }
-    // decrease spare part quantity
-    for (let issue of issues) {
-      for (let issueSparePart of issue.issueSpareParts) {
-        const sparePart = await this.sparePartRepository.findOne({
-          where: { id: issueSparePart.sparePart.id },
-        });
-        sparePart.quantity -= issueSparePart.quantity;
-        await this.sparePartRepository.save(sparePart);
-      }
-    }
+    // let issues = task.issues;
+    // // check issueSpareParts of each issues is enought
+    // for (let issue of issues) {
+    //   for (let issueSparePart of issue.issueSpareParts) {
+    //     const sparePart = await this.sparePartRepository.findOne({
+    //       where: { id: issueSparePart.sparePart.id },
+    //     });
+    //     if (sparePart.quantity < issueSparePart.quantity) {
+    //       throw new Error('Not enough spare part');
+    //     }
+    //   }
+    // }
+    // // decrease spare part quantity
+    // for (let issue of issues) {
+    //   for (let issueSparePart of issue.issueSpareParts) {
+    //     const sparePart = await this.sparePartRepository.findOne({
+    //       where: { id: issueSparePart.sparePart.id },
+    //     });
+    //     sparePart.quantity -= issueSparePart.quantity;
+    //     await this.sparePartRepository.save(sparePart);
+    //   }
+    // }
     task.status = TaskStatus.AWAITING_FIXER;
     return await this.taskRepository.save(task);
   }
@@ -236,16 +236,9 @@ export class TaskService extends BaseService<TaskEntity> {
     task.status = TaskStatus.ASSIGNED;
     // create export warehouse
     const exportWarehouse = new ExportWareHouse();
-    exportWarehouse.task = task;
+    exportWarehouse.task = task.id as any;
     exportWarehouse.export_type = task.type === TaskType.RENEW ? exportType.DEVICE : exportType.SPARE_PART;
-    exportWarehouse.detail = task.issues.map((issue) => {
-      return {
-        issue: issue.id,
-        issueSpareParts: issue.issueSpareParts.map((issueSparePart) => {
-          return issueSparePart;
-        }),
-      };
-    });
+    exportWarehouse.detail = task.issues;
     exportWarehouse.status = exportStatus.WAITING;
     await this.exportWareHouseRepository.save(exportWarehouse);
     return await this.taskRepository.save(task);
