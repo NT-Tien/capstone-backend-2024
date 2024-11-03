@@ -171,6 +171,7 @@ export class TaskService extends BaseService<TaskEntity> {
     let task = await this.taskRepository.findOne({
       where: { id: taskId.trim() },
       relations: [
+        'export_warehouse_ticket',
         'fixer',
         'issues',
         'issues.issueSpareParts',
@@ -196,15 +197,9 @@ export class TaskService extends BaseService<TaskEntity> {
       }
     }
 
-    // update export warehouse
-    
-    let exportWarehouse = await this.ExportWareHouseRepository.findOne({
-      where: { task: task, status: exportStatus.ACCEPTED },
-    });
-
-    if (exportWarehouse) {
-      exportWarehouse.status = exportStatus.EXPORTED;
-      await this.ExportWareHouseRepository.save(exportWarehouse);
+    if (task.export_warehouse_ticket && task.export_warehouse_ticket[0].status === exportStatus.ACCEPTED) {
+      task.export_warehouse_ticket[0].status = exportStatus.EXPORTED;
+      await this.ExportWareHouseRepository.save(task.export_warehouse_ticket[0]);
     } else {
       // rollback spare part quantity
       for (let issue of task.issues) {
