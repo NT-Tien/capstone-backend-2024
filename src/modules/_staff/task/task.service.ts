@@ -236,6 +236,7 @@ export class TaskService extends BaseService<TaskEntity> {
     }
 
     task.status = TaskStatus.HEAD_STAFF_CONFIRM;
+    task.completedAt = new Date();
     console.log('3rd check');
     // let issues = await this.issueRepository.find({ where: { task: {
     //   id:
