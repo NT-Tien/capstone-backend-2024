@@ -59,7 +59,7 @@ export class SparePartController {
   async getOne(@Param('id') id: string) {
     return await this.sparePartService.getOne(id);
   }
-
+ 
   @ApiBearerAuth()
   @ApiResponse({
     type: SparePartResponseDto.SparePartUpdate,
@@ -71,7 +71,7 @@ export class SparePartController {
     @Param('id') id: string,
     @Body() body: SparePartRequestDto.SparePartUpdateDto,
   ) {
-    return await this.sparePartService.customUpdateTransaction(
+    return await this.sparePartService.update(
       id,
       SparePartRequestDto.SparePartUpdateDto.plainToClass(body),
     );

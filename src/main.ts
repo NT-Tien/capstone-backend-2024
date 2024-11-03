@@ -25,7 +25,7 @@ async function bootstrap() {
   app.setGlobalPrefix(`${process.env.PREFIX_API}`);
 
   // upload file -----------------------------------
-  app.register(multipart);
+  app.register(multipart); 
 
   // set up middlewares ----------------------------
   app.use(morgan('dev'));
@@ -78,7 +78,7 @@ async function bootstrap() {
     root: join(__dirname, '../public'),
   });
   console.log(new Date().toLocaleString());
-
-  await app.listen(8080, '0.0.0.0');
+ 
+  await app.listen(8080, '0.0.0.0'); 
 }
 bootstrap();
