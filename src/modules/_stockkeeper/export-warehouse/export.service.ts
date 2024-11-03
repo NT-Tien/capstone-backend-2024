@@ -31,7 +31,9 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
   async checkQuantityInWarehouseAndQuantiyAccepted(sparePartId: string): Promise<number> {
     // step1 get all export warehouse status waiting
     const exportWarehouses = await this.exportWarehouseRepository.find({
-      where: { status: exportStatus.WAITING },
+      where: { 
+        status: exportStatus.WAITING
+       },
     });
     // get quantity of spare part in warehouse
     const sparePart = await this.sparePartRepository.findOne({ where: { id: sparePartId } });

@@ -105,6 +105,7 @@ export class TaskService extends BaseService<TaskEntity> {
     return await this.taskRepository.findOne({
       where: { id },
       relations: [
+        'export_warehouse_ticket',
         'request',
         'fixer',
         'request.requester',
@@ -220,6 +221,7 @@ export class TaskService extends BaseService<TaskEntity> {
       {
         where: { id: taskId },
         relations: [
+          'export_warehouse_ticket',
           'issues',
           'issues.issueSpareParts',
           'issues.issueSpareParts.sparePart'

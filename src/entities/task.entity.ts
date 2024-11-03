@@ -11,6 +11,7 @@ import { RequestEntity } from './request.entity';
 import { IssueEntity } from './issue.entity';
 import { AccountEntity } from './account.entity';
 import { DeviceEntity } from './device.entity';
+import { ExportWareHouse } from './export-warehouse.entity';
 
 export enum TaskType {
   FIX = 'FIX',
@@ -84,6 +85,9 @@ export class TaskEntity extends BaseEntity {
 
   @ManyToOne(() => AccountEntity, (account) => account.id)
   fixer?: AccountEntity;
+
+  @OneToMany(() => ExportWareHouse, (export_warehouse) => export_warehouse.id)
+  export_warehouse_ticket?: ExportWareHouse[];
 
   @Column({
     name: 'fixer_note',
