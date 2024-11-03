@@ -29,20 +29,24 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
   }
 
   async checkQuantityInWarehouseAndQuantiyAccepted(sparePartId: string): Promise<number> {
-    const query = `
-      SELECT SUM((detail->'issueSpareParts'->0->>'quantity')::numeric) AS "quantity"
-      FROM "EXPORT_WAREHOUSE" "export_warehouse"
-      WHERE (detail->>'status' = $1 AND (detail->'issueSpareParts'->0->'sparePart'->>'id') = $2)
-      AND ("export_warehouse"."deletedAt" IS NULL)
-    `;
-  
-    const parameters = ['ACCEPTED', sparePartId];
-  
-    const queryRunner = this.exportWarehouseRepository.manager.connection.createQueryRunner();
-    await queryRunner.connect();
-    const result = await queryRunner.query(query, parameters);
-    await queryRunner.release();
-    return result[0]?.quantity || 0;
+    // step1 get all export warehouse status waiting
+    const exportWarehouses = await this.exportWarehouseRepository.find({
+      where: { status: exportStatus.WAITING },
+    });
+    // get quantity of spare part in warehouse
+    const sparePart = await this.sparePartRepository.findOne({ where: { id: sparePartId } });
+    // check detail of export warehouse have spare part same id and sum quantity
+    let quantity = 0;
+    for (const exportWarehouse of exportWarehouses) {
+      for (const issue of exportWarehouse.detail) {
+        for (const issueSparePart of issue.issueSpareParts) {
+          if (issueSparePart.sparePart.id === sparePartId) {
+            quantity += issueSparePart.quantity;
+          }
+        }
+      }
+    }
+    return sparePart.quantity - quantity;
   }
 
   async getOne(id: string): Promise<ExportWareHouse> {
@@ -109,6 +113,8 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
         for (const issue of entity.detail) {
           for (const issueSparePart of issue.issueSpareParts) {
             const quantityInWarehouse = await this.checkQuantityInWarehouseAndQuantiyAccepted(issueSparePart.sparePart.id);
+            console.log('quantityInWarehouse', quantityInWarehouse);
+            
             if (quantityInWarehouse < issueSparePart.quantity) {
               throw new Error(`Spare part ${issueSparePart.sparePart.name} not enough in warehouse`);
             }
