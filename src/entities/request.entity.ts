@@ -18,6 +18,8 @@ export enum RequestStatus {
 
 export enum RequestType {
   FIX = 'FIX',
+  WARRANTY = 'WARRANTY',
+  RENEW = 'RENEW',
   MAINTENANCE = 'MAINTENANCE',
 }
 
