@@ -221,7 +221,7 @@ export class TaskService extends BaseService<TaskEntity> {
       {
         where: { id: taskId },
         relations: [
-          'export_warehouse_ticket',
+          // 'export_warehouse_ticket',
           'issues',
           'issues.issueSpareParts',
           'issues.issueSpareParts.sparePart'
@@ -239,11 +239,13 @@ export class TaskService extends BaseService<TaskEntity> {
     task.status = TaskStatus.ASSIGNED;
     // create export warehouse
     const exportWarehouse = new ExportWareHouse();
-    exportWarehouse.task = task.id as any;
+    exportWarehouse.task = task;
     exportWarehouse.export_type = task.type === TaskType.RENEW ? exportType.DEVICE : exportType.SPARE_PART;
     exportWarehouse.detail = task.issues;
     exportWarehouse.status = exportStatus.WAITING;
     await this.exportWareHouseRepository.save(exportWarehouse);
+    console.log('task', task);
+    
     return await this.taskRepository.save(task);
   }
 
