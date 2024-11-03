@@ -233,6 +233,7 @@ export class TaskService extends BaseService<TaskEntity> {
       where: { id: data.fixer },
     });
     task.fixer = fixer;
+    task.fixerDate = new Date(data.fixerDate);
     task.status = TaskStatus.ASSIGNED;
     // create export warehouse
     const exportWarehouse = new ExportWareHouse();
