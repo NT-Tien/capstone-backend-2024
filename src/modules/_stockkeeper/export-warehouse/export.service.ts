@@ -3,27 +3,54 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { exportStatus, ExportWareHouse } from 'src/entities/export-warehouse.entity';
 import { BaseService } from 'src/common/base/service.base';
+import { SparePartEntity } from 'src/entities/spare-part.entity';
 
 @Injectable()
 export class ExportWareHouseService extends BaseService<ExportWareHouse> {
   constructor(
     @InjectRepository(ExportWareHouse)
     private readonly exportWarehouseRepository: Repository<ExportWareHouse>,
+    @InjectRepository(SparePartEntity)
+    private readonly sparePartRepository: Repository<SparePartEntity>,
   ) {
     super(exportWarehouseRepository);
   }
 
   async getAll(): Promise<ExportWareHouse[]> {
     return this.exportWarehouseRepository.find({
-      relations: ['task']
+      relations: [
+        'task',
+        'task.fixer',
+        'task.issues',
+        'task.issues.issueSpareParts',
+        'task.issues.issueSpareParts.sparePart',
+      ]
     });
+  }
+
+  async checkQuantityInWarehouseAndQuantiyAccepted(sparePartId: string) {
+    // return number available for this spare part to accept export
+    const quantityInWarehouse = await this.exportWarehouseRepository.createQueryBuilder('export_warehouse')
+      .select('SUM(detail->\'issueSpareParts\'->0->>\'quantity\')', 'quantity')
+      .where('detail->>\'status\' = :status', { status: exportStatus.EXPORTED })
+      .andWhere('detail->>\'issueSpareParts\'->0->>\'sparePart\'->>\'id\' = :sparePartId', { sparePartId })
+      .getRawOne();
+    // compare with quantity of spare part in warehouse
+    const sparePart_quantity = await this.sparePartRepository.findOne({ where: { id: sparePartId } });
+    return sparePart_quantity.quantity - quantityInWarehouse.quantity;
   }
 
   async getOne(id: string): Promise<ExportWareHouse> {
     // relation with task
     return this.exportWarehouseRepository.findOne({
       where: { id },
-      relations: ['task']
+      relations: [
+        'task',
+        'task.fixer',
+        'task.issues',
+        'task.issues.issueSpareParts',
+        'task.issues.issueSpareParts.sparePart',
+      ]
     });
   }
 
@@ -36,7 +63,7 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
       if (data.status === exportStatus.ACCEPTED) {
         // check quantity of spare part in warehouse with other export warehouse detail quanity, status is EXPORTED
         // export warehouse detail query json in database postgres
-        // [
+        // detail : [
         //   {
         //     "id": "39126fee-cef5-49de-b688-a3094690b986",
         //     "status": "PENDING",
@@ -74,7 +101,7 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
         //   }
         // ]
         // check
-        for (const issueSparePart of entity.detail.issueSpareParts) {
+        for (const issueSparePart of entity.detail) {
           const quantityInWarehouse = await this.exportWarehouseRepository.createQueryBuilder('export_warehouse')
             .select('SUM(detail->\'issueSpareParts\'->0->>\'quantity\')', 'quantity')
             .where('detail->>\'status\' = :status', { status: exportStatus.EXPORTED })

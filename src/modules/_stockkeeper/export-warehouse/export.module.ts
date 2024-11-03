@@ -8,7 +8,12 @@ import { ExportWareHouseService } from "./export.service";
 import { ExportWareHouse } from "src/entities/export-warehouse.entity";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([TaskEntity, SparePartEntity, IssueEntity, ExportWareHouse])],
+    imports: [TypeOrmModule.forFeature([
+        TaskEntity, 
+        SparePartEntity, 
+        IssueEntity, 
+        ExportWareHouse
+    ])],
     controllers: [ExportWareHouseController],
     providers: [ExportWareHouseService],
 })
