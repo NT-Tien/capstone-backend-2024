@@ -19,7 +19,7 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
     const entity = await this.exportWarehouseRepository.findOne({ where: { id } });
     // check status is changed
     if (data.status && entity.status !== data.status) {
-      if (data.status === exportStatus.EXPORTED) {
+      if (data.status === exportStatus.ACCEPTED) {
         // check quantity of spare part in warehouse with other export warehouse detail quanity, status is EXPORTED
         // export warehouse detail query json in database postgres
         // [
