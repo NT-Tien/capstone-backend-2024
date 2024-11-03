@@ -101,14 +101,14 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
         //   }
         // ]
         // check
-        for (const issueSparePart of entity.detail) {
+        for (const issue of entity.detail) {
           const quantityInWarehouse = await this.exportWarehouseRepository.createQueryBuilder('export_warehouse')
             .select('SUM(detail->\'issueSpareParts\'->0->>\'quantity\')', 'quantity')
             .where('detail->>\'status\' = :status', { status: exportStatus.EXPORTED })
-            .andWhere('detail->>\'issueSpareParts\'->0->>\'sparePart\'->>\'id\' = :sparePartId', { sparePartId: issueSparePart.sparePart.id })
+            .andWhere('detail->>\'issueSpareParts\'->0->>\'sparePart\'->>\'id\' = :sparePartId', { sparePartId: issue.issueSparePart.id })
             .getRawOne();
-          if (quantityInWarehouse.quantity < issueSparePart.quantity) {
-            throw new Error(`Not enough quantity of ${issueSparePart.sparePart.name} in warehouse`);
+          if (quantityInWarehouse.quantity < issue.quantity) {
+            throw new Error(`Not enough quantity of ${issue.issueSparePart.name} in warehouse`);
           }
         }
       }
