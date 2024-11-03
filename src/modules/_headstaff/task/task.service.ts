@@ -240,13 +240,15 @@ export class TaskService extends BaseService<TaskEntity> {
     // get issues has issueSpareParts
     const issues = task.issues.filter((issue) => issue.issueSpareParts.length > 0);
     // create export warehouse
-    const exportWarehouse = new ExportWareHouse();
-    exportWarehouse.task = task;
-    exportWarehouse.export_type = task.type === TaskType.RENEW ? exportType.DEVICE : exportType.SPARE_PART;
-    exportWarehouse.detail = issues;
-    exportWarehouse.status = exportStatus.WAITING;
-    await this.exportWareHouseRepository.save(exportWarehouse);
-    
+    if (issues.length > 0) {
+      const exportWarehouse = new ExportWareHouse();
+      exportWarehouse.task = task;
+      exportWarehouse.export_type = task.type === TaskType.RENEW ? exportType.DEVICE : exportType.SPARE_PART;
+      exportWarehouse.detail = issues;
+      exportWarehouse.status = exportStatus.WAITING;
+      await this.exportWareHouseRepository.save(exportWarehouse);
+    }
+
     return await this.taskRepository.save(task);
   }
 
