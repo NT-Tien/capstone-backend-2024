@@ -32,7 +32,7 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
     // return number available for this spare part to accept export
     const quantityInWarehouse = await this.exportWarehouseRepository.createQueryBuilder('export_warehouse')
       .select('SUM(detail->\'issueSpareParts\'->0->>\'quantity\')', 'quantity')
-      .where('detail->>\'status\' = :status', { status: exportStatus.EXPORTED })
+      .where('detail->>\'status\' = :status', { status: exportStatus.ACCEPTED })
       .andWhere('detail->>\'issueSpareParts\'->0->>\'sparePart\'->>\'id\' = :sparePartId', { sparePartId })
       .getRawOne();
     // compare with quantity of spare part in warehouse
@@ -102,13 +102,11 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
         // ]
         // check
         for (const issue of entity.detail) {
-          const quantityInWarehouse = await this.exportWarehouseRepository.createQueryBuilder('export_warehouse')
-            .select('SUM(detail->\'issueSpareParts\'->0->>\'quantity\')', 'quantity')
-            .where('detail->>\'status\' = :status', { status: exportStatus.EXPORTED })
-            .andWhere('detail->>\'issueSpareParts\'->0->>\'sparePart\'->>\'id\' = :sparePartId', { sparePartId: issue.issueSparePart.id })
-            .getRawOne();
-          if (quantityInWarehouse.quantity < issue.quantity) {
-            throw new Error(`Not enough quantity of ${issue.issueSparePart.name} in warehouse`);
+          for (const issueSparePart of issue.issueSpareParts) {
+            const quantityInWarehouse = await this.checkQuantityInWarehouseAndQuantiyAccepted(issueSparePart.sparePart.id);
+            if (quantityInWarehouse < issueSparePart.quantity) {
+              throw new Error(`Spare part ${issueSparePart.sparePart.name} not enough in warehouse`);
+            }
           }
         }
       }
