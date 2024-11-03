@@ -104,13 +104,13 @@ export class TaskEntity extends BaseEntity {
   })
   name: string;
 
-  // @Column({
-  //   name: "type",
-  //   type: "enum",
-  //   enum: TaskType,
-  //   default: TaskType.FIX
-  // })
-  // type: TaskType;
+  @Column({
+    name: "type",
+    type: "enum",
+    enum: TaskType,
+    default: TaskType.FIX
+  })
+  type: TaskType;
 
   @Column({
     name: 'status',

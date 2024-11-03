@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from 'src/common/base/service.base';
 import { AccountEntity, Role } from 'src/entities/account.entity';
-import { TaskEntity, TaskStatus } from 'src/entities/task.entity';
+import { TaskEntity, TaskStatus, TaskType } from 'src/entities/task.entity';
 import { Repository } from 'typeorm';
 import { TaskRequestDto } from './dto/request.dto';
 import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
@@ -10,7 +10,7 @@ import { IssueEntity, IssueStatus } from 'src/entities/issue.entity';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
 import { StaffGateway } from 'src/modules/notify/roles/notify.staff';
-import { ExportWareHouse } from 'src/entities/export-warehouse.entity';
+import { exportStatus, exportType, ExportWareHouse } from 'src/entities/export-warehouse.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -237,7 +237,9 @@ export class TaskService extends BaseService<TaskEntity> {
     // create export warehouse
     const exportWarehouse = new ExportWareHouse();
     exportWarehouse.task = task;
-    // exportWarehouse.export_type = 
+    exportWarehouse.export_type = task.type === TaskType.RENEW ? exportType.DEVICE : exportType.SPARE_PART;
+    exportWarehouse.status = exportStatus.WAITING;
+    await this.exportWareHouseRepository.save(exportWarehouse);
     return await this.taskRepository.save(task);
   }
 
@@ -297,7 +299,15 @@ export class TaskService extends BaseService<TaskEntity> {
       issue.task = null;
       await this.issueRepository.save(issue);
     });
-
+    // if cancel task, cancel export warehouse
+    const exportWarehouse = await this.exportWareHouseRepository.findOne({
+      where: { task: task },
+    });
+    // if not exported yet then cancel, else do nothing
+    if (exportWarehouse.status !== exportStatus.EXPORTED && exportWarehouse.status !== exportStatus.CANCEL) {
+      exportWarehouse.status = exportStatus.CANCEL;
+      await this.exportWareHouseRepository.save(exportWarehouse);
+    }
     return await this.taskRepository.save(task);
   }
 
