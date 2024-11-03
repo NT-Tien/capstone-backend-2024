@@ -86,7 +86,7 @@ export class TaskEntity extends BaseEntity {
   @ManyToOne(() => AccountEntity, (account) => account.id)
   fixer?: AccountEntity;
 
-  @OneToMany(() => ExportWareHouse, (export_warehouse) => export_warehouse.id)
+  @OneToMany(() => ExportWareHouse, (export_warehouse) => export_warehouse.task)
   export_warehouse_ticket?: ExportWareHouse[];
 
   @Column({
