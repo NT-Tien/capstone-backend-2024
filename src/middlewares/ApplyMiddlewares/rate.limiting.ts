@@ -5,7 +5,7 @@ import { redisClientLocal } from 'src/config/redis.client';
 @Injectable()
 export class RateLimiting implements NestMiddleware {
   client = redisClientLocal;
-  amount = 300;
+  amount = 10000;
 
   use(req: FastifyRequest['raw'], res: FastifyReply['raw'], next: () => void) {
     const ip = (req.headers['x-forwarded-for'] ||
@@ -32,7 +32,7 @@ export class RateLimiting implements NestMiddleware {
           next();
         }
       } else {
-        this.client.set(ip, 1, 'EX', 100);
+        this.client.set(ip, 1, 'EX', 10);
         next();
       }
     });

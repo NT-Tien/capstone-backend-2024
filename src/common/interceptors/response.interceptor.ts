@@ -31,6 +31,8 @@ export class ResponseInterceptor<T>
         return new ApiResponse<T>(data, 'Success', responseStatusCode);
       }),
       catchError((error) => {
+        console.log('error', error);
+        
         return throwError(() => error);
       }),
     );

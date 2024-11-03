@@ -28,16 +28,21 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
     });
   }
 
-  async checkQuantityInWarehouseAndQuantiyAccepted(sparePartId: string) {
-    // return number available for this spare part to accept export
-    const quantityInWarehouse = await this.exportWarehouseRepository.createQueryBuilder('export_warehouse')
-      .select('SUM(detail->\'issueSpareParts\'->0->>\'quantity\')', 'quantity')
-      .where('detail->>\'status\' = :status', { status: exportStatus.ACCEPTED })
-      .andWhere('detail->>\'issueSpareParts\'->0->>\'sparePart\'->>\'id\' = :sparePartId', { sparePartId })
-      .getRawOne();
-    // compare with quantity of spare part in warehouse
-    const sparePart_quantity = await this.sparePartRepository.findOne({ where: { id: sparePartId } });
-    return sparePart_quantity.quantity - quantityInWarehouse.quantity;
+  async checkQuantityInWarehouseAndQuantiyAccepted(sparePartId: string): Promise<number> {
+    const query = `
+      SELECT SUM((detail->'issueSpareParts'->0->>'quantity')::numeric) AS "quantity"
+      FROM "EXPORT_WAREHOUSE" "export_warehouse"
+      WHERE (detail->>'status' = $1 AND (detail->'issueSpareParts'->0->'sparePart'->>'id') = $2)
+      AND ("export_warehouse"."deletedAt" IS NULL)
+    `;
+  
+    const parameters = ['ACCEPTED', sparePartId];
+  
+    const queryRunner = this.exportWarehouseRepository.manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    const result = await queryRunner.query(query, parameters);
+    await queryRunner.release();
+    return result[0]?.quantity || 0;
   }
 
   async getOne(id: string): Promise<ExportWareHouse> {
