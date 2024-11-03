@@ -197,8 +197,9 @@ export class TaskService extends BaseService<TaskEntity> {
     }
 
     // update export warehouse
+    
     let exportWarehouse = await this.ExportWareHouseRepository.findOne({
-      where: { task: task.id as any },
+      where: { task: task, status: exportStatus.ACCEPTED },
     });
 
     if (exportWarehouse) {
