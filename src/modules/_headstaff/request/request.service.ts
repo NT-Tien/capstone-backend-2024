@@ -99,6 +99,7 @@ export class RequestService extends BaseService<RequestEntity> {
         'tasks',
         'tasks.fixer',
         'tasks.issues',
+        "tasks.issues.typeError",
         'tasks.export_warehouse_ticket',
         'requester',
         'issues',
