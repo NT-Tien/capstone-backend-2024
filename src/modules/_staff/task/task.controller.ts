@@ -5,6 +5,7 @@ import {
   Get,
   Headers,
   Param,
+  ParseBoolPipe,
   Post,
   Put,
   Query,
@@ -101,8 +102,19 @@ export class TaskController {
     @Param('taskId') taskId: UUID,
     @Headers('user') user: any,
     @Body() body: TaskRequestDto.TaskConfirmDoneDto,
+    @Query() query?: TaskRequestDto.TaskCompleteQuery,
   ) {
-    return this.taskService.confirmCompletion(user.id, taskId, body);
+    return this.taskService.confirmCompletion(user.id, taskId, body, query.autoClose);
+  }
+
+  @ApiOperation({summary: "Complete a SEND warranty task"})
+  @ApiBearerAuth()
+  @Post('/complete/:taskId/warranty')
+  confirmDoneWarranty(
+    @Param('taskId') taskId: UUID,
+    @Headers('user') user: any,
+  ) {
+    return this.taskService.completeTaskWarranty(taskId, user.id);
   }
 
   @ApiBearerAuth()

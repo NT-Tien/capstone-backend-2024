@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
@@ -49,6 +49,13 @@ export namespace TaskRequestDto {
     @IsNotEmpty()
     @Expose()
     expirationDate: Date;
+  }
+
+  export class TaskCompleteQuery extends BaseDTO {
+    @ApiPropertyOptional()
+    @IsOptional()
+    @Expose()
+    autoClose?: string
   }
 
   export class TaskUpdateDto extends BaseDTO {

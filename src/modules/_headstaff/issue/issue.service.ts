@@ -28,6 +28,7 @@ export class IssueService extends BaseService<IssueEntity> {
       where: { id },
       relations: [
         'task',
+        "task.fixer",
         'typeError',
         'issueSpareParts',
         'issueSpareParts.sparePart',

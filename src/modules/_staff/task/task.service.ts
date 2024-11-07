@@ -10,6 +10,7 @@ import { TaskRequestDto } from './dto/request.dto';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
 import { HeadStaffGateway } from 'src/modules/notify/roles/notify.head-staff';
+import { Warranty } from 'src/common/constants';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -224,6 +225,7 @@ export class TaskService extends BaseService<TaskEntity> {
     userId: string,
     taskId: string,
     data: TaskRequestDto.TaskConfirmDoneDto,
+    autoClose?: string,
   ) {
     console.log('1st check');
     let task = await this.taskRepository.findOne({
@@ -235,7 +237,12 @@ export class TaskService extends BaseService<TaskEntity> {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
     }
 
-    task.status = TaskStatus.HEAD_STAFF_CONFIRM;
+    if (autoClose === 'true') {
+      task.status = TaskStatus.COMPLETED;
+    } else {
+      task.status = TaskStatus.HEAD_STAFF_CONFIRM;
+    }
+
     task.completedAt = new Date();
     console.log('3rd check');
     // let issues = await this.issueRepository.find({ where: { task: {
@@ -245,6 +252,52 @@ export class TaskService extends BaseService<TaskEntity> {
     task.last_issues_data = JSON.stringify(task.issues);
     console.log('5th check');
     return await this.taskRepository.save({ ...task, ...data });
+  }
+
+  async completeTaskWarranty(taskId: string, userId: string) {
+    const task = await this.taskRepository.findOne({
+      where: {
+        id: taskId,
+      },
+      relations: [
+        'request',
+        'request.tasks',
+        'request.tasks.issues',
+        'request.tasks.issues.typeError',
+        'fixer'
+      ],
+    });
+
+    if (!task) {
+      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+    }
+
+    // update current task
+    task.status = TaskStatus.COMPLETED;
+    task.last_issues_data = JSON.stringify(task.issues);
+    task.completedAt = new Date();
+
+    await this.taskRepository.save(task);
+
+    // update next task fixer
+    const nextTask = task.request.tasks.find((t) =>
+      t.issues.find(
+        (i) =>
+          i.typeError.id === Warranty.receive ||
+          i.typeError.id === Warranty.assemble,
+      ),
+    );
+
+    if (!nextTask) {
+      throw new HttpException('Next task not found', HttpStatus.NOT_FOUND);
+    }
+
+    nextTask.fixer = task.fixer;
+    nextTask.status = TaskStatus.ASSIGNED;
+
+    await this.taskRepository.save(nextTask);
+
+    return task;
   }
 
   async staffRequestCanncelTask(userId: string, taskId: string) {

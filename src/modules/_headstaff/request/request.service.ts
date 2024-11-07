@@ -99,10 +99,12 @@ export class RequestService extends BaseService<RequestEntity> {
         'tasks',
         'tasks.fixer',
         'tasks.issues',
+        'tasks.issues.typeError',
         'tasks.export_warehouse_ticket',
         'requester',
         'issues',
         'issues.task',
+        'issues.task.fixer',
         'issues.typeError',
         'issues.issueSpareParts',
         'issues.issueSpareParts.sparePart',
@@ -237,12 +239,13 @@ export class RequestService extends BaseService<RequestEntity> {
     dto: RequestRequestDto.RequestApproveToWarranty,
     userId: string,
   ) {
+    console.log(dto);
     let request = await this.requestRepository.findOne({
       where: { id },
       relations: ['device', 'device.area', 'device.machineModel', 'requester'],
     });
 
-    if(!request) {
+    if (!request) {
       throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
     }
 
@@ -253,7 +256,7 @@ export class RequestService extends BaseService<RequestEntity> {
         id: Warranty.disassemble,
       },
       description: dto.note,
-    })
+    });
 
     const sendIssue = await this.issueRepository.save({
       fixType: FixItemType.REPAIR,
@@ -262,7 +265,7 @@ export class RequestService extends BaseService<RequestEntity> {
         id: Warranty.send,
       },
       description: dto.note,
-    })
+    });
 
     const receiveIssue = await this.issueRepository.save({
       fixType: FixItemType.REPAIR,
@@ -270,8 +273,8 @@ export class RequestService extends BaseService<RequestEntity> {
       typeError: {
         id: Warranty.receive,
       },
-      description: '',
-    })
+      description: dto.note,
+    });
 
     const assembleIssue = await this.issueRepository.save({
       fixType: FixItemType.REPAIR,
@@ -279,46 +282,66 @@ export class RequestService extends BaseService<RequestEntity> {
       typeError: {
         id: Warranty.assemble,
       },
-      description: '',
-    })
+      description: dto.note,
+    });
 
     request = await this.requestRepository.findOne({
       where: { id },
-      relations: ['device', 'device.area', 'device.machineModel', 'requester', 'issues'],
-    })
+      relations: [
+        'device',
+        'device.area',
+        'device.machineModel',
+        'requester',
+        'issues',
+      ],
+    });
 
     request.status = RequestStatus.APPROVED;
     request.is_warranty = true;
 
-    const task = await this.taskRepository.save([
-      {
-        request,
-        issues: [disassembleIssue, sendIssue],
-        operator: 0,
-        device: request.device,
-        totalTime: 60,
-        priority: false,
-        status: TaskStatus.AWAITING_FIXER,
-        name: TaskNameGenerator.generateWarranty(request),
-        type: TaskType.WARRANTY_RECEIVE,
+    const fixer = await this.accountRepository.findOne({
+      where: {
+        id: dto.fixer,
       },
-      {
-        request,
-        issues: [receiveIssue, assembleIssue],
-        operator: 0,
-        device: request.device,
-        totalTime: 60,
-        priority: false,
-        status: TaskStatus.AWAITING_FIXER,
-        name: TaskNameGenerator.generateWarranty(request),
-        type: TaskType.WARRANTY_SEND,
-      },
-    ]);
+    });
+
+    if (!fixer) {
+      throw new HttpException('Fixer not found', HttpStatus.NOT_FOUND);
+    }
+
+    const sendTask = await this.taskRepository.save({
+      request,
+      issues: [disassembleIssue, sendIssue],
+      operator: 0,
+      device: request.device,
+      totalTime: 60,
+      status: TaskStatus.ASSIGNED,
+      name: TaskNameGenerator.generateWarranty(request),
+      type: TaskType.WARRANTY_RECEIVE,
+      priority: dto.priority,
+    });
+
+    const receiveTask = await this.taskRepository.save({
+      request,
+      issues: [receiveIssue, assembleIssue],
+      operator: 0,
+      device: request.device,
+      totalTime: 60,
+      priority: false,
+      status: TaskStatus.AWAITING_FIXER,
+      name: TaskNameGenerator.generateWarranty(request),
+      type: TaskType.WARRANTY_SEND,
+    });
+
+    sendTask.fixer = fixer;
+    sendTask.fixerDate = new Date(dto.fixerDate);
+
+    await this.taskRepository.save(sendTask);
 
     this.headGateway.emit_request_approved_warranty(request, userId);
 
     await this.requestRepository.save(request);
 
-    return request
+    return request;
   }
 }
