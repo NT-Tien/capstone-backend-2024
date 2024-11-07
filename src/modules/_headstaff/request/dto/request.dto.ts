@@ -1,6 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+  ValidateIf,
+} from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
 import { RequestStatus } from 'src/entities/request.entity';
 
@@ -94,5 +100,19 @@ export namespace RequestRequestDto {
     @IsNotEmpty()
     @Expose()
     priority: boolean;
+  }
+
+  export class RequestApproveToRenew extends BaseDTO {
+    @ApiProperty({ description: 'ID of new device' })
+    @IsNotEmpty()
+    @IsUUID()
+    @Expose()
+    deviceId: string;
+
+    @ApiPropertyOptional({ description: 'Note for renew (idk)' })
+    @IsOptional()
+    @IsString()
+    @Expose()
+    note?: string;
   }
 }
