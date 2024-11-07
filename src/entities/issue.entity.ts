@@ -50,6 +50,13 @@ export class IssueEntity extends BaseEntity {
   fixType: FixItemType;
 
   @Column({
+    name: "resolved_note",
+    type: "text",
+    nullable: true
+  })
+  resolvedNote?: string
+
+  @Column({
     name: 'status',
     type: 'enum',
     enum: IssueStatus,
@@ -65,6 +72,15 @@ export class IssueEntity extends BaseEntity {
     default: [],
   })
   imagesVerify?: string[];
+
+  @Column({
+    name: 'images_verify_fail',
+    type: 'text',
+    array: true,
+    nullable: true,
+    default: [],
+  })
+  imagesVerifyFail?: string[];
 
   @Column({
     name: 'videos_verify',

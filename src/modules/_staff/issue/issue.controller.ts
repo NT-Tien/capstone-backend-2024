@@ -42,4 +42,17 @@ export class IssueController {
   ) {
     return this.issueService.failIssue(user.id, issueId, dto);
   }
+
+  @ApiOperation({summary: "Fail an issue in a warranty task"})
+  @ApiBearerAuth()
+  @Put("warranty/:issueId/failed")
+  failIssueWarranty(
+    @Param('issueId') issueId: UUID,
+    @Body() dto: IssueRequestDto.FailIssueWarranty,
+    @Headers('user') user: any,
+  ) {
+    return this.issueService.failIssueWarranty(user.id, issueId, dto);
+  }
+  
+
 }
