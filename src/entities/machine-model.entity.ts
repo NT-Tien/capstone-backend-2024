@@ -73,7 +73,6 @@ export class MachineModelEntity extends BaseEntity {
   @Column({
     name: 'image',
     type: 'text',
-    array: true,
     nullable: true,
   })
   image?: string;
