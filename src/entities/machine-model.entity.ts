@@ -69,4 +69,13 @@ export class MachineModelEntity extends BaseEntity {
     nullable: true,
   })
   warrantyTerm: Date;
+
+  @Column({
+    name: 'images',
+    type: 'text',
+    array: true,
+    nullable: true,
+    default: [],
+  })
+  images?: string[];
 }
