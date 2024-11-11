@@ -197,7 +197,7 @@ export class TaskService extends BaseService<TaskEntity> {
       }
     }
 
-    if (task.export_warehouse_ticket && task.export_warehouse_ticket[0].status === exportStatus.ACCEPTED) {
+    if (task?.export_warehouse_ticket && task?.export_warehouse_ticket[0]?.status === exportStatus.ACCEPTED) {
       task.export_warehouse_ticket[0].status = exportStatus.EXPORTED;
       await this.ExportWareHouseRepository.save(task.export_warehouse_ticket[0]);
     } else {

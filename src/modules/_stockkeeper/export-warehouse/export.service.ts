@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { exportStatus, ExportWareHouse } from 'src/entities/export-warehouse.entity';
+import {
+  exportStatus,
+  exportType,
+  ExportWareHouse,
+} from 'src/entities/export-warehouse.entity';
 import { BaseService } from 'src/common/base/service.base';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 
@@ -24,30 +28,41 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
         'task.issues',
         'task.issues.issueSpareParts',
         'task.issues.issueSpareParts.sparePart',
-      ]
+      ],
     });
   }
 
-  async checkQuantityInWarehouseAndQuantiyAccepted(sparePartId: string): Promise<number> {
+  async checkQuantityInWarehouseAndQuantiyAccepted(
+    sparePartId: string,
+  ): Promise<number> {
     // step1 get all export warehouse status waiting
     const exportWarehouses = await this.exportWarehouseRepository.find({
-      where: { 
-        status: exportStatus.WAITING
-       },
+      where: {
+        status: exportStatus.WAITING,
+      },
     });
     // get quantity of spare part in warehouse
-    const sparePart = await this.sparePartRepository.findOne({ where: { id: sparePartId } });
+    const sparePart = await this.sparePartRepository.findOne({
+      where: { id: sparePartId },
+    });
     // check detail of export warehouse have spare part same id and sum quantity
     let quantity = 0;
     for (const exportWarehouse of exportWarehouses) {
       for (const issue of exportWarehouse.detail) {
-        for (const issueSparePart of issue.issueSpareParts) {
-          if (issueSparePart.sparePart.id === sparePartId) {
-            quantity += issueSparePart.quantity;
+        if (Array.isArray(issue.issueSpareParts)) {
+          for (const issueSparePart of issue.issueSpareParts) {
+            if (issueSparePart.sparePart.id === sparePartId) {
+              quantity += issueSparePart.quantity;
+            }
           }
+        } else {
+          console.warn(
+            `issueSpareParts is not iterable for issue with ID: ${issue.id}`,
+          );
         }
       }
     }
+
     return sparePart.quantity - quantity;
   }
 
@@ -61,14 +76,16 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
         'task.issues',
         'task.issues.issueSpareParts',
         'task.issues.issueSpareParts.sparePart',
-      ]
+      ],
     });
   }
 
-
   async update(id: string, data: any): Promise<ExportWareHouse> {
     // find the entity
-    const entity = await this.exportWarehouseRepository.findOne({ where: { id } });
+    const entity = await this.exportWarehouseRepository.findOne({
+      where: { id },
+      relations: ['task', 'task.device_renew'],
+    });
     // check status is changed
     if (data.status && entity.status !== data.status) {
       if (data.status === exportStatus.ACCEPTED) {
@@ -113,18 +130,36 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
         // ]
         // check
         for (const issue of entity.detail) {
-          for (const issueSparePart of issue.issueSpareParts) {
-            const quantityInWarehouse = await this.checkQuantityInWarehouseAndQuantiyAccepted(issueSparePart.sparePart.id);
-            console.log('quantityInWarehouse', quantityInWarehouse);
-            
-            if (quantityInWarehouse < issueSparePart.quantity) {
-              throw new Error(`Spare part ${issueSparePart.sparePart.name} not enough in warehouse`);
+          if (Array.isArray(issue.issueSpareParts)) {
+            for (const issueSparePart of issue.issueSpareParts) {
+              const quantityInWarehouse =
+                await this.checkQuantityInWarehouseAndQuantiyAccepted(
+                  issueSparePart.sparePart.id,
+                );
+              console.log('quantityInWarehouse', quantityInWarehouse);
+
+              if (quantityInWarehouse < issueSparePart.quantity) {
+                throw new Error(
+                  `Spare part ${issueSparePart.sparePart.name} not enough in warehouse`,
+                );
+              }
             }
+          } else {
+            console.warn(
+              `issueSpareParts is not iterable for issue with ID: ${issue.id}`,
+            );
           }
+        }
+
+        if (
+          entity.export_type === exportType.DEVICE &&
+          entity.task.device_renew
+        ) {
+          entity.status = exportStatus.ACCEPTED;
+          await this.exportWarehouseRepository.save(entity);
         }
       }
     }
     return super.update(id, data);
   }
-
 }
