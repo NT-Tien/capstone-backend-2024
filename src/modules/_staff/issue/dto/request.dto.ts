@@ -42,5 +42,10 @@ export namespace IssueRequestDto {
     @IsOptional()
     @Expose()
     imagesVerify?: string[];
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @Expose()
+    shouldSkipUpdateTask?: boolean;
   }
 }
