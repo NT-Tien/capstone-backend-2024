@@ -323,6 +323,7 @@ export class RequestService extends BaseService<RequestEntity> {
         operator: 0,
         device: request.device,
         totalTime: 60,
+        priority: false,
         status: TaskStatus.AWAITING_FIXER,
         name: TaskNameGenerator.generateWarranty(request),
         type: TaskType.WARRANTY_RECEIVE,
