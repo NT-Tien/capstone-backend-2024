@@ -85,21 +85,6 @@ export namespace RequestRequestDto {
     @IsNotEmpty()
     @Expose()
     note: string;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @Expose()
-    fixerDate: string;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @Expose()
-    fixer: string;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @Expose()
-    priority: boolean;
   }
 
   export class RequestApproveToRenew extends BaseDTO {
