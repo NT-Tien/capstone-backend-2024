@@ -71,11 +71,10 @@ export class MachineModelEntity extends BaseEntity {
   warrantyTerm: Date;
 
   @Column({
-    name: 'images',
+    name: 'image',
     type: 'text',
     array: true,
     nullable: true,
-    default: [],
   })
-  images?: string[];
+  image?: string;
 }
