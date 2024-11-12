@@ -255,7 +255,7 @@ export class TaskService extends BaseService<TaskEntity> {
       exportWarehouse.task = task;
       exportWarehouse.export_type = exportType.DEVICE;
       exportWarehouse.detail = task.device_renew.id;
-      exportWarehouse.status = exportStatus.WAITING
+      exportWarehouse.status = exportStatus.ACCEPTED
 
       await this.exportWareHouseRepository.save(exportWarehouse)
     }

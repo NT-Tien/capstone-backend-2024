@@ -217,11 +217,6 @@ try {
         HttpStatus.NOT_FOUND,
       );
     }
-  } else {
-    throw new HttpException(
-      'Device renew information missing',
-      HttpStatus.BAD_REQUEST,
-    );
   }
 
   task.confirmReceipt = true;

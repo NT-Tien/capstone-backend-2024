@@ -9,7 +9,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeviceResponseDto } from './dto/response.dto';
 import { DeviceService } from './device.service';
 import { DeviceRequestDto } from './dto/request.dto';
@@ -32,6 +32,13 @@ export class DeviceController {
   async getAll() {
     console.log("RECEIVED")
     return await this.deviceService.getAllWithRelationsNoPosition();
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Get all machine models with unused devices"})
+  @Get("/all/unused")
+  async getAllUnused() {
+    return await this.deviceService.getAllUnused();
   }
 
   // @ApiResponse({
