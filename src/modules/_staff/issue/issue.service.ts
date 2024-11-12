@@ -35,14 +35,17 @@ export class IssueService extends BaseService<IssueEntity> {
     // issue.imagesVerify = dto.imagesVerify;
     // issue.videosVerify = dto.videosVerify;
     // issue.resolvedNote = dto.resolvedNote;
-    return this.issueRepository.update({
-      id: issueId,
-    }, {
-      status: IssueStatus.RESOLVED,
-      imagesVerify: dto.imagesVerify,
-      videosVerify: dto.videosVerify,
-      resolvedNote: dto.resolvedNote,
-    });
+    return this.issueRepository.update(
+      {
+        id: issueId,
+      },
+      {
+        status: IssueStatus.RESOLVED,
+        imagesVerify: dto.imagesVerify,
+        videosVerify: dto.videosVerify,
+        resolvedNote: dto.resolvedNote,
+      },
+    );
   }
 
   async failIssue(
@@ -84,9 +87,14 @@ export class IssueService extends BaseService<IssueEntity> {
     issue.status = IssueStatus.FAILED;
     issue.failReason = dto.failReason;
     issue.imagesVerifyFail = dto.imagesVerify;
-    await this.issueRepository.save(issue);
+    const save = await this.issueRepository.save(issue);
 
     // update task -> closed
+
+    if (dto.shouldSkipUpdateTask) {
+      return save;
+    }
+
     const task = await this.taskRepository.findOne({
       where: {
         id: dto.taskId,
@@ -96,6 +104,8 @@ export class IssueService extends BaseService<IssueEntity> {
     task.completedAt = new Date();
     task.status = TaskStatus.COMPLETED;
 
-    return this.taskRepository.save(task);
+    await this.taskRepository.save(task);
+
+    return save;
   }
 }

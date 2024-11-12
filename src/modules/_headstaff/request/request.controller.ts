@@ -5,6 +5,7 @@ import {
   Get,
   Headers,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   Res,
@@ -131,36 +132,18 @@ export class RequestController {
     return this.requestService.approveRequestToWarranty(id, dto, user.id);
   }
 
-  // @ApiBearerAuth()
-  // @ApiResponse({
-  //   type: RequestResponseDto.RequestDelete,
-  //   status: 200,
-  //   description: 'Hard delete a Request',
-  // })
-  // @Delete(':id')
-  // async deleteHard(@Param('id') id: string) {
-  //   return await this.requestService.delete(id);
-  // }
-
-  // @ApiBearerAuth()
-  // @ApiResponse({
-  //   type: RequestResponseDto.RequestDelete,
-  //   status: 200,
-  //   description: 'Soft delete a Request',
-  // })
-  // @Delete('soft-delete/:id')
-  // async delete(@Param('id') id: string) {
-  //   return await this.requestService.softDelete(id);
-  // }
-
-  // @ApiBearerAuth()
-  // @ApiResponse({
-  //   type: RequestResponseDto.RequestRestore,
-  //   status: 200,
-  //   description: 'Restore a Request',
-  // })
-  // @Put('restore/:id')
-  // async restore(@Param('id') id: string) {
-  //   return await this.requestService.restore(id);
-  // }
+  @ApiOperation({
+    summary: 'Approve request - renew device',
+    description:
+      'Creates two issues in the request: Bring old machine to warehouse, and bring new machine to area. Both issues are created in one task.',
+  })
+  @ApiBearerAuth()
+  @Put('/approve-renew/:id')
+  async approveRequest_Renew(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: RequestRequestDto.RequestApproveToRenew,
+    @Headers('user') user: any,
+  ) {
+    return this.requestService.approveRequestToRenew(id, dto, user.id);
+  }
 }

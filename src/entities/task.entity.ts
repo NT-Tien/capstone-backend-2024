@@ -127,6 +127,7 @@ export class TaskEntity extends BaseEntity {
   @Column({
     name: 'priority',
     type: 'boolean',
+    default: false,
   })
   priority: boolean;
 

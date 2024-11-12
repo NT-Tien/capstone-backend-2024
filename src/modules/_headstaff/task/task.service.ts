@@ -88,6 +88,15 @@ export class TaskService extends BaseService<TaskEntity> {
 
     await this.deviceRepository.save(task.device);
 
+    // Create Export Warehouse entry for the renewed device
+    const exportWarehouse = new ExportWareHouse();
+    exportWarehouse.task = task;
+    exportWarehouse.export_type = exportType.DEVICE;
+    exportWarehouse.detail = renewDeviceId;
+    exportWarehouse.status = exportStatus.WAITING;
+
+    await this.exportWareHouseRepository.save(exportWarehouse);
+
     return await this.taskRepository.save(task);
   }
 
@@ -224,7 +233,8 @@ export class TaskService extends BaseService<TaskEntity> {
           // 'export_warehouse_ticket',
           'issues',
           'issues.issueSpareParts',
-          'issues.issueSpareParts.sparePart'
+          'issues.issueSpareParts.sparePart',
+          'device_renew',
         ],
       },
     );
@@ -239,8 +249,17 @@ export class TaskService extends BaseService<TaskEntity> {
     task.status = TaskStatus.ASSIGNED;
     // get issues has issueSpareParts
     const issues = task.issues.filter((issue) => issue.issueSpareParts.length > 0);
-    // create export warehouse
-    if (issues.length > 0) {
+    // create export warehouse renew
+    if (task.type === TaskType.RENEW && task.device_renew) {
+      const exportWarehouse = new ExportWareHouse();
+      exportWarehouse.task = task;
+      exportWarehouse.export_type = exportType.DEVICE;
+      exportWarehouse.detail = task.device_renew.id;
+      exportWarehouse.status = exportStatus.ACCEPTED
+
+      await this.exportWareHouseRepository.save(exportWarehouse)
+    }
+    else if (issues.length > 0) {
       const exportWarehouse = new ExportWareHouse();
       exportWarehouse.task = task;
       exportWarehouse.export_type = task.type === TaskType.RENEW ? exportType.DEVICE : exportType.SPARE_PART;
