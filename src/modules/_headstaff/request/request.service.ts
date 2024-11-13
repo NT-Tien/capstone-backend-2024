@@ -337,6 +337,79 @@ export class RequestService extends BaseService<RequestEntity> {
     return request;
   }
 
+  // async approveRequestToRenew(
+  //   id: string,
+  //   dto: RequestRequestDto.RequestApproveToRenew,
+  //   userId: string,
+  // ) {
+  //   // update request
+  //   let request = await this.requestRepository.findOne({
+  //     where: { id },
+  //     relations: ['issues', 'issues.typeError'],
+  //   });
+
+  //   if (!request) {
+  //     throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
+  //   }
+
+  //   const newDevice = await this.deviceRepository.findOne({
+  //     where: {
+  //       id: dto.deviceId,
+  //     },
+  //   });
+
+  //   if (!newDevice) {
+  //     throw new HttpException('New device not found', HttpStatus.NOT_FOUND);
+  //   }
+
+  //   request.is_rennew = true;
+  //   request.status = RequestStatus.APPROVED;
+  //   request.type = RequestType.RENEW;
+
+  //   await this.requestRepository.save(request);
+
+  //   // create issues
+  //   const dismantleOldDeviceIssue = await this.issueRepository.save({
+  //     request,
+  //     fixType: FixItemType.REPLACE,
+  //     typeError: {
+  //       id: Renew.dismantleOldDevice,
+  //     },
+  //     description: dto.note ?? '',
+  //   });
+
+  //   const installNewDeviceIssue = await this.issueRepository.save({
+  //     request,
+  //     fixType: FixItemType.REPLACE,
+  //     typeError: {
+  //       id: Renew.installNewDevice,
+  //     },
+  //     description: dto.note ?? '',
+  //   });
+
+  //   // create task
+
+  //   request = await this.requestRepository.findOne({
+  //     where: { id },
+  //     relations: ['device', 'device.machineModel', 'issues', 'device.area'],
+  //   });
+
+  //   const task = await this.taskRepository.save({
+  //     name: TaskNameGenerator.generateRenew(request),
+  //     device: request.device,
+  //     device_renew: newDevice,
+  //     request: request,
+  //     issues: [dismantleOldDeviceIssue, installNewDeviceIssue],
+  //     operator: 0,
+  //     status: TaskStatus.AWAITING_FIXER,
+  //     totalTime: 0,
+  //     type: TaskType.RENEW,
+  //     priority: false,
+  //   });
+
+  //   return request;
+  // }
+
   async approveRequestToRenew(
     id: string,
     dto: RequestRequestDto.RequestApproveToRenew,
@@ -347,27 +420,27 @@ export class RequestService extends BaseService<RequestEntity> {
       where: { id },
       relations: ['issues', 'issues.typeError'],
     });
-
+  
     if (!request) {
       throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
     }
-
+  
     const newDevice = await this.deviceRepository.findOne({
       where: {
         id: dto.deviceId,
       },
     });
-
+  
     if (!newDevice) {
       throw new HttpException('New device not found', HttpStatus.NOT_FOUND);
     }
-
+  
     request.is_rennew = true;
     request.status = RequestStatus.APPROVED;
     request.type = RequestType.RENEW;
-
+  
     await this.requestRepository.save(request);
-
+  
     // create issues
     const dismantleOldDeviceIssue = await this.issueRepository.save({
       request,
@@ -377,7 +450,7 @@ export class RequestService extends BaseService<RequestEntity> {
       },
       description: dto.note ?? '',
     });
-
+  
     const installNewDeviceIssue = await this.issueRepository.save({
       request,
       fixType: FixItemType.REPLACE,
@@ -386,15 +459,14 @@ export class RequestService extends BaseService<RequestEntity> {
       },
       description: dto.note ?? '',
     });
-
+  
     // create task
-
     request = await this.requestRepository.findOne({
       where: { id },
       relations: ['device', 'device.machineModel', 'issues', 'device.area'],
     });
-
-    const task = await this.taskRepository.save({
+  
+    await this.taskRepository.save({
       name: TaskNameGenerator.generateRenew(request),
       device: request.device,
       device_renew: newDevice,
@@ -406,7 +478,8 @@ export class RequestService extends BaseService<RequestEntity> {
       type: TaskType.RENEW,
       priority: false,
     });
-
+  
     return request;
   }
+  
 }
