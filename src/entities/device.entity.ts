@@ -3,12 +3,20 @@ import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
 import { MachineModelEntity } from './machine-model.entity';
 import { AreaEntity } from './area.entity';
 import { RequestEntity } from './request.entity';
+import { TaskEntity } from './task.entity';
 
 @Entity({
   name: 'DEVICE',
 })
 // @Index(['area', 'positionX', 'positionY'], { unique: true })
 export class DeviceEntity extends BaseEntity {
+
+  @OneToMany(() => TaskEntity, (task) => task.device)
+  task_renew: TaskEntity; // for renew
+
+  @OneToMany(() => TaskEntity, (task) => task.device)
+  task: TaskEntity; // for normal get
+
   @ManyToOne(() => AreaEntity, (area) => area.id, {
     nullable: true,
   })

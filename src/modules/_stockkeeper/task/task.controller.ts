@@ -80,7 +80,7 @@ export class TaskController {
   })
   @Post('receipt/:taskId')
   receiveSpareParts(
-    @Param('taskId') taskId: UUID,
+    @Param('taskId') taskId: string,
     @Body() dto: TaskRequestDto.TaskConfirmReceiptDto,
     @Headers('user') user: any,
   ) {
