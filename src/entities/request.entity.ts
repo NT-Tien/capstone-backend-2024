@@ -130,3 +130,10 @@ export class RequestEntity extends BaseEntity {
   })
   is_rennew: boolean;
 }
+
+export class RequestUtil {
+  static isRunning(request?: RequestEntity): boolean | undefined {
+    if(!request) return undefined;
+    return request.status === RequestStatus.PENDING || request.status === RequestStatus.APPROVED || request.status === RequestStatus.IN_PROGRESS;
+  }
+}
