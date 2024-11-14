@@ -57,6 +57,7 @@ export class RequestEntity extends BaseEntity {
   @Column({
     name: 'requester_note',
     type: 'text',
+    nullable: true,
   })
   requester_note: string; // if the request is renew type, requester is headstaff
 
