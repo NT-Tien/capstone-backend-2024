@@ -188,6 +188,17 @@ export class TaskService extends BaseService<TaskEntity> {
     if (!task || task.fixer.id !== userId) {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
     }
+
+    // just only accept 1 time 1 task staff can in process
+    let taskInProcess = await this.taskRepository.findOne({
+      where: { fixer: { id: userId }, status: TaskStatus.IN_PROGRESS },
+    });
+    if (taskInProcess) {
+      throw new HttpException(
+        'You are already in process another task',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     // update request status when task is started
     if (task.request.status === RequestStatus.APPROVED) {
       await this.requestRepository.update(
