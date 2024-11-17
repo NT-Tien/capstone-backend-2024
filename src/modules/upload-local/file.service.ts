@@ -6,9 +6,18 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FileLocalEntity } from 'src/entities/file-local.entity';
 import { BaseService } from 'src/common/base/service.base';
+import * as fs from 'fs';
 
 @Injectable()
 export class FileService extends BaseService<FileLocalEntity> {
+  private static readonly FILE_PATH = join(
+    __dirname,
+    '..',
+    '..',
+    '..',
+    'public/uploads',
+  );
+
   constructor(
     @InjectRepository(FileLocalEntity)
     private readonly fileRepository: Repository<FileLocalEntity>,
@@ -18,6 +27,10 @@ export class FileService extends BaseService<FileLocalEntity> {
 
   async getFiles() {
     return await this.fileRepository.find();
+  }
+
+  private static getFilePath(...path: string[]) {
+    return join(FileService.FILE_PATH, ...path);
   }
 
   // upload file
@@ -31,25 +44,19 @@ export class FileService extends BaseService<FileLocalEntity> {
     // check folder exist
     console.log('dirname', __dirname);
 
-    if (
-      !require('fs').existsSync(
-        join(__dirname, '..', '..', '..', 'public/uploads'),
-      )
-    ) {
-      require('fs').mkdirSync(
-        join(__dirname, '..', '..', '..', 'public/uploads'),
-      );
+    if (!fs.existsSync(join(__dirname, '..', '..', '..', 'public/uploads'))) {
+      fs.mkdirSync(join(__dirname, '..', '..', '..', 'public/uploads'));
     }
     // write file
-    require('fs').writeFileSync(
+    fs.writeFileSync(
       join(__dirname, '..', '..', '..', 'public/uploads', fileName),
       file.buffer,
     );
     // get file size
-    var stats = require('fs').statSync(
+    const stats = fs.statSync(
       join(__dirname, '..', '..', '..', 'public/uploads', fileName),
     );
-    var fileSizeInBytes = stats.size;
+    const fileSizeInBytes = stats.size;
     // create new file
     return await this.fileRepository.save({
       path: fileName,
@@ -61,11 +68,9 @@ export class FileService extends BaseService<FileLocalEntity> {
   async deleteFile(path: string) {
     try {
       if (
-        require('fs').existsSync(
-          join(__dirname, '..', '..', '..', 'public/uploads', path),
-        )
+        fs.existsSync(join(__dirname, '..', '..', '..', 'public/uploads', path))
       ) {
-        await require('fs').unlinkSync(
+        fs.unlinkSync(
           join(__dirname, '..', '..', '..', 'public/uploads', path),
         );
         return this.fileRepository.delete({ path: path });
@@ -74,6 +79,29 @@ export class FileService extends BaseService<FileLocalEntity> {
       }
     } catch (error) {
       console.log('delete file error', error);
+    }
+  }
+
+  async getFile(path: string) {
+    const filePath = FileService.getFilePath(path);
+
+    try {
+      const fileEntity = await this.fileRepository.findOneOrFail({
+        where: {
+          path,
+        },
+      });
+      if (fs.existsSync(filePath)) {
+        const file = fs.readFileSync(filePath);
+        return {
+          file,
+          entity: fileEntity,
+        };
+      } else {
+        throw new HttpException('File not found', 404);
+      }
+    } catch (e) {
+      throw new HttpException('File not found', 404);
     }
   }
 }

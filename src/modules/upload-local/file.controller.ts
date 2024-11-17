@@ -1,38 +1,37 @@
 import {
+  FileInterceptor,
+  MemoryStorageFile,
+  UploadedFile,
+} from '@blazity/nest-file-fastify';
+import {
   Controller,
   Delete,
   Get,
   Inject,
   Param,
   Post,
-  Req,
   Res,
   UseGuards,
-  UseInterceptors,
+  UseInterceptors
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
-  ApiHeader,
-  ApiTags,
+  ApiTags
 } from '@nestjs/swagger';
-import {
-  FileInterceptor,
-  MemoryStorageFile,
-  UploadedFile,
-} from '@blazity/nest-file-fastify';
-import { FileService } from './file.service';
+import { FastifyReply } from 'fastify';
 import { AdminGuard } from '../auth/guards/admin.guard';
+import { FileService } from './file.service';
 
 @ApiTags('file-local')
-@UseGuards(AdminGuard)
 @Controller('file-local')
 export class FileController {
   constructor(
     @Inject('FILE_SERVICE') private readonly fileService: FileService,
   ) {}
 
+  @UseGuards(AdminGuard)
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -58,9 +57,17 @@ export class FileController {
     return await this.fileService.uploadFile(file);
   }
 
+  @UseGuards(AdminGuard)
   @ApiBearerAuth()
   @Delete('remove/:path')
   async removeFile(@Param('path') path: string) {
     return await this.fileService.deleteFile(path);
+  }
+
+  @Get(':path')
+  async getFile(@Param('path') path: string, @Res() res: FastifyReply) {
+    const response = await this.fileService.getFile(path);
+    res.header('Content-Type', response.entity.type);
+    res.send(response.file)
   }
 }
