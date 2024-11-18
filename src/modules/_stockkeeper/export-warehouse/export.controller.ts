@@ -1,11 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Headers, Param, Post, Put, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { StockkeeperGuard } from "src/modules/auth/guards/stockkeeper.guard";
 import { ExportWareHouseService } from "./export.service";
 import { ExportWareHouseRequestDto } from "./dto/request.dto";
 
 
-@ApiTags('stockkeeper: issue')
+@ApiTags('stockkeeper: export-warehouse')
 @UseGuards(StockkeeperGuard)
 @Controller('/stockkeeper/export-warehouse')
 export class ExportWareHouseController {
