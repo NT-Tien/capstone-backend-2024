@@ -1,22 +1,20 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Headers,
   Param,
   Post,
   Put,
-  Res,
-  UseGuards,
+  UseGuards
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 // import { CacheTTL } from '@nestjs/cache-manager';
-import { RequestService } from './request.service';
-import { RequestResponseDto } from './dto/response.dto';
-import { RequestRequestDto } from './dto/request.dto';
-import { HeadGuard } from 'src/modules/auth/guards/head.guard';
 import { UUID } from 'crypto';
+import { HeadGuard } from 'src/modules/auth/guards/head.guard';
+import { RequestRequestDto } from './dto/request.dto';
+import { RequestResponseDto } from './dto/response.dto';
+import { RequestService } from './request.service';
 
 @ApiTags('head: request')
 @UseGuards(HeadGuard)
@@ -34,34 +32,6 @@ export class RequestController {
   async getAll(@Headers('user') user: any) {
     return await this.requestService.customHeadGetAllRequest(user?.id);
   }
-
-  // @ApiResponse({
-  //   type: RequestResponseDto.RequestGetAll,
-  //   status: 200,
-  //   description: 'Get all categories',
-  // })
-  // @CacheTTL(10)
-  // @Get('get-all-cache')
-  // async getAllForUser() {
-  //   return await this.requestService.getAll();
-  // }
-
-  // @ApiBearerAuth()
-  // @Get('include-deleted')
-  // async getAllWithDeleted() {
-  //   return await this.requestService.getAllWithDeleted();
-  // }
-
-  // @ApiResponse({
-  //   type: RequestResponseDto.RequestGetOne,
-  //   status: 200,
-  //   description: 'Get one Request',
-  // })
-  // @ApiBearerAuth()
-  // @Get(':id')
-  // async getOneFor(@Param('id') id: string) {
-  //   return await this.requestService.getOne(id);
-  // }
 
   @ApiBearerAuth()
   @ApiResponse({
@@ -88,61 +58,11 @@ export class RequestController {
 
   @ApiBearerAuth()
   @Put('/:id/close')
-  async confirmRequest(
+  async addFeedback(
     @Param('id') id: UUID,
-    @Body() body: RequestRequestDto.RequestConfirmDto,
+    @Body() body: RequestRequestDto.RequestAddFeedbackDto,
     @Headers('user') user: any,
   ) {
-    return this.requestService.confirmRequest(id, body, user.id);
+    return this.requestService.addFeedback(id, body, user.id);
   }
-
-  // @ApiBearerAuth()
-  // @ApiResponse({
-  //   type: RequestResponseDto.RequestUpdate,
-  //   status: 200,
-  //   description: 'Update a Request',
-  // })
-  // @Put(':id')
-  // async update(
-  //   @Param('id') id: string,
-  //   @Body() body: RequestRequestDto.RequestUpdateDto,
-  // ) {
-  //   return await this.requestService.update(
-  //     id,
-  //     RequestRequestDto.RequestUpdateDto.plainToClass(body),
-  //   );
-  // }
-
-  // @ApiBearerAuth()
-  // @ApiResponse({
-  //   type: RequestResponseDto.RequestDelete,
-  //   status: 200,
-  //   description: 'Hard delete a Request',
-  // })
-  // @Delete(':id')
-  // async deleteHard(@Param('id') id: string) {
-  //   return await this.requestService.delete(id);
-  // }
-
-  // @ApiBearerAuth()
-  // @ApiResponse({
-  //   type: RequestResponseDto.RequestDelete,
-  //   status: 200,
-  //   description: 'Soft delete a Request',
-  // })
-  // @Delete('soft-delete/:id')
-  // async delete(@Param('id') id: string) {
-  //   return await this.requestService.softDelete(id);
-  // }
-
-  // @ApiBearerAuth()
-  // @ApiResponse({
-  //   type: RequestResponseDto.RequestRestore,
-  //   status: 200,
-  //   description: 'Restore a Request',
-  // })
-  // @Put('restore/:id')
-  // async restore(@Param('id') id: string) {
-  //   return await this.requestService.restore(id);
-  // }
 }
