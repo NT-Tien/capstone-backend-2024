@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { StockkeeperGuard } from "src/modules/auth/guards/stockkeeper.guard";
 import { ExportWareHouseService } from "./export.service";
 import { ExportWareHouseRequestDto } from "./dto/request.dto";
+import { get } from "http";
 
 
 @ApiTags('stockkeeper: export-warehouse')
@@ -56,4 +57,13 @@ export class ExportWareHouseController {
         return await this.exportWareHouseService.softDelete(id);
     }
 
+
+    @ApiBearerAuth()
+    @Get('filter/:staff_name/:created_date')
+    async filterByStaffNameAndCreatedDate(
+        @Param('staff_name') staff_name: string,
+        @Param('created_date') created_date: Date,
+    ) {
+        return this.exportWareHouseService.filterByStaffNameAndCreatedDate(staff_name, created_date);
+    }
 }
