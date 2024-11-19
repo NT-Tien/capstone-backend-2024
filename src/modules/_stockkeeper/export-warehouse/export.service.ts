@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, ILike, Repository } from "typeorm";
 import {
   exportStatus,
   exportType,
@@ -29,6 +29,35 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
         'task.issues.issueSpareParts',
         'task.issues.issueSpareParts.sparePart',
       ],
+    });
+  }
+
+
+  async filterByStaffNameAndCreatedDate(
+    staff_name: string,
+    created_date: Date
+  ): Promise<ExportWareHouse[]> {
+    const startOfDay = new Date(created_date); 
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(created_date); 
+    endOfDay.setHours(23, 59, 59, 999); 
+    return this.exportWarehouseRepository.find({
+      relations: [
+        'task',
+        'task.fixer',
+        'task.issues',
+        'task.issues.issueSpareParts',
+        'task.issues.issueSpareParts.sparePart',
+      ],
+      where: {
+        task: {
+          fixer: {
+            username: ILike(`%${staff_name}%`),
+          },
+          fixerDate: Between(created_date, endOfDay),
+        },
+      },
     });
   }
 
