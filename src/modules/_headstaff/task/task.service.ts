@@ -6,7 +6,7 @@ import { TaskEntity, TaskStatus, TaskType } from 'src/entities/task.entity';
 import { Repository } from 'typeorm';
 import { TaskRequestDto } from './dto/request.dto';
 import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
-import { IssueEntity, IssueStatus } from 'src/entities/issue.entity';
+import { FixItemType, IssueEntity, IssueStatus } from 'src/entities/issue.entity';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
 import { StaffGateway } from 'src/modules/notify/roles/notify.staff';
@@ -248,18 +248,21 @@ export class TaskService extends BaseService<TaskEntity> {
     task.fixerDate = new Date(data.fixerDate);
     task.status = TaskStatus.ASSIGNED;
     // get issues has issueSpareParts
-    const issues = task.issues.filter((issue) => issue.issueSpareParts.length > 0);
+    const issues = task.issues.filter((issue) =>
+      issue.issueSpareParts.length > 0 ||
+      issue.fixType == FixItemType.REPLACE
+    );
     // create export warehouse renew
-    if (task.type === TaskType.RENEW && task.device_renew) {
-      const exportWarehouse = new ExportWareHouse();
-      exportWarehouse.task = task;
-      exportWarehouse.export_type = exportType.DEVICE;
-      exportWarehouse.detail = task.device_renew.id;
-      exportWarehouse.status = exportStatus.WAITING
+    // if (task.type === TaskType.RENEW && task.device_renew) {
+    //   const exportWarehouse = new ExportWareHouse();
+    //   exportWarehouse.task = task;
+    //   exportWarehouse.export_type = exportType.DEVICE;
+    //   exportWarehouse.detail = task.device_renew;
+    //   exportWarehouse.status = exportStatus.WAITING
 
-      await this.exportWareHouseRepository.save(exportWarehouse)
-    }
-    else if (issues.length > 0) {
+    //   await this.exportWareHouseRepository.save(exportWarehouse)
+    // }
+    if (issues.length > 0) {
       const exportWarehouse = new ExportWareHouse();
       exportWarehouse.task = task;
       exportWarehouse.export_type = task.type === TaskType.RENEW ? exportType.DEVICE : exportType.SPARE_PART;

@@ -11,6 +11,7 @@ import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
 import { HeadStaffGateway } from 'src/modules/notify/roles/notify.head-staff';
 import { Warranty } from 'src/common/constants';
+import { exportStatus, ExportWareHouse } from 'src/entities/export-warehouse.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -25,6 +26,8 @@ export class TaskService extends BaseService<TaskEntity> {
     private readonly issueSparePartRepository: Repository<IssueSparePartEntity>,
     @InjectRepository(SparePartEntity)
     private readonly sparePartRepository: Repository<SparePartEntity>,
+    @InjectRepository(ExportWareHouse)
+    private readonly exportWareHouseRepository: Repository<ExportWareHouse>,
     @InjectRepository(RequestEntity)
     private readonly requestRepository: Repository<RequestEntity>,
     private readonly headStaffGateway: HeadStaffGateway,
@@ -187,6 +190,17 @@ export class TaskService extends BaseService<TaskEntity> {
     });
     if (!task || task.fixer.id !== userId) {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+    }
+
+    // check export-warehouse is exist or not if exist check it status is accepted
+    let export_warehouse = await this.exportWareHouseRepository.findOne({
+      where: {
+        task: task
+      }
+    }) 
+
+    if(export_warehouse && export_warehouse.status != exportStatus.ACCEPTED){
+      throw new HttpException('Export ticket is not avaiable', 400);
     }
 
     // just only accept 1 time 1 task staff can in process

@@ -70,6 +70,10 @@ export class RequestService extends BaseService<RequestEntity> {
     // find device
     let device = await this.deviceRepository.findOne({
       where: { id: data.device },
+      relations: [
+        'machineModel',
+        'area',
+      ]
     });
     if (!device || device.deletedAt) {
       throw new Error('Device is not valid');
@@ -94,6 +98,7 @@ export class RequestService extends BaseService<RequestEntity> {
     let newRequest = await this.requestRepository.save({
       requester: account,
       device: device,
+      old_device: device,
       requester_note: data.requester_note,
     });
     
