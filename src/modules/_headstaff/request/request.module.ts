@@ -10,6 +10,9 @@ import { NotifyEntity } from 'src/entities/notify.entity';
 import { NotifyModule } from 'src/modules/notify/notify.module';
 import { IssueEntity } from 'src/entities/issue.entity';
 import { TaskEntity } from 'src/entities/task.entity';
+import { SparePartEntity } from 'src/entities/spare-part.entity';
+import { TypeErrorEntity } from 'src/entities/type-error.entity';
+import { IssueSparePartEntity } from 'src/entities/issue-spare-part.entity';
 
 @Module({
   imports: [
@@ -20,9 +23,12 @@ import { TaskEntity } from 'src/entities/task.entity';
       IssueEntity,
       TaskEntity,
       NotifyEntity,
+      SparePartEntity,
+      TypeErrorEntity,
+      IssueSparePartEntity
     ]),
     AuthModule,
-    NotifyModule
+    NotifyModule,
   ],
   controllers: [RequestController],
   providers: [RequestService],

@@ -6,14 +6,17 @@ import {
   Param,
   Post,
   Put,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiTags
+} from '@nestjs/swagger';
 // import { CacheTTL } from '@nestjs/cache-manager';
 import { UUID } from 'crypto';
 import { HeadGuard } from 'src/modules/auth/guards/head.guard';
 import { RequestRequestDto } from './dto/request.dto';
-import { RequestResponseDto } from './dto/response.dto';
 import { RequestService } from './request.service';
 
 @ApiTags('head: request')
@@ -22,23 +25,31 @@ import { RequestService } from './request.service';
 export class RequestController {
   constructor(private readonly requestService: RequestService) {}
 
-  @ApiBearerAuth()
-  @ApiResponse({
-    type: RequestResponseDto.RequestGetAll,
-    status: 200,
-    description: 'Get all Requests',
+  @ApiOperation({
+    summary: 'Get all requests by user',
+    description: 'Returns all requests that user has created',
   })
+  @ApiBearerAuth()
   @Get()
   async getAll(@Headers('user') user: any) {
     return await this.requestService.customHeadGetAllRequest(user?.id);
   }
 
-  @ApiBearerAuth()
-  @ApiResponse({
-    type: RequestResponseDto.RequestCreate,
-    status: 201,
-    description: 'Create a Request',
+  @ApiOperation({
+    summary: "Get a request by ID",
+    description: "Returns a request by a given ID and a user"
   })
+  @ApiBearerAuth()
+  @Get('/:id')
+  async getOne(@Param('id') id: UUID, @Headers('user') user: any) {
+    return await this.requestService.one(id, user.id);
+  }
+
+  @ApiOperation({
+    summary: "Create a request",
+    description: 'Create a request with the given information. Notifies HEAD_MAINTENANCE',
+  })
+  @ApiBearerAuth()
   @Post()
   async create(
     @Headers('user') user: any,
@@ -50,12 +61,20 @@ export class RequestController {
     );
   }
 
+  @ApiOperation({
+    summary: "Cancels a request",
+    description: "Cancels a request by a given ID. Request must be PENDING and NOT SEEN"
+  })
   @ApiBearerAuth()
   @Put('/:id/cancel')
   async cancelRequest(@Param('id') id: UUID, @Headers('user') user: any) {
     return this.requestService.cancelRequest(id, user.id);
   }
 
+  @ApiOperation({
+    summary: "Close a request by giving feedback",
+    description: "Close a request by giving feedback. Request must be HEAD_CONFIRM"
+  })
   @ApiBearerAuth()
   @Put('/:id/close')
   async addFeedback(

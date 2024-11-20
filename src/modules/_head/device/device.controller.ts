@@ -4,11 +4,9 @@ import {
   Param,
   UseGuards
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { HeadGuard } from 'src/modules/auth/guards/head.guard';
 import { DeviceService } from './device.service';
-import { DeviceResponseDto } from './dto/response.dto';
-// import { CacheTTL } from '@nestjs/cache-manager';
 
 @ApiTags('head: device')
 @UseGuards(HeadGuard)
@@ -16,10 +14,9 @@ import { DeviceResponseDto } from './dto/response.dto';
 export class DeviceController {
   constructor(private readonly deviceService: DeviceService) {}
 
-  @ApiResponse({
-    type: DeviceResponseDto.DeviceGetOne,
-    status: 200,
-    description: 'Get one Device',
+  @ApiOperation({
+    summary: "Get device by ID",
+    description: "Returns all information about a device"
   })
   @ApiBearerAuth()
   @Get(':id')
@@ -27,10 +24,9 @@ export class DeviceController {
     return await this.deviceService.getOneWithRelations(id);
   }
 
-  @ApiResponse({
-    type: DeviceResponseDto.DeviceGetOne,
-    status: 200,
-    description: 'Get one Device',
+  @ApiOperation({
+    summary: "Get device with request history",
+    description: "Returns all information about a device with request history from all users"
   })
   @ApiBearerAuth()
   @Get('history-request/:id')

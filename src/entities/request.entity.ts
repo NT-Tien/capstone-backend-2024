@@ -118,6 +118,20 @@ export class RequestEntity extends BaseEntity {
   is_warranty: boolean;
 
   @Column({
+    name: 'is_fix',
+    type: 'boolean',
+    default: false,
+  })
+  is_fix: boolean;
+
+  @Column({
+    name: "is_multiple_types",
+    type: "boolean",
+    default: false,
+  })
+  is_multiple_types: boolean;
+
+  @Column({
     name: 'return_date_warranty',
     nullable: true,
   })
