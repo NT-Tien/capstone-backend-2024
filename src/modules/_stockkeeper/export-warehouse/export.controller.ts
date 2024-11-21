@@ -4,6 +4,8 @@ import { StockkeeperGuard } from "src/modules/auth/guards/stockkeeper.guard";
 import { ExportWareHouseService } from "./export.service";
 import { ExportWareHouseRequestDto } from "./dto/request.dto";
 import { get } from "http";
+import { UUID } from "crypto";
+import { AdminGuard } from "src/modules/auth/guards/admin.guard";
 
 
 @ApiTags('stockkeeper: export-warehouse')
@@ -65,5 +67,22 @@ export class ExportWareHouseController {
         @Param('created_date') created_date: Date,
     ) {
         return this.exportWareHouseService.filterByStaffNameAndCreatedDate(staff_name, created_date);
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(AdminGuard)
+    @Get('admin')
+    async adminGetAll() {
+        return await this.exportWareHouseService.adminGetAll();
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(AdminGuard)
+    @Put('admin/:ticketId/:isAccept')
+    async adminUpdateStatus(
+        @Param('ticketId') ticketId: UUID,
+        @Param('isAccept') isAccept: boolean,
+    ) {
+        return await this.exportWareHouseService.adminUpdateStatus( ticketId, isAccept);
     }
 }
