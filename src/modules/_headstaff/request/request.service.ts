@@ -495,7 +495,7 @@ export class RequestService extends BaseService<RequestEntity> {
           i.typeError.id === Warranty.send ||
           i.typeError.id === Warranty.disassemble)
       ) {
-        i.status = IssueStatus.FAILED;
+        i.status = IssueStatus.CANCELLED;
       }
     });
 

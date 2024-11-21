@@ -111,7 +111,6 @@ export class RequestService extends BaseService<RequestEntity> {
       .andWhere('request.status IN (:...statuses)', {
         statuses: [
           RequestStatus.PENDING,
-          RequestStatus.APPROVED,
           RequestStatus.IN_PROGRESS,
         ],
       })
