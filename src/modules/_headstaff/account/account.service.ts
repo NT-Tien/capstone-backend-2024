@@ -28,7 +28,7 @@ export class AccountService extends BaseService<AccountEntity> {
       .createQueryBuilder('account')
       .leftJoinAndSelect('account.tasks', 'task')
       .where('account.role = :role', { role: Role.staff })
-      .andWhere('task.fix_date = :fixDate OR task.id IS NULL', { fixDate })
+      .andWhere('task.fixer_date = :fixDate OR task.id IS NULL', { fixDate })
       .getMany();
     // exclude staff have a task is priority and total task not over 60 * 8 minutes
     result = result.filter((staff) => {

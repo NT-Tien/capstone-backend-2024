@@ -289,7 +289,9 @@ export class TaskService extends BaseService<TaskEntity> {
         'request.tasks',
         'request.tasks.issues',
         'request.tasks.issues.typeError',
-        'fixer'
+        'fixer',
+        'issues',
+        'issues.typeError',
       ],
     });
 
@@ -302,27 +304,27 @@ export class TaskService extends BaseService<TaskEntity> {
     task.last_issues_data = JSON.stringify(task.issues);
     task.completedAt = new Date();
 
-    await this.taskRepository.save(task);
+    return await this.taskRepository.save(task);
 
     // update next task fixer
-    const nextTask = task.request.tasks.find((t) =>
-      t.issues.find(
-        (i) =>
-          i.typeError.id === Warranty.receive ||
-          i.typeError.id === Warranty.assemble,
-      ),
-    );
+    // const nextTask = task.request.tasks.find((t) =>
+    //   t.issues.find(
+    //     (i) =>
+    //       i.typeError.id === Warranty.receive ||
+    //       i.typeError.id === Warranty.assemble,
+    //   ),
+    // );
 
-    if (!nextTask) {
-      throw new HttpException('Next task not found', HttpStatus.NOT_FOUND);
-    }
+    // if (!nextTask) {
+    //   throw new HttpException('Next task not found', HttpStatus.NOT_FOUND);
+    // }
 
-    nextTask.fixer = task.fixer;
-    nextTask.status = TaskStatus.ASSIGNED;
+    // nextTask.fixer = task.fixer;
+    // nextTask.status = TaskStatus.ASSIGNED;
 
-    await this.taskRepository.save(nextTask);
+    // await this.taskRepository.save(nextTask);
 
-    return task;
+    // return task;
   }
 
   async staffRequestCanncelTask(userId: string, taskId: string) {

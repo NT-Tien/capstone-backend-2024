@@ -37,41 +37,6 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
     });
   }
 
-  async adminGetAll(): Promise<ExportWareHouse[]> {
-    return this.exportWarehouseRepository.find({
-      where: {
-        status: In([exportStatus.WAITING_ADMIN, exportStatus.ADMIN_REJECT]),
-      },
-      relations: [
-        'task',
-        'task.fixer',
-        'task.issues',
-        'task.issues.issueSpareParts',
-        'task.issues.issueSpareParts.sparePart',
-      ],
-    });
-  }
-
-  async adminUpdateStatus(
-    ticketId: UUID,
-    isAccept: boolean,
-  ) : Promise<boolean> {
-    try {
-      const ticket = await this.exportWarehouseRepository.findOne({
-        where: { id: ticketId },
-      });
-      if (!ticket) {
-        return false;
-      }
-      ticket.status = isAccept ? exportStatus.WAITING : exportStatus.ADMIN_REJECT;
-      await this.exportWarehouseRepository.save(ticket);
-      console.log(`Ticket with ID ${ticketId} updated successfully`);
-      return true;
-    } catch (error) {
-      return false;
-    }
-  }
-
   async filterByStaffNameAndCreatedDate(
     staff_name: string,
     created_date: Date

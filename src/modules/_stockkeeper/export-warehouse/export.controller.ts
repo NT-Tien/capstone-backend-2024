@@ -6,7 +6,6 @@ import { ExportWareHouseService } from "./export.service";
 import { ExportWareHouseRequestDto } from "./dto/request.dto";
 import { get } from "http";
 import { UUID } from "crypto";
-import { AdminGuard } from "src/modules/auth/guards/admin.guard";
 
 
 @ApiTags('stockkeeper: export-warehouse')
