@@ -11,7 +11,6 @@ import { RequestRequestDto } from './dto/request.dto';
 import { AccountEntity, Role } from 'src/entities/account.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
 import { NotifyEntity } from 'src/entities/notify.entity';
-import { HeadGateway } from 'src/modules/notify/roles/notify.head';
 import {
   FixItemType,
   IssueEntity,
@@ -43,7 +42,6 @@ export class RequestService extends BaseService<RequestEntity> {
     private readonly sparePartRepository: Repository<SparePartEntity>,
     @InjectRepository(IssueSparePartEntity)
     private readonly issueSparePartRepository: Repository<IssueSparePartEntity>,
-    private readonly headGateway: HeadGateway,
   ) {
     super(requestRepository);
   }
@@ -224,7 +222,7 @@ export class RequestService extends BaseService<RequestEntity> {
     //   }
     // }
     if (data.status === RequestStatus.REJECTED) {
-      this.headGateway.emit_request_rejected(response, userId);
+      // this.headGateway.emit_request_rejected(response, userId);
     }
 
     return result;
@@ -464,7 +462,7 @@ export class RequestService extends BaseService<RequestEntity> {
       },
     ]);
 
-    this.headGateway.emit_request_approved_warranty(request, userId);
+    // this.headGateway.emit_request_approved_warranty(request, userId);
 
     await this.requestRepository.save(request);
 

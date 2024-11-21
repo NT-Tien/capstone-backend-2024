@@ -24,7 +24,7 @@ import { ExportWareHouse } from 'src/entities/export-warehouse.entity';
       ExportWareHouse
     ]),
     AuthModule,
-    NotifyModule
+    // NotifyModule
   ],
   controllers: [TaskController],
   providers: [TaskService],

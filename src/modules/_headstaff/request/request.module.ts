@@ -28,7 +28,7 @@ import { IssueSparePartEntity } from 'src/entities/issue-spare-part.entity';
       IssueSparePartEntity
     ]),
     AuthModule,
-    NotifyModule,
+    // NotifyModule,
   ],
   controllers: [RequestController],
   providers: [RequestService],

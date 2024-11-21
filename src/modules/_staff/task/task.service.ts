@@ -9,9 +9,11 @@ import { Between, In, Repository } from 'typeorm';
 import { TaskRequestDto } from './dto/request.dto';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
-import { HeadStaffGateway } from 'src/modules/notify/roles/notify.head-staff';
 import { Warranty } from 'src/common/constants';
-import { exportStatus, ExportWareHouse } from 'src/entities/export-warehouse.entity';
+import {
+  exportStatus,
+  ExportWareHouse,
+} from 'src/entities/export-warehouse.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -30,7 +32,6 @@ export class TaskService extends BaseService<TaskEntity> {
     private readonly exportWareHouseRepository: Repository<ExportWareHouse>,
     @InjectRepository(RequestEntity)
     private readonly requestRepository: Repository<RequestEntity>,
-    private readonly headStaffGateway: HeadStaffGateway,
   ) {
     super(taskRepository);
   }
@@ -195,11 +196,11 @@ export class TaskService extends BaseService<TaskEntity> {
     // check export-warehouse is exist or not if exist check it status is accepted
     let export_warehouse = await this.exportWareHouseRepository.findOne({
       where: {
-        task: task
-      }
-    }) 
+        task: task,
+      },
+    });
 
-    if(export_warehouse && export_warehouse.status != exportStatus.ACCEPTED){
+    if (export_warehouse && export_warehouse.status != exportStatus.ACCEPTED) {
       throw new HttpException('Export ticket is not avaiable', 400);
     }
 
@@ -240,7 +241,7 @@ export class TaskService extends BaseService<TaskEntity> {
       ],
     });
 
-    this.headStaffGateway.emit_task_started(response, userId);
+    // this.headStaffGateway.emit_task_started(response, userId);
 
     return save;
   }
@@ -289,7 +290,7 @@ export class TaskService extends BaseService<TaskEntity> {
         'request.tasks',
         'request.tasks.issues',
         'request.tasks.issues.typeError',
-        'fixer'
+        'fixer',
       ],
     });
 

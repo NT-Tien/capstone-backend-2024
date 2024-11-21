@@ -1,29 +1,29 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { TYPE_ORM_CONFIG } from './config/orm.config';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import { ResponseInterceptor } from './common/interceptors/response.interceptor';
-import { MyMiddlewareModule } from './middlewares/middleware.module';
-import { QUEUE_CONFIG } from './config/queue.config';
 import { BullModule } from '@nestjs/bull';
 import { CacheModule } from '@nestjs/cache-manager';
+import { Module } from '@nestjs/common';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
-import { AuthModule } from './modules/auth/auth.module';
-import { ImageModule } from './modules/upload/image/image.module';
-import { VideoModule } from './modules/upload/video/video.module';
-import { NotifyModule } from './modules/notify/notify.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { redisStore } from 'cache-manager-redis-yet';
 import { AllExceptionsFilter } from './common/filters/catch.filter';
+import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { TYPE_ORM_CONFIG } from './config/orm.config';
+import { QUEUE_CONFIG } from './config/queue.config';
+import { CACHE_REDIS_CONFIG } from './config/redis.client';
+import { MyMiddlewareModule } from './middlewares/middleware.module';
 import { AdminModule } from './modules/_admin/admin.module';
-import { ManagerModule } from './modules/_manager/manager.module';
 import { HeadModule } from './modules/_head/head.module';
 import { HeadstaffModule } from './modules/_headstaff/headstaff.module';
+import { ManagerModule } from './modules/_manager/manager.module';
 import { StaffModule } from './modules/_staff/staff.module';
 import { StockkeeperModule } from './modules/_stockkeeper/stockkeeper.module';
-import { PredictiveModule } from './modules/predictive-maintenance/predictive.module';
-import { redisStore } from 'cache-manager-redis-yet';
-import { CACHE_REDIS_CONFIG } from './config/redis.client';
-import { FileLocalModule } from './modules/upload-local/file.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { HandelDataModule } from './modules/handle-data/handle-data.module';
+import { PredictiveModule } from './modules/predictive-maintenance/predictive.module';
+import { FileLocalModule } from './modules/upload-local/file.module';
+import { ImageModule } from './modules/upload/image/image.module';
+import { VideoModule } from './modules/upload/video/video.module';
+import { NotificationsModule } from 'src/modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -41,7 +41,6 @@ import { HandelDataModule } from './modules/handle-data/handle-data.module';
     FileLocalModule,
     ImageModule,
     VideoModule,
-    NotifyModule,
     AdminModule,
     ManagerModule,
     HeadModule,
@@ -50,6 +49,8 @@ import { HandelDataModule } from './modules/handle-data/handle-data.module';
     StockkeeperModule,
     PredictiveModule,
     HandelDataModule,
+    NotificationsModule,
+    // NotifyModule,
   ],
   providers: [
     {

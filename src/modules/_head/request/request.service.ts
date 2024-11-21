@@ -10,10 +10,11 @@ import { BaseService } from 'src/common/base/service.base';
 import { AccountEntity, Role } from 'src/entities/account.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
 import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
-import { HeadStaffGateway } from 'src/modules/notify/roles/notify.head-staff';
 import { Repository } from 'typeorm';
 import { FeedbackEntity } from '../../../entities/feedback.entity';
 import { RequestRequestDto } from './dto/request.dto';
+import { HeadStaffNotificationGateway } from 'src/modules/notifications/gateways/head-staff.gateway';
+import { NotificationType } from 'src/entities/notification.entity';
 
 @Injectable()
 export class RequestService extends BaseService<RequestEntity> {
@@ -26,7 +27,7 @@ export class RequestService extends BaseService<RequestEntity> {
     private readonly deviceRepository: Repository<DeviceEntity>,
     @InjectRepository(FeedbackEntity)
     private readonly feedbackRepository: Repository<FeedbackEntity>,
-    private readonly headStaffGateWay: HeadStaffGateway,
+    private readonly notify_HeadStaff: HeadStaffNotificationGateway,
   ) {
     super(requestRepository);
   }
@@ -139,7 +140,12 @@ export class RequestService extends BaseService<RequestEntity> {
     });
 
     // notify head staff
-    await this.headStaffGateWay.emit_request_create(result, userId);
+    await this.notify_HeadStaff.emit(NotificationType.HD_CREATE_REQUEST)({
+      requester: account,
+      areaName: device.area.name,
+      requestId: newRequest.id,
+    })
+    // await this.headStaffGateWay.emit_request_create(result, userId);
 
     return result;
   }

@@ -1,13 +1,10 @@
-import { Body, Controller, Delete, Get, Headers, Param, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { StockkeeperGuard } from "src/modules/auth/guards/stockkeeper.guard";
-import { AdminGuard } from "src/modules/auth/guards/admin.guard";
-import { ExportWareHouseService } from "./export.service";
-import { ExportWareHouseRequestDto } from "./dto/request.dto";
-import { get } from "http";
 import { UUID } from "crypto";
 import { AdminGuard } from "src/modules/auth/guards/admin.guard";
-
+import { StockkeeperGuard } from "src/modules/auth/guards/stockkeeper.guard";
+import { ExportWareHouseRequestDto } from "./dto/request.dto";
+import { ExportWareHouseService } from "./export.service";
 
 @ApiTags('stockkeeper: export-warehouse')
 @Controller('/stockkeeper/export-warehouse')

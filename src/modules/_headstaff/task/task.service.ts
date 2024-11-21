@@ -9,7 +9,6 @@ import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
 import { FixItemType, IssueEntity, IssueStatus } from 'src/entities/issue.entity';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
-import { StaffGateway } from 'src/modules/notify/roles/notify.staff';
 import { exportStatus, exportType, ExportWareHouse } from 'src/entities/export-warehouse.entity';
 
 @Injectable()
@@ -29,7 +28,6 @@ export class TaskService extends BaseService<TaskEntity> {
     private readonly issueRepository: Repository<IssueEntity>,
     @InjectRepository(ExportWareHouse)
     private readonly exportWareHouseRepository: Repository<ExportWareHouse>,
-    private readonly staffGateway: StaffGateway
   ) {
     super(taskRepository);
   }
@@ -175,12 +173,12 @@ export class TaskService extends BaseService<TaskEntity> {
     // } else {
     //   newTask.status = TaskStatus.AWAITING_FIXER;
     // }
-    let newTaskResult = await this.taskRepository.save({
+    const newTaskResult = await this.taskRepository.save({
       ...data,
       ...newTask,
     } as any);
     // assign issues to task
-    let newIssuesAdded = await this.taskRepository
+    const newIssuesAdded = await this.taskRepository
       .createQueryBuilder('task')
       .relation(TaskEntity, 'issues')
       .of(newTaskResult.id)
@@ -352,7 +350,7 @@ export class TaskService extends BaseService<TaskEntity> {
     })
 
     if (entity.fixer !== null && entity.fixer !== undefined) {
-      this.staffGateway.emit_task_assigned(responseEntity, userId, responseEntity.fixer.id)
+      // this.staffGateway.emit_task_assigned(responseEntity, userId, responseEntity.fixer.id)
     }
 
     return response

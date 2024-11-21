@@ -11,7 +11,7 @@ import { TaskEntity } from 'src/entities/task.entity';
   imports: [
     TypeOrmModule.forFeature([RequestEntity, TaskEntity]),
     AuthModule,
-    NotifyModule,
+    // NotifyModule,
   ],
 })
 export class RequestModule {}

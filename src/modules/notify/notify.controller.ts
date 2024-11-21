@@ -6,7 +6,7 @@ import { HeadGuard } from '../auth/guards/head.guard';
 import { StaffGuard } from '../auth/guards/staff.guard';
 import { NotifyDto } from './dto/request.dto';
 
-@ApiTags('notification')
+@ApiTags('notification: old')
 @Controller('notify')
 export class NotifyController {
   constructor(private readonly notifyService: NotifyService) {}

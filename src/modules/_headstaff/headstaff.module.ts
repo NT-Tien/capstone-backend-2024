@@ -7,6 +7,7 @@ import { IssueModule } from './issue/issue.module';
 import { HeadStaffDashboardController } from './headstaff.controller';
 import { TypeErrorModule } from './type-error/type-error.module';
 import { RequestAddDeviceModule } from './request-add-device/request-add-device.module';
+import { NotificationsModule } from 'src/modules/_headstaff/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { RequestAddDeviceModule } from './request-add-device/request-add-device.
     IssueModule,
     TypeErrorModule,
     RequestAddDeviceModule,
+    NotificationsModule,
   ],
-  controllers: [HeadStaffDashboardController],  
+  controllers: [HeadStaffDashboardController],
 })
 export class HeadstaffModule {}
