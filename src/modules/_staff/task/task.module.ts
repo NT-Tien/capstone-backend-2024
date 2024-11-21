@@ -10,6 +10,7 @@ import { IssueEntity } from 'src/entities/issue.entity';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { RequestEntity } from 'src/entities/request.entity';
 import { NotifyModule } from 'src/modules/notify/notify.module';
+import { ExportWareHouse } from 'src/entities/export-warehouse.entity';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { NotifyModule } from 'src/modules/notify/notify.module';
       SparePartEntity,
       AccountEntity,
       RequestEntity,
+      ExportWareHouse
     ]),
     AuthModule,
     NotifyModule

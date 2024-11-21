@@ -46,6 +46,13 @@ export class RequestEntity extends BaseEntity {
   })
   device: DeviceEntity;
 
+  @Column({
+    name: 'old_device',
+    type: 'jsonb',
+    nullable: true,
+  })
+  old_device: any;
+
   @ManyToOne(() => AccountEntity, (acc) => acc.id, {
     nullable: false,
   })
@@ -147,7 +154,7 @@ export class RequestEntity extends BaseEntity {
 
 export class RequestUtil {
   static isRunning(request?: RequestEntity): boolean | undefined {
-    if(!request) return undefined;
+    if (!request) return undefined;
     return request.status === RequestStatus.PENDING || request.status === RequestStatus.APPROVED || request.status === RequestStatus.IN_PROGRESS;
   }
 }

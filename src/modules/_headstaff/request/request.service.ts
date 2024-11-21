@@ -634,7 +634,7 @@ export class RequestService extends BaseService<RequestEntity> {
 
     const installNewDeviceIssue = await this.issueRepository.save({
       request,
-      fixType: FixItemType.REPLACE,
+      fixType: FixItemType.REPAIR,
       typeError: {
         id: Renew.installNewDevice,
       },
