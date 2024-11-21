@@ -31,6 +31,25 @@ export namespace MachineModelRequestDto {
     warrantyTerm: Date;
   }
 
+  export class ImportDevicetDto extends BaseDTO {
+  
+    @ApiProperty()
+    @Expose()
+    machineModelCode: string;
+  
+    @ApiProperty()
+    @Expose()
+    modelName: string;
+  
+    @ApiProperty()
+    @Expose()
+    description: string;
+  
+    @ApiProperty()
+    @Expose()
+    quantity: number;
+  }
+
   export class MachineModelUpdateDto extends BaseDTO {
     @ApiProperty()
     @ValidateIf((o) => o.name !== undefined)

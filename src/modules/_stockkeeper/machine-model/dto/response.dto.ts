@@ -25,6 +25,8 @@ export namespace MachineModelResponseDto {
     @ApiProperty({ example: 200 })
     statusCode: number;
   }
+
+  
   export class MachineModelGetOne {
     @ApiProperty({
       example: {
