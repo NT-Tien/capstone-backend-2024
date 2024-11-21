@@ -46,6 +46,13 @@ export class RequestEntity extends BaseEntity {
   })
   device: DeviceEntity;
 
+  @Column({
+    name: 'old_device',
+    type: 'jsonb',
+    nullable: true,
+  })
+  old_device: any;
+
   @ManyToOne(() => AccountEntity, (acc) => acc.id, {
     nullable: false,
   })
@@ -118,6 +125,20 @@ export class RequestEntity extends BaseEntity {
   is_warranty: boolean;
 
   @Column({
+    name: 'is_fix',
+    type: 'boolean',
+    default: false,
+  })
+  is_fix: boolean;
+
+  @Column({
+    name: "is_multiple_types",
+    type: "boolean",
+    default: false,
+  })
+  is_multiple_types: boolean;
+
+  @Column({
     name: 'return_date_warranty',
     nullable: true,
   })
@@ -133,7 +154,7 @@ export class RequestEntity extends BaseEntity {
 
 export class RequestUtil {
   static isRunning(request?: RequestEntity): boolean | undefined {
-    if(!request) return undefined;
+    if (!request) return undefined;
     return request.status === RequestStatus.PENDING || request.status === RequestStatus.APPROVED || request.status === RequestStatus.IN_PROGRESS;
   }
 }

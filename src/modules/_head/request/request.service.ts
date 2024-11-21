@@ -32,12 +32,14 @@ export class RequestService extends BaseService<RequestEntity> {
   }
 
   async customHeadGetAllRequest(userId: string): Promise<RequestEntity[]> {
-    let account = await this.accountRepository.findOne({
-      where: { id: userId },
+    const account = await this.accountRepository.findOne({
+      where: { id: userId, role: Role.head },
     });
-    if (!account || account.deletedAt || account.role !== Role.head) {
+
+    if (!account || account.deletedAt) {
       throw new HttpException('Account is not valid', HttpStatus.BAD_REQUEST);
     }
+
     return this.requestRepository
       .createQueryBuilder('request')
       .leftJoinAndSelect('request.requester', 'requester')
@@ -56,47 +58,79 @@ export class RequestService extends BaseService<RequestEntity> {
       .getMany();
   }
 
+  async one(requestId: string, userId: string): Promise<RequestEntity> {
+    const account = await this.accountRepository.findOne({
+      where: { id: userId, role: Role.head },
+    });
+
+    if (!account || account.deletedAt) {
+      throw new HttpException('Account is not valid', HttpStatus.BAD_REQUEST);
+    }
+
+    return this.requestRepository
+      .createQueryBuilder('request')
+      .leftJoinAndSelect('request.requester', 'requester')
+      .leftJoinAndSelect('request.device', 'device')
+      .leftJoinAndSelect('device.area', 'area')
+      .leftJoinAndSelect('device.machineModel', 'machineModel')
+      .leftJoinAndSelect('request.tasks', 'tasks')
+      .leftJoinAndSelect('request.checker', 'checker')
+      .leftJoinAndSelect('request.issues', 'issues')
+      .leftJoinAndSelect('request.feedback', 'feedback')
+      .where('requester.deletedAt is null')
+      .andWhere('requester.id = :id', { id: userId })
+      .andWhere('request.id = :requestId', { requestId })
+      .getOne();
+  }
+
   async customHeadCreateRequest(
     userId: string,
     data: RequestRequestDto.RequestCreateDto,
   ): Promise<RequestEntity> {
     // find account
-    let account = await this.accountRepository.findOne({
-      where: { id: userId },
+    const account = await this.accountRepository.findOne({
+      where: { id: userId, role: Role.head },
     });
-    if (!account || account.deletedAt || account.role !== Role.head) {
-      throw new Error('Account is not valid');
+
+    if (!account || account.deletedAt) {
+      throw new HttpException('Account is not valid', HttpStatus.BAD_REQUEST);
     }
     // find device
-    let device = await this.deviceRepository.findOne({
+    const device = await this.deviceRepository.findOne({
       where: { id: data.device },
+      relations: [
+        'machineModel',
+        'area',
+      ]
     });
     if (!device || device.deletedAt) {
-      throw new Error('Device is not valid');
+      throw new HttpException('Device is not valid', HttpStatus.BAD_REQUEST);
     }
-    // check request duplicate
-    // let request = await this.requestRepository.findOne({
-    //   where: { requester: account, device: device, status: RequestStatus.PENDING },
-    // });
-    let request = await this.requestRepository
+
+    const existsDuplicate = await this.requestRepository
       .createQueryBuilder('request')
       .leftJoinAndSelect('request.device', 'device')
       .andWhere('device.deletedAt is null')
       .andWhere('device.id = :id', { id: data.device })
-      // .andWhere('request.status = :status', { status: RequestStatus.PENDING })
-      .andWhere('request.status IN (:...statuses)', { statuses: [RequestStatus.PENDING, RequestStatus.IN_PROGRESS] })
-      .getOne();
-    if (request) {
+      .andWhere('request.status IN (:...statuses)', {
+        statuses: [
+          RequestStatus.PENDING,
+          RequestStatus.IN_PROGRESS,
+        ],
+      })
+      .getExists();
+    if (existsDuplicate) {
       throw new HttpException('Request is duplicate', HttpStatus.BAD_REQUEST);
     }
 
     // create new request
-    let newRequest = await this.requestRepository.save({
+    const newRequest = await this.requestRepository.save({
       requester: account,
       device: device,
+      old_device: device,
       requester_note: data.requester_note,
     });
-    
+
     const result = await this.requestRepository.findOne({
       where: {
         id: newRequest.id,
@@ -105,17 +139,14 @@ export class RequestService extends BaseService<RequestEntity> {
     });
 
     // notify head staff
-    await this.headStaffGateWay.emit_request_create(
-      result,
-      userId,
-    );
+    await this.headStaffGateWay.emit_request_create(result, userId);
 
-    return result
+    return result;
   }
 
-  async confirmRequest(
+  async addFeedback(
     requestId: string,
-    dto: RequestRequestDto.RequestConfirmDto,
+    dto: RequestRequestDto.RequestAddFeedbackDto,
     userId: string,
   ) {
     const request = await this.requestRepository.findOne({
@@ -132,6 +163,9 @@ export class RequestService extends BaseService<RequestEntity> {
       throw new UnauthorizedException(
         'You are not allowed to confirm this request',
       );
+    }
+    if (request.status !== RequestStatus.HEAD_CONFIRM) {
+      throw new BadRequestException('Request is not valid');
     }
 
     request.status = RequestStatus.CLOSED;
@@ -158,19 +192,24 @@ export class RequestService extends BaseService<RequestEntity> {
     });
 
     if (!request) {
-      throw new BadRequestException('Request not found');
+      throw new HttpException('Request is not valid', HttpStatus.BAD_REQUEST);
     }
+
     if (request.requester.id !== userId) {
       throw new UnauthorizedException(
         'You are not allowed to cancel this request',
       );
     }
 
+    if (request.status !== RequestStatus.PENDING || request.is_seen) {
+      throw new HttpException('Request is not valid', HttpStatus.BAD_REQUEST);
+    }
+
     request.status = RequestStatus.HEAD_CANCEL;
-    const result1 = await this.requestRepository.save(request);
+    const result = await this.requestRepository.save(request);
 
     return {
-      request: result1,
+      request: result,
     };
   }
 }
