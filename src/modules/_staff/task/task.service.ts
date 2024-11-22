@@ -11,6 +11,7 @@ import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
 import { HeadStaffGateway } from 'src/modules/notify/roles/notify.head-staff';
 import { Warranty } from 'src/common/constants';
+import { exportStatus, ExportWareHouse } from 'src/entities/export-warehouse.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -25,6 +26,8 @@ export class TaskService extends BaseService<TaskEntity> {
     private readonly issueSparePartRepository: Repository<IssueSparePartEntity>,
     @InjectRepository(SparePartEntity)
     private readonly sparePartRepository: Repository<SparePartEntity>,
+    @InjectRepository(ExportWareHouse)
+    private readonly exportWareHouseRepository: Repository<ExportWareHouse>,
     @InjectRepository(RequestEntity)
     private readonly requestRepository: Repository<RequestEntity>,
     private readonly headStaffGateway: HeadStaffGateway,
@@ -189,6 +192,17 @@ export class TaskService extends BaseService<TaskEntity> {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
     }
 
+    // check export-warehouse is exist or not if exist check it status is accepted
+    let export_warehouse = await this.exportWareHouseRepository.findOne({
+      where: {
+        task: task
+      }
+    }) 
+
+    if(export_warehouse && export_warehouse.status != exportStatus.ACCEPTED){
+      throw new HttpException('Export ticket is not avaiable', 400);
+    }
+
     // just only accept 1 time 1 task staff can in process
     let taskInProcess = await this.taskRepository.findOne({
       where: { fixer: { id: userId }, status: TaskStatus.IN_PROGRESS },
@@ -275,7 +289,9 @@ export class TaskService extends BaseService<TaskEntity> {
         'request.tasks',
         'request.tasks.issues',
         'request.tasks.issues.typeError',
-        'fixer'
+        'fixer',
+        'issues',
+        'issues.typeError',
       ],
     });
 
@@ -288,27 +304,27 @@ export class TaskService extends BaseService<TaskEntity> {
     task.last_issues_data = JSON.stringify(task.issues);
     task.completedAt = new Date();
 
-    await this.taskRepository.save(task);
+    return await this.taskRepository.save(task);
 
     // update next task fixer
-    const nextTask = task.request.tasks.find((t) =>
-      t.issues.find(
-        (i) =>
-          i.typeError.id === Warranty.receive ||
-          i.typeError.id === Warranty.assemble,
-      ),
-    );
+    // const nextTask = task.request.tasks.find((t) =>
+    //   t.issues.find(
+    //     (i) =>
+    //       i.typeError.id === Warranty.receive ||
+    //       i.typeError.id === Warranty.assemble,
+    //   ),
+    // );
 
-    if (!nextTask) {
-      throw new HttpException('Next task not found', HttpStatus.NOT_FOUND);
-    }
+    // if (!nextTask) {
+    //   throw new HttpException('Next task not found', HttpStatus.NOT_FOUND);
+    // }
 
-    nextTask.fixer = task.fixer;
-    nextTask.status = TaskStatus.ASSIGNED;
+    // nextTask.fixer = task.fixer;
+    // nextTask.status = TaskStatus.ASSIGNED;
 
-    await this.taskRepository.save(nextTask);
+    // await this.taskRepository.save(nextTask);
 
-    return task;
+    // return task;
   }
 
   async staffRequestCanncelTask(userId: string, taskId: string) {

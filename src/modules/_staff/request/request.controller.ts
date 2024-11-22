@@ -35,10 +35,7 @@ export class RequestController {
       where: {
         id,
       },
-      relations: ['tasks', 'tasks.issues', 'tasks.issues.typeError'],
     });
-
-    console.log(request)
 
     if (!request) {
       throw new HttpException('Request not found', 404);
@@ -46,13 +43,11 @@ export class RequestController {
 
     // update request
     request.return_date_warranty = new Date(dto.warrantyDate);
-    await this.requestRepository.save(request);
+    return await this.requestRepository.save(request);
 
     // update receive warranty task
-    const receiveWarrantyTask = request.tasks.find((task) => task.issues.filter((i) => i.typeError.id === Warranty.receive).length > 0)
-    receiveWarrantyTask.fixerDate = new Date(dto.warrantyDate);
-    await this.taskRepository.save(receiveWarrantyTask);
-
-    return request;
+    // const receiveWarrantyTask = request.tasks.find((task) => task.issues.filter((i) => i.typeError.id === Warranty.receive).length > 0)
+    // receiveWarrantyTask.fixerDate = new Date(dto.warrantyDate);
+    // await this.taskRepository.save(receiveWarrantyTask);
   }
 }

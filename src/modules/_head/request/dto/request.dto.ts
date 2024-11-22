@@ -5,7 +5,7 @@ import { BaseDTO } from 'src/common/base/dto.base';
 import { RequestStatus } from 'src/entities/request.entity';
 
 export namespace RequestRequestDto {
-  export class RequestConfirmDto extends BaseDTO {
+  export class RequestAddFeedbackDto extends BaseDTO {
     @ApiProperty()
     @IsOptional()
     @Expose()

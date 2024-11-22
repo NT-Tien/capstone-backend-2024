@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, ILike, Repository } from "typeorm";
 import {
   exportStatus,
   exportType,
@@ -8,6 +8,8 @@ import {
 } from 'src/entities/export-warehouse.entity';
 import { BaseService } from 'src/common/base/service.base';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
+import { Not, In } from 'typeorm';
+import { UUID } from 'crypto';
 
 @Injectable()
 export class ExportWareHouseService extends BaseService<ExportWareHouse> {
@@ -22,6 +24,9 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
 
   async getAll(): Promise<ExportWareHouse[]> {
     return this.exportWarehouseRepository.find({
+      where: {
+        status: Not(In([exportStatus.WAITING_ADMIN, exportStatus.ADMIN_REJECT])),
+      },
       relations: [
         'task',
         'task.fixer',
@@ -29,6 +34,34 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
         'task.issues.issueSpareParts',
         'task.issues.issueSpareParts.sparePart',
       ],
+    });
+  }
+
+  async filterByStaffNameAndCreatedDate(
+    staff_name: string,
+    created_date: Date
+  ): Promise<ExportWareHouse[]> {
+    const startOfDay = new Date(created_date); 
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(created_date); 
+    endOfDay.setHours(23, 59, 59, 999); 
+    return this.exportWarehouseRepository.find({
+      relations: [
+        'task',
+        'task.fixer',
+        'task.issues',
+        'task.issues.issueSpareParts',
+        'task.issues.issueSpareParts.sparePart',
+      ],
+      where: {
+        task: {
+          fixer: {
+            username: ILike(`%${staff_name}%`),
+          },
+          fixerDate: Between(created_date, endOfDay),
+        },
+      },
     });
   }
 
@@ -161,5 +194,40 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
       }
     }
     return super.update(id, data);
+  }
+
+  async adminUpdateStatus(
+    ticketId: UUID,
+    isAccept: boolean,
+  ) : Promise<boolean> {
+    try {
+      const ticket = await this.exportWarehouseRepository.findOne({
+        where: { id: ticketId },
+      });
+      if (!ticket) {
+        return false;
+      }
+      ticket.status = isAccept ? exportStatus.WAITING : exportStatus.ADMIN_REJECT;
+      await this.exportWarehouseRepository.save(ticket);
+      console.log(`Ticket with ID ${ticketId} updated successfully`);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async adminGetAll(): Promise<ExportWareHouse[]> {
+    return this.exportWarehouseRepository.find({
+      where: {
+        status: In([exportStatus.WAITING_ADMIN, exportStatus.ADMIN_REJECT]),
+      },
+      relations: [
+        'task',
+        'task.fixer',
+        'task.issues',
+        'task.issues.issueSpareParts',
+        'task.issues.issueSpareParts.sparePart',
+      ],
+    });
   }
 }
