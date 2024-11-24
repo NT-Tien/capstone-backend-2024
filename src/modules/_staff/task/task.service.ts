@@ -11,7 +11,10 @@ import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
 import { HeadStaffGateway } from 'src/modules/notify/roles/notify.head-staff';
 import { Warranty } from 'src/common/constants';
-import { exportStatus, ExportWareHouse } from 'src/entities/export-warehouse.entity';
+import {
+  exportStatus,
+  ExportWareHouse,
+} from 'src/entities/export-warehouse.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -100,6 +103,25 @@ export class TaskService extends BaseService<TaskEntity> {
       .andWhere('task.fixer_date >= :startOfMonth', { startOfMonth })
       .groupBy('task.fixer_date')
       .getRawMany();
+  }
+
+  async getAllInProgressTasks(userId: string) {
+    return this.taskRepository.find({
+      where: {
+        fixer: {
+          id: userId,
+        },
+        status: TaskStatus.IN_PROGRESS,
+      },
+      relations: [
+        'export_warehouse_ticket',
+        'device',
+        'device.area',
+        'fixer',
+        'issues',
+        'issues.typeError',
+      ],
+    });
   }
 
   async customStaffGetTaskDetail(userId: string, taskId: string) {
@@ -195,11 +217,11 @@ export class TaskService extends BaseService<TaskEntity> {
     // check export-warehouse is exist or not if exist check it status is accepted
     let export_warehouse = await this.exportWareHouseRepository.findOne({
       where: {
-        task: task
-      }
-    }) 
+        task: task,
+      },
+    });
 
-    if(export_warehouse && export_warehouse.status != exportStatus.ACCEPTED){
+    if (export_warehouse && export_warehouse.status != exportStatus.ACCEPTED) {
       throw new HttpException('Export ticket is not avaiable', 400);
     }
 
