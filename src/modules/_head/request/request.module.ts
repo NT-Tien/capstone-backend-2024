@@ -7,7 +7,7 @@ import { AccountEntity } from 'src/entities/account.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
 import { AuthModule } from 'src/modules/auth/auth.module';
 import { NotifyModule } from 'src/modules/notify/notify.module';
-import { FeedbackEntity } from '../../../entities/feedback.entity';
+import { FeedbackEntity } from 'src/entities/feedback.entity';
 
 @Module({
   imports: [
