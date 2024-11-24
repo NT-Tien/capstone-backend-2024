@@ -31,7 +31,7 @@ export namespace MachineModelRequestDto {
     warrantyTerm: Date;
   }
 
-  export class ImportDevicetDto extends BaseDTO {
+  export class ImportDevicetDto extends BaseDTO { 
   
     @ApiProperty()
     @Expose()

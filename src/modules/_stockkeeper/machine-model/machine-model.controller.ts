@@ -60,6 +60,7 @@ export class MachineModelController {
     return await this.machineModelService.customGetOne(id);
   }
 
+  // import devices 
   @ApiBearerAuth()
   @Post('import')
   async importDevices(@Body() devices: MachineModelRequestDto.ImportDevicetDto[]) 
