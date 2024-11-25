@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RequestService } from './request.service';
-import { RequestEntity } from 'src/entities/request.entity';
-import { RequestController } from './request.controller';
 import { AccountEntity } from 'src/entities/account.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
+import { RequestEntity } from 'src/entities/request.entity';
 import { AuthModule } from 'src/modules/auth/auth.module';
-import { NotifyModule } from 'src/modules/notify/notify.module';
-import { FeedbackEntity } from 'src/entities/feedback.entity';
+import { FeedbackEntity } from '../../../entities/feedback.entity';
+import { RequestController } from './request.controller';
+import { RequestService } from './request.service';
+import { Global_NotificationsModule } from 'src/modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -18,7 +18,8 @@ import { FeedbackEntity } from 'src/entities/feedback.entity';
       FeedbackEntity,
     ]),
     AuthModule,
-    NotifyModule,
+    Global_NotificationsModule,
+    // NotifyModule,
   ],
   controllers: [RequestController],
   providers: [RequestService],

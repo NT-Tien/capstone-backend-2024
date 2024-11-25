@@ -9,7 +9,6 @@ import { RequestEntity } from 'src/entities/request.entity';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
 import { IssueEntity } from 'src/entities/issue.entity';
-import { StaffGateway } from 'src/modules/notify/roles/notify.staff';
 import { NotifyModule } from 'src/modules/notify/notify.module';
 import { ExportWareHouse } from 'src/entities/export-warehouse.entity';
 
@@ -25,7 +24,7 @@ import { ExportWareHouse } from 'src/entities/export-warehouse.entity';
       ExportWareHouse,
     ]),
     AuthModule,
-    NotifyModule
+    // NotifyModule
   ],
   controllers: [TaskController],
   providers: [TaskService],

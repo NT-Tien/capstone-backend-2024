@@ -5,6 +5,7 @@ import { IssueModule } from './issue/issue.module';
 import { StaffRequestChangeSparePartModule } from './staff-request-change-spare-part/staff-request-change-spare-part.module';
 import { RequestModule } from './request/request.module';
 import { ExportWareHouseModule } from './export-warehouse/export.module';
+import { Staff_NotificationsModule } from 'src/modules/_staff/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ExportWareHouseModule } from './export-warehouse/export.module';
     StaffRequestChangeSparePartModule,
     RequestModule,
     ExportWareHouseModule,
+    Staff_NotificationsModule,
   ],
 })
-export class StaffModule { }
+export class StaffModule {}
