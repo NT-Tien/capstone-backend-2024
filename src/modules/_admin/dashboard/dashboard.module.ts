@@ -6,6 +6,7 @@ import { RequestEntity } from "src/entities/request.entity";
 import { AuthModule } from "src/modules/auth/auth.module";
 import { DashboardController } from "./dashboard.controller";
 import { DashboardService } from "./dashboard.service";
+import { TaskEntity } from "src/entities/task.entity";
 
 @Module({
     imports: [
@@ -13,6 +14,7 @@ import { DashboardService } from "./dashboard.service";
             RequestEntity,
             AccountEntity,
             DeviceEntity,
+            TaskEntity,
         ]),
         AuthModule,
     ],

@@ -35,45 +35,9 @@ export class RequestController {
     return await this.requestService.customHeadGetAllRequest(user?.id);
   }
 
-<<<<<<< HEAD
-  // @ApiResponse({
-  //   type: RequestResponseDto.RequestGetAll,
-  //   status: 200,
-  //   description: 'Get all categories',
-  // })
-  // @CacheTTL(10)
-  // @Get('get-all-cache')
-  // async getAllForUser() {
-  //   return await this.requestService.getAll();
-  // }
-
-  // @ApiBearerAuth()
-  // @Get('include-deleted')
-  // async getAllWithDeleted() {
-  //   return await this.requestService.getAllWithDeleted();
-  // }
-
-  @ApiResponse({
-    type: RequestResponseDto.RequestGetOne,
-    status: 200,
-    description: 'Get one Request',
-  })
-  @ApiBearerAuth()
-  @Get(':id')
-  async getOneFor(@Param('id') id: string) {
-    return await this.requestService.getOne(id);
-  }
-
-  @ApiBearerAuth()
-  @ApiResponse({
-    type: RequestResponseDto.RequestCreate,
-    status: 201,
-    description: 'Create a Request',
-=======
   @ApiOperation({
     summary: "Get a request by ID",
     description: "Returns a request by a given ID and a user"
->>>>>>> refs/remotes/origin/main
   })
   @ApiBearerAuth()
   @Get('/:id')
