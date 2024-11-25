@@ -1,27 +1,26 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from 'src/common/base/service.base';
-import {
-  RequestEntity,
-  RequestStatus,
-  RequestType,
-} from 'src/entities/request.entity';
-import { Repository } from 'typeorm';
-import { RequestRequestDto } from './dto/request.dto';
+import { Renew, Warranty } from 'src/common/constants';
 import { AccountEntity, Role } from 'src/entities/account.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
-import { NotifyEntity } from 'src/entities/notify.entity';
+import { IssueSparePartEntity } from 'src/entities/issue-spare-part.entity';
 import {
   FixItemType,
   IssueEntity,
   IssueStatus,
 } from 'src/entities/issue.entity';
-import { Renew, Warranty } from 'src/common/constants';
-import { TaskEntity, TaskStatus, TaskType } from 'src/entities/task.entity';
-import TaskNameGenerator from 'src/utils/taskname-generator';
-import { TypeErrorEntity } from 'src/entities/type-error.entity';
+import {
+  RequestEntity,
+  RequestStatus,
+  RequestType,
+} from 'src/entities/request.entity';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
-import { IssueSparePartEntity } from 'src/entities/issue-spare-part.entity';
+import { TaskEntity, TaskStatus, TaskType } from 'src/entities/task.entity';
+import { TypeErrorEntity } from 'src/entities/type-error.entity';
+import TaskNameGenerator from 'src/utils/taskname-generator';
+import { Repository } from 'typeorm';
+import { RequestRequestDto } from './dto/request.dto';
 
 @Injectable()
 export class RequestService extends BaseService<RequestEntity> {

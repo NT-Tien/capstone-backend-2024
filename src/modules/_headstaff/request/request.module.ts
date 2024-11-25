@@ -4,7 +4,6 @@ import { AccountEntity } from 'src/entities/account.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
 import { IssueSparePartEntity } from 'src/entities/issue-spare-part.entity';
 import { IssueEntity } from 'src/entities/issue.entity';
-import { NotifyEntity } from 'src/entities/notify.entity';
 import { RequestEntity } from 'src/entities/request.entity';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { TaskEntity } from 'src/entities/task.entity';
@@ -21,7 +20,6 @@ import { RequestService } from './request.service';
       DeviceEntity,
       IssueEntity,
       TaskEntity,
-      NotifyEntity,
       SparePartEntity,
       TypeErrorEntity,
       IssueSparePartEntity
