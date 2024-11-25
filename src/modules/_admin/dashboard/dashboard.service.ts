@@ -107,4 +107,14 @@ export class DashboardService {
 
     }
 
+    async getRequestRenewData() {
+        // 1. Số yêu cầu thay máy mới 
+        // 2. Số yêu cầu thay máy đang chờ duyệt
+        // 3. Số yêu cầu thay máy dc approve
+        // 4. số yêu cầu thay máy bị reject
+        // 5. số yêu cầu thay máy đang thực hiện
+        // 6. số yêu cầu thay máy thay thành công
+        // 7. số yêu cầu thay máy đang chờ mua máy mới
+    }
+
 }
