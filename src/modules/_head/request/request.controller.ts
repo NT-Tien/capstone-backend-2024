@@ -52,16 +52,16 @@ export class RequestController {
   //   return await this.requestService.getAllWithDeleted();
   // }
 
-  // @ApiResponse({
-  //   type: RequestResponseDto.RequestGetOne,
-  //   status: 200,
-  //   description: 'Get one Request',
-  // })
-  // @ApiBearerAuth()
-  // @Get(':id')
-  // async getOneFor(@Param('id') id: string) {
-  //   return await this.requestService.getOne(id);
-  // }
+  @ApiResponse({
+    type: RequestResponseDto.RequestGetOne,
+    status: 200,
+    description: 'Get one Request',
+  })
+  @ApiBearerAuth()
+  @Get(':id')
+  async getOneFor(@Param('id') id: string) {
+    return await this.requestService.getOne(id);
+  }
 
   @ApiBearerAuth()
   @ApiResponse({
