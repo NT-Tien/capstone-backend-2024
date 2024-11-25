@@ -108,13 +108,127 @@ export class DashboardService {
     }
 
     async getRequestRenewData() {
-        // 1. Số yêu cầu thay máy mới 
-        // 2. Số yêu cầu thay máy đang chờ duyệt
-        // 3. Số yêu cầu thay máy dc approve
-        // 4. số yêu cầu thay máy bị reject
-        // 5. số yêu cầu thay máy đang thực hiện
-        // 6. số yêu cầu thay máy thay thành công
-        // 7. số yêu cầu thay máy đang chờ mua máy mới
+
+        // export enum RequestStatus {
+        //     PENDING = 'PENDING', // use for request renew
+        //     HEAD_CANCEL = 'HEAD_CANCEL',
+        //     APPROVED = 'APPROVED', // use for request renew
+        //     IN_PROGRESS = 'IN_PROGRESS', // use for request renew
+        //     CLOSED = 'CLOSED', // use for request renew
+        //     HEAD_CONFIRM = 'HEAD_CONFIRM',
+        //     REJECTED = 'REJECTED', // use for request renew
+        //   }
+
+        // 1. Số yêu cầu thay máy mới request.type = RENEW status = PENDING
+        // 2. Số yêu cầu thay máy đang chờ duyệt request.type = RENEW status = APPROVED
+        // 3. Số yêu cầu thay máy dc approve và đang thực hiện request.type = RENEW status = APPROVED
+        // 4. số yêu cầu thay máy bị rejectc request.type = RENEW status = REJECTED
+        // 5. số yêu cầu thay máy đang thực hiện  request.type = RENEW status = IN_PROGRESS
+        // 6. số yêu cầu thay máy thay thành công request.type = RENEW status = CLOSED or HEAD_CONFIRM
+        // 7. số yêu cầu thay máy đang chờ mua máy mới request.type = RENEW status = APPROVED and request.tasks.renew_device = null and request.tasks.type = TaskType
+
+        // will get request.tasks sort created_at lastest and get first
+
+        let request_renew = await this.requestRepository.find({
+            where: {
+                type: RequestType.RENEW
+            },
+            relations: ['tasks']
+        });
+
+        let data = {
+            total: request_renew.length,
+            pending: {
+                total: 0,
+                devices_and_request: [],
+            },
+            approved: {
+                total: 0,
+                devices_and_request: [],
+            },
+            in_progress: {
+                total: 0,
+                devices_and_request: [],
+            },
+            rejected: {
+                total: 0,
+                devices_and_request: [],
+            },
+            success: {
+                total: 0,
+                devices_and_request: [],
+            },
+            waiting_new_device: {
+                total: 0,
+                devices_and_request: [],
+            }
+        }
+
+        request_renew.forEach(request => {
+            let task = request.tasks.find(task => task.type == TaskType.RENEW);
+            if (request.status == RequestStatus.PENDING) {
+                data.pending.total += 1;
+                data.pending.devices_and_request.push({
+                    request: request,
+                    device: request.device,
+                    task: task
+                });
+            }
+            if (request.status == RequestStatus.APPROVED) {
+                data.approved.total += 1;
+                data.approved.devices_and_request.push({
+                    request: request,
+                    device: request.device,
+                    task: task
+                });
+            }
+            if (request.status == RequestStatus.APPROVED && task) {
+                data.waiting_new_device.total += 1;
+                data.waiting_new_device.devices_and_request.push({
+                    request: request,
+                    device: request.device,
+                    task: task
+                });
+            }
+            if (request.status == RequestStatus.REJECTED) {
+                data.rejected.total += 1;
+                data.rejected.devices_and_request.push({
+                    request: request,
+                    device: request.device,
+                    task: task
+                });
+            }
+            if (request.status == RequestStatus.IN_PROGRESS) {
+                data.in_progress.total += 1;
+                data.in_progress.devices_and_request.push({
+                    request: request,
+                    device: request.device,
+                    task: task
+                });
+            }
+            if ((
+                request.status == RequestStatus.CLOSED ||
+                request.status == RequestStatus.HEAD_CONFIRM
+            )) {
+                data.success.total += 1;
+                data.success.devices_and_request.push({
+                    request: request,
+                    device: request.device,
+                    task: task
+                });
+            }
+            if (request.type == RequestType.RENEW && request.status == RequestStatus.APPROVED && !task.device_renew && task.type == TaskType.RENEW) {
+                data.waiting_new_device.total += 1;
+                data.waiting_new_device.devices_and_request.push({
+                    request: request,
+                    device: request.device,
+                    task: task
+                });
+            }
+        });
+        
+        
+
     }
 
 }

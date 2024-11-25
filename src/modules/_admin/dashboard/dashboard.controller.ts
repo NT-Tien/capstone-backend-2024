@@ -17,4 +17,9 @@ export class DashboardController {
         return await this.dashboardService.getDeviceWarantyData();
     }
 
+    @Get('device-renew-data')
+    async getDeviceRenewData() {
+        return await this.dashboardService.getRequestRenewData();
+    }
+
 }
