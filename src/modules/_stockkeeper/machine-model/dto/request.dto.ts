@@ -31,6 +31,25 @@ export namespace MachineModelRequestDto {
     warrantyTerm: Date;
   }
 
+  export class ImportDevicetDto extends BaseDTO { 
+  
+    @ApiProperty({ description: 'machineModelCode', example: '12345' })
+    
+    machineModelCode: string;
+  
+    @ApiProperty({ description: 'modelName', example: '12345' })
+    
+    modelName: string;
+  
+    @ApiProperty({ description: 'IdescriptionD của thiết bị', example: '12345' })
+    
+    description: string;
+  
+    @ApiProperty({ description: 'quantity của thiết bị', example: '12345' })
+    
+    quantity: number;
+  }
+
   export class MachineModelUpdateDto extends BaseDTO {
     @ApiProperty()
     @ValidateIf((o) => o.name !== undefined)

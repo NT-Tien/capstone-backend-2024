@@ -8,11 +8,11 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBody, ApiProperty } from '@nestjs/swagger';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MachineModelService } from './machine-model.service';
 import { MachineModelResponseDto } from './dto/response.dto';
 import { MachineModelRequestDto } from './dto/request.dto';
-import { AdminGuard } from 'src/modules/auth/guards/admin.guard';
 import { StaffGuard } from 'src/modules/auth/guards/staff.guard';
 // import { CacheTTL } from '@nestjs/cache-manager';
 
@@ -59,6 +59,17 @@ export class MachineModelController {
   @Get(':id')
   async getOneFor(@Param('id') id: string) {
     return await this.machineModelService.customGetOne(id);
+  }
+
+  // import devices 
+  @ApiBearerAuth()
+  @Post('import')
+  @ApiBody({
+    type: [MachineModelRequestDto.ImportDevicetDto], // Mô tả mảng DTO trong Swagger
+    description: 'Danh sách thiết bị cần import',
+  })
+  async importDevices(@Body() devices: MachineModelRequestDto.ImportDevicetDto[]) {
+    return await this.machineModelService.importDevices(devices);
   }
 
   // @ApiBearerAuth()

@@ -7,6 +7,8 @@ export enum exportType {
   SPARE_PART = 'SPARE_PART',
 }
 export enum exportStatus {
+  WAITING_ADMIN = "WAITING_ADMIN",
+  ADMIN_REJECT = "ADMIN_REJECT",
   WAITING = 'WAITING',
   DELAY = 'DELAY',
   ACCEPTED = 'ACCEPTED',

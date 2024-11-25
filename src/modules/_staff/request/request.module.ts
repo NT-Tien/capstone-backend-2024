@@ -1,17 +1,16 @@
 import { Module } from '@nestjs/common';
-import { RequestController } from './request.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RequestEntity } from 'src/entities/request.entity';
-import { AuthModule } from 'src/modules/auth/auth.module';
-import { NotifyModule } from 'src/modules/notify/notify.module';
 import { TaskEntity } from 'src/entities/task.entity';
+import { AuthModule } from 'src/modules/auth/auth.module';
+import { RequestController } from './request.controller';
 
 @Module({
   controllers: [RequestController],
   imports: [
     TypeOrmModule.forFeature([RequestEntity, TaskEntity]),
     AuthModule,
-    NotifyModule,
+    // NotifyModule,
   ],
 })
 export class RequestModule {}

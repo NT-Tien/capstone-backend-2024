@@ -9,7 +9,6 @@ export const TYPE_ORM_CONFIG = {
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
   synchronize: process.env.ENV === 'main' ? true : false,
-  // synchronize: true,
   entities: ['dist/**/*.entity.js'],
   subscribers: ['dist/**/*.subscriber.js'],
   ssl: process.env.ENV === 'production' ? { ca: process.env.DB_SSL_CA } : false,
