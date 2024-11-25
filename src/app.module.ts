@@ -24,6 +24,10 @@ import { FileLocalModule } from './modules/upload-local/file.module';
 import { ImageModule } from './modules/upload/image/image.module';
 import { VideoModule } from './modules/upload/video/video.module';
 import { Global_NotificationsModule } from 'src/modules/notifications/notifications.module';
+import { AppController } from 'src/app.controller';
+import { TaskEntity } from 'src/entities/task.entity';
+import { RequestEntity } from 'src/entities/request.entity';
+import { AreaEntity } from 'src/entities/area.entity';
 
 @Module({
   imports: [
@@ -50,8 +54,10 @@ import { Global_NotificationsModule } from 'src/modules/notifications/notificati
     PredictiveModule,
     HandelDataModule,
     Global_NotificationsModule,
+    TypeOrmModule.forFeature([TaskEntity, RequestEntity, AreaEntity]),
     // NotifyModule,
   ],
+  controllers: [AppController],
   providers: [
     {
       provide: APP_INTERCEPTOR,
