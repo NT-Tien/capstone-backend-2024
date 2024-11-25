@@ -1,13 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { endOfDay, subMonths, subWeeks, subYears } from 'date-fns';
 import { BaseService } from 'src/common/base/service.base';
+import { AccountEntity, Role } from 'src/entities/account.entity';
+import { DeviceEntity } from 'src/entities/device.entity';
 import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
 import { Between, In, Repository } from 'typeorm';
 import { RequestRequestDto } from './dto/request.dto';
-import { AccountEntity, Role } from 'src/entities/account.entity';
-import { DeviceEntity } from 'src/entities/device.entity';
-import { NotifyEntity } from 'src/entities/notify.entity';
-import { endOfDay, subMonths, subWeeks, subYears } from 'date-fns';
 
 @Injectable()
 export class RequestService extends BaseService<RequestEntity> {
@@ -18,8 +17,6 @@ export class RequestService extends BaseService<RequestEntity> {
     private readonly accountRepository: Repository<AccountEntity>,
     @InjectRepository(DeviceEntity)
     private readonly deviceRepository: Repository<DeviceEntity>,
-    @InjectRepository(NotifyEntity)
-    private readonly notifyRepository: Repository<NotifyEntity>,
   ) {
     super(requestRepository);
   }

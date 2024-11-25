@@ -37,7 +37,6 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
     });
   }
 
-
   async filterByStaffNameAndCreatedDate(
     staff_name: string,
     created_date: Date

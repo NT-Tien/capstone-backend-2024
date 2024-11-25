@@ -11,7 +11,12 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 // import { CacheTTL } from '@nestjs/cache-manager';
 import { TaskService } from './task.service';
 import { TaskResponseDto } from './dto/response.dto';
@@ -42,17 +47,30 @@ export class TaskController {
   }
 
   @ApiBearerAuth()
-  @ApiOperation({ summary: "Get all staff's task by date"})
-  @Get("/all-by-date")
-  getAllByDate(@Headers('user') user: any, @Query() dto: TaskRequestDto.TaskAllByDate) {
+  @ApiOperation({ summary: "Get all staff's task by date" })
+  @Get('/all-by-date')
+  getAllByDate(
+    @Headers('user') user: any,
+    @Query() dto: TaskRequestDto.TaskAllByDate,
+  ) {
     return this.taskService.staffGetAllTaskByDate(user.id, dto);
   }
 
   @ApiBearerAuth()
-  @ApiOperation({ summary: "Get staff's task counts"})
-  @Get("/all-counts")
-  getAllCounts(@Headers('user') user: any, @Query() dto: TaskRequestDto.TaskAllCount) {
+  @ApiOperation({ summary: "Get staff's task counts" })
+  @Get('/all-counts')
+  getAllCounts(
+    @Headers('user') user: any,
+    @Query() dto: TaskRequestDto.TaskAllCount,
+  ) {
     return this.taskService.staffGetAllTaskCounts(user.id, dto);
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get current in-progress tasks for user' })
+  @Get('/all/in-progress')
+  getAllInProgress(@Headers('user') user: any) {
+    return this.taskService.getAllInProgressTasks(user.id)
   }
 
   @ApiBearerAuth()
@@ -104,10 +122,15 @@ export class TaskController {
     @Body() body: TaskRequestDto.TaskConfirmDoneDto,
     @Query() query?: TaskRequestDto.TaskCompleteQuery,
   ) {
-    return this.taskService.confirmCompletion(user.id, taskId, body, query.autoClose);
+    return this.taskService.confirmCompletion(
+      user.id,
+      taskId,
+      body,
+      query.autoClose,
+    );
   }
 
-  @ApiOperation({summary: "Complete a SEND warranty task"})
+  @ApiOperation({ summary: 'Complete a SEND warranty task' })
   @ApiBearerAuth()
   @Post('/complete/:taskId/warranty')
   confirmDoneWarranty(
@@ -124,10 +147,7 @@ export class TaskController {
     description: 'Confirm done',
   })
   @Post('request-task-cancel/:taskId')
-  requestTaskCancel(
-    @Param('taskId') taskId: UUID,
-    @Headers('user') user: any,
-  ) {
+  requestTaskCancel(@Param('taskId') taskId: UUID, @Headers('user') user: any) {
     return this.taskService.staffRequestCanncelTask(user.id, taskId);
   }
 

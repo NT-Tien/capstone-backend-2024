@@ -8,6 +8,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -50,23 +51,6 @@ export class RequestController {
       status,
     );
   }
-
-  // @ApiResponse({
-  //   type: RequestResponseDto.RequestGetAll,
-  //   status: 200,
-  //   description: 'Get all categories',
-  // })
-  // @CacheTTL(10)
-  // @Get('get-all-cache')
-  // async getAllForUser() {
-  //   return await this.requestService.getAll();
-  // }
-
-  // @ApiBearerAuth()
-  // @Get('include-deleted')
-  // async getAllWithDeleted() {
-  //   return await this.requestService.getAllWithDeleted();
-  // }
 
   @ApiResponse({
     type: RequestResponseDto.RequestGetOne,
@@ -121,15 +105,51 @@ export class RequestController {
     return this.requestService.getStatistics();
   }
 
-  @ApiOperation({ summary: 'Approve request - send warranty' })
+  @ApiOperation({
+    summary: 'Approve request - fix',
+    description: 'Creates issues in request.',
+  })
+  @ApiBearerAuth()
+  @Put('/approve-fix/:id')
+  async approveRequestToFix(
+    @Param('id') id: string,
+    @Query() query: RequestRequestDto.IsMultipleTypesQuery,
+    @Body() dto: RequestRequestDto.RequestApproveToFix,
+    @Headers('user') user: any,
+  ) {
+    return this.requestService.approveRequestToFix(id, dto, user.id, query.isMultiple);
+  }
+
+  @ApiOperation({
+    summary: 'Approve request - send warranty',
+    description: 'Creates four issues in request and one task.',
+  })
   @ApiBearerAuth()
   @Put('/approve-warranty/:id')
   async approveRequest(
     @Param('id') id: string,
+    @Query() query: RequestRequestDto.IsMultipleTypesQuery,
     @Body() dto: RequestRequestDto.RequestApproveToWarranty,
     @Headers('user') user: any,
   ) {
-    return this.requestService.approveRequestToWarranty(id, dto, user.id);
+    return this.requestService.approveRequestToWarranty(
+      id,
+      dto,
+      user.id,
+      query.isMultiple,
+    );
+  }
+
+  @ApiOperation({
+    summary: "Request Warranty failed",
+    description: "Sets all warranty issues in request to failed and tasks to cancelled"
+  })
+  @ApiBearerAuth()
+  @Put('/warranty-failed/:id')
+  async warrantyFailed(
+    @Param('id') id: string,
+  ) {
+    return this.requestService.warrantyFailed(id);
   }
 
   @ApiOperation({
@@ -141,9 +161,15 @@ export class RequestController {
   @Put('/approve-renew/:id')
   async approveRequest_Renew(
     @Param('id', ParseUUIDPipe) id: string,
+    @Query() query: RequestRequestDto.IsMultipleTypesQuery,
     @Body() dto: RequestRequestDto.RequestApproveToRenew,
     @Headers('user') user: any,
   ) {
-    return this.requestService.approveRequestToRenew(id, dto, user.id);
+    return this.requestService.approveRequestToRenew(
+      id,
+      dto,
+      user.id,
+      query.isMultiple,
+    );
   }
 }

@@ -1,6 +1,6 @@
-import { Column, Entity, ManyToOne, Unique } from 'typeorm';
-import { AccountEntity, Role } from './account.entity';
 import { BaseEntity } from 'src/common/base/entity.base';
+import { Column, Entity, ManyToOne } from 'typeorm';
+import { AccountEntity, Role } from './account.entity';
 
 export enum NotifyType {
   REQUEST = 'request',

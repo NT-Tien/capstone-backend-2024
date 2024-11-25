@@ -9,9 +9,11 @@ import { Between, In, Repository } from 'typeorm';
 import { TaskRequestDto } from './dto/request.dto';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
-import { HeadStaffGateway } from 'src/modules/notify/roles/notify.head-staff';
 import { Warranty } from 'src/common/constants';
-import { exportStatus, ExportWareHouse } from 'src/entities/export-warehouse.entity';
+import {
+  exportStatus,
+  ExportWareHouse,
+} from 'src/entities/export-warehouse.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -30,7 +32,6 @@ export class TaskService extends BaseService<TaskEntity> {
     private readonly exportWareHouseRepository: Repository<ExportWareHouse>,
     @InjectRepository(RequestEntity)
     private readonly requestRepository: Repository<RequestEntity>,
-    private readonly headStaffGateway: HeadStaffGateway,
   ) {
     super(taskRepository);
   }
@@ -100,6 +101,25 @@ export class TaskService extends BaseService<TaskEntity> {
       .andWhere('task.fixer_date >= :startOfMonth', { startOfMonth })
       .groupBy('task.fixer_date')
       .getRawMany();
+  }
+
+  async getAllInProgressTasks(userId: string) {
+    return this.taskRepository.find({
+      where: {
+        fixer: {
+          id: userId,
+        },
+        status: TaskStatus.IN_PROGRESS,
+      },
+      relations: [
+        'export_warehouse_ticket',
+        'device',
+        'device.area',
+        'fixer',
+        'issues',
+        'issues.typeError',
+      ],
+    });
   }
 
   async customStaffGetTaskDetail(userId: string, taskId: string) {
@@ -195,9 +215,9 @@ export class TaskService extends BaseService<TaskEntity> {
     // check export-warehouse is exist or not if exist check it status is accepted
     let export_warehouse = await this.exportWareHouseRepository.findOne({
       where: {
-        task: task
-      }
-    }) 
+        task: task,
+      },
+    });
 
     if(export_warehouse && export_warehouse.status != exportStatus.ACCEPTED){
       throw new HttpException('Export ticket is not avaiable', 400);
@@ -240,7 +260,7 @@ export class TaskService extends BaseService<TaskEntity> {
       ],
     });
 
-    this.headStaffGateway.emit_task_started(response, userId);
+    // this.headStaffGateway.emit_task_started(response, userId);
 
     return save;
   }
@@ -289,7 +309,9 @@ export class TaskService extends BaseService<TaskEntity> {
         'request.tasks',
         'request.tasks.issues',
         'request.tasks.issues.typeError',
-        'fixer'
+        'fixer',
+        'issues',
+        'issues.typeError',
       ],
     });
 
@@ -302,27 +324,27 @@ export class TaskService extends BaseService<TaskEntity> {
     task.last_issues_data = JSON.stringify(task.issues);
     task.completedAt = new Date();
 
-    await this.taskRepository.save(task);
+    return await this.taskRepository.save(task);
 
     // update next task fixer
-    const nextTask = task.request.tasks.find((t) =>
-      t.issues.find(
-        (i) =>
-          i.typeError.id === Warranty.receive ||
-          i.typeError.id === Warranty.assemble,
-      ),
-    );
+    // const nextTask = task.request.tasks.find((t) =>
+    //   t.issues.find(
+    //     (i) =>
+    //       i.typeError.id === Warranty.receive ||
+    //       i.typeError.id === Warranty.assemble,
+    //   ),
+    // );
 
-    if (!nextTask) {
-      throw new HttpException('Next task not found', HttpStatus.NOT_FOUND);
-    }
+    // if (!nextTask) {
+    //   throw new HttpException('Next task not found', HttpStatus.NOT_FOUND);
+    // }
 
-    nextTask.fixer = task.fixer;
-    nextTask.status = TaskStatus.ASSIGNED;
+    // nextTask.fixer = task.fixer;
+    // nextTask.status = TaskStatus.ASSIGNED;
 
-    await this.taskRepository.save(nextTask);
+    // await this.taskRepository.save(nextTask);
 
-    return task;
+    // return task;
   }
 
   async staffRequestCanncelTask(userId: string, taskId: string) {
