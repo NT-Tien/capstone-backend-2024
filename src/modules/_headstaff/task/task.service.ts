@@ -6,10 +6,18 @@ import { TaskEntity, TaskStatus, TaskType } from 'src/entities/task.entity';
 import { Repository } from 'typeorm';
 import { TaskRequestDto } from './dto/request.dto';
 import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
-import { FixItemType, IssueEntity, IssueStatus } from 'src/entities/issue.entity';
+import {
+  FixItemType,
+  IssueEntity,
+  IssueStatus,
+} from 'src/entities/issue.entity';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
-import { exportStatus, exportType, ExportWareHouse } from 'src/entities/export-warehouse.entity';
+import {
+  exportStatus,
+  exportType,
+  ExportWareHouse,
+} from 'src/entities/export-warehouse.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -36,7 +44,7 @@ export class TaskService extends BaseService<TaskEntity> {
     page: number,
     limit: number,
     status: TaskStatus,
-    order?: number
+    order?: number,
   ): Promise<[TaskEntity[], number]> {
     return this.taskRepository.findAndCount({
       where: {
@@ -135,7 +143,7 @@ export class TaskService extends BaseService<TaskEntity> {
     // check request has been assigned to a task (status != cancelled or == completed)
     const request = await this.requestRepository.findOne({
       where: { id: data.request },
-      relations: ['tasks', 'device'],
+      relations: ['tasks', 'device', 'device.area', 'device.machineModel'],
     });
     if (!request || request.status === RequestStatus.REJECTED) {
       throw new Error('Request not found or invalid status');
@@ -156,6 +164,7 @@ export class TaskService extends BaseService<TaskEntity> {
     let newTask = new TaskEntity();
     newTask.request = request;
     newTask.device = request.device;
+    newTask.device_static = request.device;
     // if (data.fixer) {
     //   const fixer = await this.accountRepository.findOne({
     //     where: {
@@ -224,18 +233,16 @@ export class TaskService extends BaseService<TaskEntity> {
   }
 
   async assignFixer(taskId: string, data: TaskRequestDto.TaskAssignFixerDto) {
-    const task = await this.taskRepository.findOne(
-      {
-        where: { id: taskId },
-        relations: [
-          // 'export_warehouse_ticket',
-          'issues',
-          'issues.issueSpareParts',
-          'issues.issueSpareParts.sparePart',
-          'device_renew',
-        ],
-      },
-    );
+    const task = await this.taskRepository.findOne({
+      where: { id: taskId },
+      relations: [
+        // 'export_warehouse_ticket',
+        'issues',
+        'issues.issueSpareParts',
+        'issues.issueSpareParts.sparePart',
+        'device_renew',
+      ],
+    });
     if (!task || task.status !== TaskStatus.AWAITING_FIXER || task.fixer) {
       throw new Error('Task not found or invalid status');
     }
@@ -246,9 +253,10 @@ export class TaskService extends BaseService<TaskEntity> {
     task.fixerDate = new Date(data.fixerDate);
     task.status = TaskStatus.ASSIGNED;
     // get issues has issueSpareParts
-    const issues = task.issues.filter((issue) =>
-      issue.issueSpareParts.length > 0 ||
-      issue.fixType == FixItemType.REPLACE
+    const issues = task.issues.filter(
+      (issue) =>
+        issue.issueSpareParts.length > 0 ||
+        issue.fixType == FixItemType.REPLACE,
     );
     // create export warehouse renew
     // if (task.type === TaskType.RENEW && task.device_renew) {
@@ -263,7 +271,10 @@ export class TaskService extends BaseService<TaskEntity> {
     if (issues.length > 0) {
       const exportWarehouse = new ExportWareHouse();
       exportWarehouse.task = task;
-      exportWarehouse.export_type = task.type === TaskType.RENEW ? exportType.DEVICE : exportType.SPARE_PART;
+      exportWarehouse.export_type =
+        task.type === TaskType.RENEW
+          ? exportType.DEVICE
+          : exportType.SPARE_PART;
       exportWarehouse.detail = issues;
       exportWarehouse.status = exportStatus.WAITING;
       await this.exportWareHouseRepository.save(exportWarehouse);
@@ -333,26 +344,42 @@ export class TaskService extends BaseService<TaskEntity> {
       where: { task: task },
     });
     // if not exported yet then cancel, else do nothing
-    if (exportWarehouse.status !== exportStatus.EXPORTED && exportWarehouse.status !== exportStatus.CANCEL) {
+    if (
+      exportWarehouse.status !== exportStatus.EXPORTED &&
+      exportWarehouse.status !== exportStatus.CANCEL
+    ) {
       exportWarehouse.status = exportStatus.CANCEL;
       await this.exportWareHouseRepository.save(exportWarehouse);
     }
     return await this.taskRepository.save(task);
   }
 
-  async updateTask(id: string, entity: TaskRequestDto.TaskUpdateDto, userId: string) {
-    const response = await this.taskRepository.update(id, entity as any).then(() => this.getOne(id));
+  async updateTask(
+    id: string,
+    entity: TaskRequestDto.TaskUpdateDto,
+    userId: string,
+  ) {
+    const response = await this.taskRepository
+      .update(id, entity as any)
+      .then(() => this.getOne(id));
     const responseEntity = await this.taskRepository.findOne({
       where: {
         id: response.id,
       },
-      relations: ['request', 'fixer', 'request.requester', 'device', 'device.area', 'device.machineModel'],
-    })
+      relations: [
+        'request',
+        'fixer',
+        'request.requester',
+        'device',
+        'device.area',
+        'device.machineModel',
+      ],
+    });
 
     if (entity.fixer !== null && entity.fixer !== undefined) {
       // this.staffGateway.emit_task_assigned(responseEntity, userId, responseEntity.fixer.id)
     }
 
-    return response
+    return response;
   }
 }

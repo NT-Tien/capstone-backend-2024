@@ -90,6 +90,13 @@ export class TaskEntity extends BaseEntity {
   export_warehouse_ticket?: ExportWareHouse[];
 
   @Column({
+    name: 'device_static',
+    type: 'jsonb',
+    nullable: true,
+  })
+  device_static?: any;
+
+  @Column({
     name: 'fixer_note',
     type: 'text',
     nullable: true,
@@ -109,10 +116,10 @@ export class TaskEntity extends BaseEntity {
   name: string;
 
   @Column({
-    name: "type",
-    type: "enum",
+    name: 'type',
+    type: 'enum',
     enum: TaskType,
-    default: TaskType.FIX
+    default: TaskType.FIX,
   })
   type: TaskType;
 
@@ -191,7 +198,7 @@ export class TaskEntity extends BaseEntity {
     type: 'text',
     nullable: true,
   })
-  confirmReceiptBY?: string; 
+  confirmReceiptBY?: string;
 
   @Column({
     name: 'confirm_send_by',
@@ -229,16 +236,16 @@ export class TaskEntity extends BaseEntity {
   return_spare_part_data?: any;
 
   @Column({
-    name: "cancel_reason",
-    type: "text",
-    nullable: true
+    name: 'cancel_reason',
+    type: 'text',
+    nullable: true,
   })
   cancelReason?: string;
 
   @Column({
-    name: "cancel_by",
-    type: "text",
-    nullable: true
+    name: 'cancel_by',
+    type: 'text',
+    nullable: true,
   })
   cancelBy?: string;
 }
