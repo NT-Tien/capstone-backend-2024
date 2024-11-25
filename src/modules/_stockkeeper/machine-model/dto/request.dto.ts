@@ -33,20 +33,20 @@ export namespace MachineModelRequestDto {
 
   export class ImportDevicetDto extends BaseDTO { 
   
-    @ApiProperty()
-    @Expose()
+    @ApiProperty({ description: 'machineModelCode', example: '12345' })
+    
     machineModelCode: string;
   
-    @ApiProperty()
-    @Expose()
+    @ApiProperty({ description: 'modelName', example: '12345' })
+    
     modelName: string;
   
-    @ApiProperty()
-    @Expose()
+    @ApiProperty({ description: 'IdescriptionD của thiết bị', example: '12345' })
+    
     description: string;
   
-    @ApiProperty()
-    @Expose()
+    @ApiProperty({ description: 'quantity của thiết bị', example: '12345' })
+    
     quantity: number;
   }
 

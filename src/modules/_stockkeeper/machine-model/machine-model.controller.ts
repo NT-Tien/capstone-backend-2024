@@ -8,6 +8,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBody, ApiProperty } from '@nestjs/swagger';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MachineModelService } from './machine-model.service';
 import { MachineModelResponseDto } from './dto/response.dto';
@@ -63,9 +64,12 @@ export class MachineModelController {
   // import devices 
   @ApiBearerAuth()
   @Post('import')
-  async importDevices(@Body() devices: MachineModelRequestDto.ImportDevicetDto[]) 
-  {
-    return await this.machineModelService.importDevices(devices);  
+  @ApiBody({
+    type: [MachineModelRequestDto.ImportDevicetDto], // Mô tả mảng DTO trong Swagger
+    description: 'Danh sách thiết bị cần import',
+  })
+  async importDevices(@Body() devices: MachineModelRequestDto.ImportDevicetDto[]) {
+    return await this.machineModelService.importDevices(devices);
   }
 
   // @ApiBearerAuth()
