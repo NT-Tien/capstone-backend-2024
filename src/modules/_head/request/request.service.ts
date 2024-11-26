@@ -99,10 +99,7 @@ export class RequestService extends BaseService<RequestEntity> {
     // find device
     const device = await this.deviceRepository.findOne({
       where: { id: data.device },
-      relations: [
-        'machineModel',
-        'area',
-      ]
+      relations: ['machineModel', 'area'],
     });
     if (!device || device.deletedAt) {
       throw new HttpException('Device is not valid', HttpStatus.BAD_REQUEST);
@@ -117,6 +114,7 @@ export class RequestService extends BaseService<RequestEntity> {
         statuses: [
           RequestStatus.PENDING,
           RequestStatus.IN_PROGRESS,
+          RequestStatus.APPROVED,
         ],
       })
       .getExists();
@@ -144,7 +142,7 @@ export class RequestService extends BaseService<RequestEntity> {
       requester: account,
       areaName: device.area.name,
       requestId: newRequest.id,
-    })
+    });
     // await this.headStaffGateWay.emit_request_create(result, userId);
 
     return result;

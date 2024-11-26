@@ -10,6 +10,7 @@ import { RequestModule } from './request/request.module';
 import { RequestAddDeviceModule } from './request-add-device/request-add-device.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from '../auth/auth.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AuthModule } from '../auth/auth.module';
     RequestModule,
     RequestAddDeviceModule,
     UserModule,
+    DashboardModule,
   ],
 })
 export class AdminModule {}
