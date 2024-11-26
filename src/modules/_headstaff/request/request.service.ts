@@ -117,6 +117,8 @@ export class RequestService extends BaseService<RequestEntity> {
         'tasks.device_renew',
         'tasks.device_renew.machineModel',
         'tasks.issues.typeError',
+        'tasks.issues.issueSpareParts',
+        'tasks.issues.issueSpareParts.sparePart',
         'tasks.export_warehouse_ticket',
         'requester',
         'issues',

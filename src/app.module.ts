@@ -55,6 +55,7 @@ import { AreaEntity } from 'src/entities/area.entity';
     HandelDataModule,
     Global_NotificationsModule,
     TypeOrmModule.forFeature([TaskEntity, RequestEntity, AreaEntity]),
+    
     // NotifyModule,
   ],
   controllers: [AppController],

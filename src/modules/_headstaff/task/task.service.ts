@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from 'src/common/base/service.base';
 import { AccountEntity, Role } from 'src/entities/account.entity';
@@ -232,7 +232,11 @@ export class TaskService extends BaseService<TaskEntity> {
     return await this.taskRepository.save(task);
   }
 
-  async assignFixer(taskId: string, data: TaskRequestDto.TaskAssignFixerDto) {
+  async assignFixer(
+    taskId: string,
+    data: TaskRequestDto.TaskAssignFixerDto,
+    shouldCreateExport?: boolean,
+  ) {
     const task = await this.taskRepository.findOne({
       where: { id: taskId },
       relations: [
@@ -268,7 +272,7 @@ export class TaskService extends BaseService<TaskEntity> {
 
     //   await this.exportWareHouseRepository.save(exportWarehouse)
     // }
-    if (issues.length > 0) {
+    if (shouldCreateExport && issues.length > 0) {
       const exportWarehouse = new ExportWareHouse();
       exportWarehouse.task = task;
       exportWarehouse.export_type =
@@ -381,5 +385,28 @@ export class TaskService extends BaseService<TaskEntity> {
     }
 
     return response;
+  }
+
+  async createExportWarehouseSparePart(id: string) {
+    const task = await this.taskRepository.findOne({
+      where: {
+        id,
+      },
+      relations: ['issues', 'issues.issueSpareParts', 'issues.issueSpareParts.sparePart'],
+    });
+
+    // if no spare parts, error
+    if (task.issues.every((i) => i.issueSpareParts.length === 0)) {
+      throw new HttpException('No spare parts to export', 400);
+    }
+
+    // create export warehouse
+    const exportWarehouse = new ExportWareHouse();
+    exportWarehouse.task = task;
+    exportWarehouse.export_type = exportType.SPARE_PART;
+    exportWarehouse.detail = task.issues;
+    exportWarehouse.status = exportStatus.WAITING;
+
+    return await this.exportWareHouseRepository.save(exportWarehouse);
   }
 }
