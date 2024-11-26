@@ -13,6 +13,7 @@ export enum RequestStatus {
   IN_PROGRESS = 'IN_PROGRESS', // use for request renew
   CLOSED = 'CLOSED', // use for request renew
   HEAD_CONFIRM = 'HEAD_CONFIRM',
+  HM_VERIFY = 'HM_VERIFY', // use for checking 
   REJECTED = 'REJECTED', // use for request renew
 }
 
