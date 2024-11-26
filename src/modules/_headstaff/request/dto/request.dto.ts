@@ -154,4 +154,13 @@ export namespace RequestRequestDto {
     @Expose()
     note?: string;
   }
+
+  export class RequestApproveToRenewEmpty extends BaseDTO {
+
+    @ApiPropertyOptional({ description: 'Note for renew (idk)' })
+    @IsOptional()
+    @IsString()
+    @Expose()
+    note?: string;
+  }
 }

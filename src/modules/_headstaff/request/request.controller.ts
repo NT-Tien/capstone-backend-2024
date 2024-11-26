@@ -172,4 +172,25 @@ export class RequestController {
       query.isMultiple,
     );
   }
+
+  @ApiOperation({
+    summary: 'Approve request - renew device',
+    description:
+      'Create renew task with empty renew device ',
+  })
+  @ApiBearerAuth()
+  @Put('/approve-renew-empty-device/:id')
+  async approveRequest_Renew_Empty(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query() query: RequestRequestDto.IsMultipleTypesQuery,
+    @Body() dto: RequestRequestDto.RequestApproveToRenewEmpty,
+    @Headers('user') user: any,
+  ) {
+    return this.requestService.approveRequestToRenewEmpty(
+      id,
+      dto,
+      user.id,
+      query.isMultiple,
+    );
+  }
 }

@@ -10,6 +10,9 @@ import { BaseService } from 'src/common/base/service.base';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { Not, In } from 'typeorm';
 import { UUID } from 'crypto';
+import { DeviceEntity } from 'src/entities/device.entity';
+import { MachineModelEntity } from 'src/entities/machine-model.entity';
+import { TaskEntity } from 'src/entities/task.entity';
 
 @Injectable()
 export class ExportWareHouseService extends BaseService<ExportWareHouse> {
@@ -18,6 +21,12 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
     private readonly exportWarehouseRepository: Repository<ExportWareHouse>,
     @InjectRepository(SparePartEntity)
     private readonly sparePartRepository: Repository<SparePartEntity>,
+    @InjectRepository(DeviceEntity)
+    private readonly deviceRepository: Repository<DeviceEntity>,
+    @InjectRepository(MachineModelEntity)
+    private readonly machineModelRepository: Repository<MachineModelEntity>,
+    @InjectRepository(TaskEntity)
+    private readonly taskRepository: Repository<TaskEntity>,
   ) {
     super(exportWarehouseRepository);
   }
@@ -229,5 +238,58 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
         'task.issues.issueSpareParts.sparePart',
       ],
     });
+  }
+
+  async exportDeviceForRenewTask(ticketId: UUID): Promise<boolean> {
+    
+    const ticket = await this.exportWarehouseRepository.findOne({
+      where: {
+        id: ticketId,
+      }
+    });
+
+    if (ticket == null){
+      return false;
+    }
+
+    var model = await this.machineModelRepository.findOne({
+      where: {
+        id: ticket.detail
+      }
+    });
+
+    if (model == null){
+      return false;
+    }
+
+    var renewDevice = await this.deviceRepository.findOne({
+      where: {
+        machineModel: model,
+        positionX : null,
+        positionY: null
+      }
+    });
+
+    if (renewDevice == null){
+      return false;
+    }
+
+
+    var task = await this.taskRepository.findOne({
+      where: {
+        id: ticket.task.id
+      }
+    });
+
+    if (task == null){
+      return false;
+    }
+
+
+    task.device_renew = renewDevice;
+
+    await this.taskRepository.save(task);
+
+    return true;
   }
 }
