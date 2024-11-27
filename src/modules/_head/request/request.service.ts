@@ -78,6 +78,7 @@ export class RequestService extends BaseService<RequestEntity> {
       .leftJoinAndSelect('request.checker', 'checker')
       .leftJoinAndSelect('request.issues', 'issues')
       .leftJoinAndSelect('request.feedback', 'feedback')
+      .leftJoinAndSelect('issues.typeError', 'typeError')
       .where('requester.deletedAt is null')
       .andWhere('requester.id = :id', { id: userId })
       .andWhere('request.id = :requestId', { requestId })
