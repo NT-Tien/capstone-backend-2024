@@ -26,8 +26,10 @@ export class AccountService extends BaseService<AccountEntity> {
   async getAllAccountsStaffAvaiable(fixDate: string): Promise<AccountEntity[]> {
     let result = await this.accountRepository
       .createQueryBuilder('account')
-      .leftJoinAndSelect('account.tasks', 'task')
-      .andWhere('task.fixer_date = :fixDate OR task.id IS NULL', { fixDate })
+      .leftJoinAndSelect('account.tasks', 'task', 'task.fixer_date = :date', {
+        date: fixDate,
+      })
+      .where('account.role = :role', { role: Role.staff })
       .getMany();
     // exclude staff have a task is priority and total task not over 60 * 8 minutes
     result = result.filter((staff) => {
@@ -39,5 +41,14 @@ export class AccountService extends BaseService<AccountEntity> {
       return !task_priority && task_over < 60 * 8;
     });
     return result;
+  }
+
+  async getAllByTasksOnDate(date: string): Promise<AccountEntity[]> {
+    return this.accountRepository
+      .createQueryBuilder('account')
+      .leftJoinAndSelect('account.tasks', 'task', 'task.fixer_date = :date', {
+        date,
+      })
+      .getMany();
   }
 }

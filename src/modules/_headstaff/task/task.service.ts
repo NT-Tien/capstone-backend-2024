@@ -272,14 +272,15 @@ export class TaskService extends BaseService<TaskEntity> {
 
     //   await this.exportWareHouseRepository.save(exportWarehouse)
     // }
-    if (shouldCreateExport && issues.length > 0) {
+    if (!!shouldCreateExport && issues.length > 0) {
       const exportWarehouse = new ExportWareHouse();
       exportWarehouse.task = task;
       exportWarehouse.export_type =
         task.type === TaskType.RENEW
           ? exportType.DEVICE
           : exportType.SPARE_PART;
-      exportWarehouse.detail = issues;
+      exportWarehouse.detail =
+        task.type === TaskType.RENEW ? task.device_renew.id : issues;
       exportWarehouse.status = exportStatus.WAITING;
       await this.exportWareHouseRepository.save(exportWarehouse);
     }
@@ -392,7 +393,11 @@ export class TaskService extends BaseService<TaskEntity> {
       where: {
         id,
       },
-      relations: ['issues', 'issues.issueSpareParts', 'issues.issueSpareParts.sparePart'],
+      relations: [
+        'issues',
+        'issues.issueSpareParts',
+        'issues.issueSpareParts.sparePart',
+      ],
     });
 
     // if no spare parts, error
