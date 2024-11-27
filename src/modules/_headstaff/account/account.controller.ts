@@ -42,6 +42,12 @@ export class AccountController {
     return await this.accountService.getAllAccountsStaffAvaiable(fixDate);
   }
 
+  @ApiBearerAuth()
+  @Get('by-tasks-on-date/:date')
+  async getAllByTasksOnDate(@Param('date') date: string) {
+    return await this.accountService.getAllByTasksOnDate(date);
+  }
+
   // @ApiResponse({
   //   type: AccountResponseDto.AccountGetAll,
   //   status: 200,

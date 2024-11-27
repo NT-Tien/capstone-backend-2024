@@ -664,4 +664,73 @@ export class RequestService extends BaseService<RequestEntity> {
 
     return request;
   }
+
+  async approveRequestToRenewEmpty(
+    id: string,
+    dto: RequestRequestDto.RequestApproveToRenewEmpty,
+    userId: string,
+    isMultiple?: boolean,
+  ) {
+    // update request
+    let request = await this.requestRepository.findOne({
+      where: { id },
+      relations: ['issues', 'issues.typeError'],
+    });
+
+    if (!request) {
+      throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
+    }
+
+    request.is_rennew = true;
+    request.is_warranty = false;
+    request.is_fix = false;
+    request.status = RequestStatus.APPROVED;
+    request.type = RequestType.RENEW;
+    if (isMultiple) {
+      request.is_multiple_types = true;
+    }
+
+    await this.requestRepository.save(request);
+
+    // create issues
+    const dismantleOldDeviceIssue = await this.issueRepository.save({
+      request,
+      fixType: FixItemType.REPLACE,
+      typeError: {
+        id: Renew.dismantleOldDevice,
+      },
+      description: dto.note ?? '',
+    });
+
+    const installNewDeviceIssue = await this.issueRepository.save({
+      request,
+      fixType: FixItemType.REPAIR,
+      typeError: {
+        id: Renew.installNewDevice,
+      },
+      description: dto.note ?? '',
+    });
+
+    // create task
+    request = await this.requestRepository.findOne({
+      where: { id },
+      relations: ['device', 'device.machineModel', 'issues', 'device.area'],
+    });
+
+    await this.taskRepository.save({
+      name: TaskNameGenerator.generateRenew(request),
+      device: request.device,
+      request: request,
+      issues: [dismantleOldDeviceIssue, installNewDeviceIssue],
+      device_static: request.device,
+      operator: 0,
+      status: TaskStatus.AWAITING_FIXER,
+      totalTime: 0,
+      type: TaskType.RENEW,
+      priority: false,
+    });
+
+    return request;
+  }
 }
+

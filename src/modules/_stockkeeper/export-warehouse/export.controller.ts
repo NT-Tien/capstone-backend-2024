@@ -88,4 +88,13 @@ export class ExportWareHouseController {
     ) {
         return await this.exportWareHouseService.adminUpdateStatus( ticketId, isAccept);
     }
+
+    @ApiBearerAuth()
+    @UseGuards(AdminGuard)
+    @Put('export-renew/:ticketId')
+    async exportDeviceForRenewTask(
+        @Param('ticketId') ticketId: UUID
+    ) {
+        return await this.exportWareHouseService.exportDeviceForRenewTask( ticketId);
+    }
 }
