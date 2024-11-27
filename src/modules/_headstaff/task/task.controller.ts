@@ -146,10 +146,12 @@ export class TaskController {
   async assignFixer(
     @Param('id') id: string,
     @Body() body: TaskRequestDto.TaskAssignFixerDto,
+    @Query('should-create-export') shouldCreateExport?: boolean,
   ) {
     return await this.taskService.assignFixer(
       id,
       TaskRequestDto.TaskAssignFixerDto.plainToClass(body),
+      shouldCreateExport
     );
   }
 
@@ -191,5 +193,15 @@ export class TaskController {
   @Put('restore/:id')
   async restore(@Param('id') id: string) {
     return await this.taskService.restore(id);
+  }
+
+  @ApiOperation({
+    summary: "Create export warehouse for task"
+
+  })
+  @ApiBearerAuth()
+  @Put(":id/create-export-warehouse/spare-part")
+  async createExportWarehouseSparePart(@Param('id') id: string) {
+    return await this.taskService.createExportWarehouseSparePart(id);
   }
 }
