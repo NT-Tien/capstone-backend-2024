@@ -21,8 +21,10 @@ import { TypeErrorEntity } from 'src/entities/type-error.entity';
 import TaskNameGenerator from 'src/utils/taskname-generator';
 import { Repository } from 'typeorm';
 import { RequestRequestDto } from './dto/request.dto';
+import { RequestResponseDto } from './dto/response.dto';
 import { ExportWareHouse, exportType, exportStatus } from 'src/entities/export-warehouse.entity';
 import { UUID } from 'typeorm/driver/mongodb/bson.typings';
+import { MachineModelEntity } from 'src/entities/machine-model.entity';
 
 @Injectable()
 export class RequestService extends BaseService<RequestEntity> {
@@ -45,6 +47,8 @@ export class RequestService extends BaseService<RequestEntity> {
     private readonly issueSparePartRepository: Repository<IssueSparePartEntity>,
     @InjectRepository(ExportWareHouse)
     private readonly exportWareHouseRepository: Repository<ExportWareHouse>,
+    @InjectRepository(MachineModelEntity)
+    private readonly machineModelEntityRepository: Repository<MachineModelEntity>,
   ) {
     super(requestRepository);
   }
@@ -746,5 +750,27 @@ export class RequestService extends BaseService<RequestEntity> {
 
     return request;
   }
-}
 
+
+  async RenewStatus(taskID: string)
+  : Promise<RequestRequestDto.RenewStatusResponse> {
+  
+    
+    const ticket = await this.exportWareHouseRepository.findOne({
+      where: { id : taskID },
+      relations: ['device', 'device.machineModel', 'issues', 'device.area'],
+    });
+    
+    const model = await this.machineModelEntityRepository.findOne({
+      where: { id : ticket.detail },
+      relations: ['device', 'device.machineModel', 'issues', 'device.area'],
+    });
+
+    var result= new RequestRequestDto.RenewStatusResponse();
+    result.exportWarehouse = ticket;
+    result.model = model;
+    
+    return result;
+  }
+
+}
