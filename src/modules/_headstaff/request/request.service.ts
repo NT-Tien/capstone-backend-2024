@@ -757,13 +757,11 @@ export class RequestService extends BaseService<RequestEntity> {
   
     
     const ticket = await this.exportWareHouseRepository.findOne({
-      where: { id : taskID },
-      relations: ['device', 'device.machineModel', 'issues', 'device.area'],
+      where: { id : taskID }
     });
     
     const model = await this.machineModelEntityRepository.findOne({
-      where: { id : ticket.detail },
-      relations: ['device', 'device.machineModel', 'issues', 'device.area'],
+      where: { id : ticket.detail }
     });
 
     var result= new RequestRequestDto.RenewStatusResponse();
