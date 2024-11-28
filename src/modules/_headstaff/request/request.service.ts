@@ -742,7 +742,8 @@ export class RequestService extends BaseService<RequestEntity> {
 
     const ticket = new ExportWareHouse();
     ticket.task = newTask;
-    ticket.detail = dto.machineModelId;
+    ticket.reason_delay = dto.machineModelId;
+    ticket.detail = "[]";
     ticket.export_type = exportType.DEVICE;
     ticket.status = exportStatus.WAITING_ADMIN;
 
@@ -754,16 +755,21 @@ export class RequestService extends BaseService<RequestEntity> {
 
   async RenewStatus(taskID: string)
   : Promise<RequestRequestDto.RenewStatusResponse> {
-  
     
-    const ticket = await this.exportWareHouseRepository.findOne({
-      where: { id : taskID }
+    const existedTask = await this.taskRepository.findOne({
+      where: { id: taskID }
     });
-    
-    const model = await this.machineModelEntityRepository.findOne({
-      where: { id : ticket.detail }
-    });
+    if(existedTask == null) return null;
 
+    const ticket = await this.exportWareHouseRepository.findOne({
+      where: { task: { id: taskID } },
+      relations: ['task'],
+    });
+    
+    console.log("ticket nè*--------------------------------------------------; "+ticket)
+    const model = await this.machineModelEntityRepository.findOne({
+      where: { id : ticket.reason_delay }
+    });
     var result= new RequestRequestDto.RenewStatusResponse();
     result.exportWarehouse = ticket;
     result.model = model;
