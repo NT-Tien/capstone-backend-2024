@@ -40,7 +40,7 @@ export class TaskController {
     @Param('page') page: number,
     @Param('limit') limit: number,
     @Param('status') status: TaskStatus,
-    @Query('order') order: number
+    @Query('order') order: number,
   ) {
     return this.taskService.customGetAllTask(page, limit, status, order);
   }
@@ -101,7 +101,7 @@ export class TaskController {
     return await this.taskService.updateTask(
       id,
       TaskRequestDto.TaskUpdateDto.plainToClass(body),
-      user.id
+      user.id,
     );
   }
 
@@ -146,19 +146,20 @@ export class TaskController {
   async assignFixer(
     @Param('id') id: string,
     @Body() body: TaskRequestDto.TaskAssignFixerDto,
-    @Query('should-create-export') shouldCreateExport?: boolean,
+    @Query('shouldCreateExport') shouldCreateExport?: boolean,
   ) {
+    console.log(body, shouldCreateExport);
     return await this.taskService.assignFixer(
       id,
       TaskRequestDto.TaskAssignFixerDto.plainToClass(body),
-      shouldCreateExport
+      shouldCreateExport,
     );
   }
 
   @ApiBearerAuth()
-  @ApiOperation({summary: "Cancel a task"})
+  @ApiOperation({ summary: 'Cancel a task' })
   @Put('cancel/:id')
-  async cancelTask(@Param('id') id: string, @Headers('user') user: any,) {
+  async cancelTask(@Param('id') id: string, @Headers('user') user: any) {
     return await this.taskService.cancelTask(id, user);
   }
 
@@ -196,11 +197,10 @@ export class TaskController {
   }
 
   @ApiOperation({
-    summary: "Create export warehouse for task"
-
+    summary: 'Create export warehouse for task',
   })
   @ApiBearerAuth()
-  @Put(":id/create-export-warehouse/spare-part")
+  @Put(':id/create-export-warehouse/spare-part')
   async createExportWarehouseSparePart(@Param('id') id: string) {
     return await this.taskService.createExportWarehouseSparePart(id);
   }
