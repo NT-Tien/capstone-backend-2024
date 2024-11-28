@@ -288,6 +288,32 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
 
     task.device_renew = renewDevice;
 
+    const machineModelRenew = await this.machineModelRepository.findOne({
+      where: {
+        id: ticket.detail
+      }
+    });
+
+    if (machineModelRenew == null){
+      return false;
+    }
+
+    const deviceRenew = await this.deviceRepository.findOne({
+      where: {
+        machineModel: machineModelRenew,
+        positionX : null,
+        positionY: null
+      }
+    });
+
+    if (deviceRenew == null){
+      return false;
+    }
+
+    ticket.task.device_renew = deviceRenew;
+
+    await this.exportWarehouseRepository.save(ticket);
+
     await this.taskRepository.save(task);
 
     return true;

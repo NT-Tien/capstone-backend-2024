@@ -21,6 +21,8 @@ import { TypeErrorEntity } from 'src/entities/type-error.entity';
 import TaskNameGenerator from 'src/utils/taskname-generator';
 import { Repository } from 'typeorm';
 import { RequestRequestDto } from './dto/request.dto';
+import { ExportWareHouse, exportType, exportStatus } from 'src/entities/export-warehouse.entity';
+import { UUID } from 'typeorm/driver/mongodb/bson.typings';
 
 @Injectable()
 export class RequestService extends BaseService<RequestEntity> {
@@ -41,6 +43,8 @@ export class RequestService extends BaseService<RequestEntity> {
     private readonly sparePartRepository: Repository<SparePartEntity>,
     @InjectRepository(IssueSparePartEntity)
     private readonly issueSparePartRepository: Repository<IssueSparePartEntity>,
+    @InjectRepository(ExportWareHouse)
+    private readonly exportWareHouseRepository: Repository<ExportWareHouse>,
   ) {
     super(requestRepository);
   }
@@ -717,18 +721,28 @@ export class RequestService extends BaseService<RequestEntity> {
       relations: ['device', 'device.machineModel', 'issues', 'device.area'],
     });
 
-    await this.taskRepository.save({
-      name: TaskNameGenerator.generateRenew(request),
-      device: request.device,
-      request: request,
-      issues: [dismantleOldDeviceIssue, installNewDeviceIssue],
-      device_static: request.device,
-      operator: 0,
-      status: TaskStatus.AWAITING_FIXER,
-      totalTime: 0,
-      type: TaskType.RENEW,
-      priority: false,
-    });
+
+    const newTask = new TaskEntity();
+    newTask.name = TaskNameGenerator.generateRenew(request);
+    newTask.device = request.device;
+    newTask.request = request;
+    newTask.issues = [dismantleOldDeviceIssue, installNewDeviceIssue];
+    newTask.device_static = request.device;
+    newTask.operator = 0;
+    newTask.status = TaskStatus.AWAITING_FIXER;
+    newTask.totalTime = 0;
+    newTask.type = TaskType.RENEW;
+    newTask.priority = false;
+    
+    await this.taskRepository.save(newTask);
+
+    const ticket = new ExportWareHouse();
+    ticket.task = newTask;
+    ticket.detail = dto.machineModelId;
+    ticket.export_type = exportType.DEVICE;
+    ticket.status = exportStatus.WAITING_ADMIN;
+
+    await this.exportWareHouseRepository.save(ticket);
 
     return request;
   }

@@ -162,5 +162,11 @@ export namespace RequestRequestDto {
     @IsString()
     @Expose()
     note?: string;
+
+    @ApiPropertyOptional({ description: 'Note for renew (idk)' })
+    @IsOptional()
+    @IsString()
+    @Expose()
+    machineModelId?: string;
   }
 }
