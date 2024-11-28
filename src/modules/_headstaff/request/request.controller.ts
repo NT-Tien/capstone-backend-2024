@@ -24,6 +24,7 @@ import { RequestResponseDto } from './dto/response.dto';
 import { RequestRequestDto } from './dto/request.dto';
 import { HeadStaffGuard } from 'src/modules/auth/guards/headstaff.guard';
 import { RequestStatus } from 'src/entities/request.entity';
+import { UUID } from 'crypto';
 
 @ApiTags('head staff: request')
 @UseGuards(HeadStaffGuard)
@@ -193,4 +194,18 @@ export class RequestController {
       query.isMultiple,
     );
   }
+
+
+  @ApiOperation({
+    summary: 'Get model for empty  renew device',
+    description:
+      'Model and status',
+  })
+  @ApiBearerAuth()
+@Get('/renew-status/:taskId')
+async RenewStatus(
+  @Param('taskId') id: string, // Đổi taskId thành id để khớp
+) {
+  return this.requestService.RenewStatus(id); // Truyền id vào phương thức RenewStatus
+}
 }
