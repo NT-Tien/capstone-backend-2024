@@ -12,6 +12,7 @@ import { AuthModule } from 'src/modules/auth/auth.module';
 import { RequestController } from './request.controller';
 import { RequestService } from './request.service';
 import { ExportWareHouse } from 'src/entities/export-warehouse.entity';
+import { MachineModelEntity } from 'src/entities/machine-model.entity';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { ExportWareHouse } from 'src/entities/export-warehouse.entity';
       SparePartEntity,
       TypeErrorEntity,
       IssueSparePartEntity,
-      ExportWareHouse
+      ExportWareHouse,
+      MachineModelEntity
     ]),
     AuthModule,
     // NotifyModule,
