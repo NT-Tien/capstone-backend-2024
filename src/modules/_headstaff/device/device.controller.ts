@@ -41,6 +41,13 @@ export class DeviceController {
     return await this.deviceService.getAllUnused();
   }
 
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Get all machine models with unused devices"})
+  @Get("/all/status-false")
+  async getAllSatusFalse() {
+    return await this.deviceService.getAllSatusFalse();
+  }
+
   // @ApiResponse({
   //   type: DeviceResponseDto.DeviceGetAll,
   //   status: 200,
