@@ -61,4 +61,12 @@ export class DeviceService extends BaseService<DeviceEntity> {
       ),
     }));
   }
+
+  async getAllSatusFalse() {
+    return this.deviceRepository.find({
+      where: { status: false },
+      relations: ['devices', 'devices.area'],
+    });
+
+  }
 }
