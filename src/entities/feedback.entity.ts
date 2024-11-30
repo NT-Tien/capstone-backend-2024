@@ -9,7 +9,7 @@ import { RequestEntity } from './request.entity';
 })
 export class FeedbackEntity extends BaseEntity {
   @OneToOne(() => RequestEntity, (request) => request.id, {
-    nullable: false,
+    nullable: true,
   })
   @JoinColumn({ name: 'request_id' })
   request: RequestEntity;
