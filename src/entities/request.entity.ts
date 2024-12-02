@@ -1,10 +1,10 @@
 import { BaseEntity } from 'src/common/base/entity.base';
-import { Column, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
-import { DeviceEntity } from './device.entity';
+import { BeforeInsert, Column, Entity, getRepository, ManyToOne, OneToMany } from 'typeorm';
 import { AccountEntity } from './account.entity';
-import { TaskEntity } from './task.entity';
-import { IssueEntity } from './issue.entity';
+import { DeviceEntity } from './device.entity';
 import { FeedbackEntity } from './feedback.entity';
+import { IssueEntity } from './issue.entity';
+import { TaskEntity } from './task.entity';
 
 export enum RequestStatus {
   PENDING = 'PENDING', // use for request renew
@@ -36,6 +36,14 @@ export enum RequestLevel { // only for MAINTENANCE type
   },
 })
 export class RequestEntity extends BaseEntity {
+  @Column({
+    name: "code",
+    type: "text",
+    nullable: false,
+    default: "OLD_CODE",
+  })
+  code: string;
+
   @OneToMany(() => IssueEntity, (issue) => issue.request)
   issues: IssueEntity[];
 
@@ -59,8 +67,8 @@ export class RequestEntity extends BaseEntity {
   })
   requester: AccountEntity;
 
-  @OneToOne(() => FeedbackEntity, (feedback) => feedback.request)
-  feedback?: FeedbackEntity;
+  @OneToMany(() => FeedbackEntity, (feedback) => feedback.request)
+  feedback?: FeedbackEntity[];
 
   @Column({
     name: 'requester_note',

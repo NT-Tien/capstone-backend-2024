@@ -1,21 +1,22 @@
 import { BaseEntity } from 'src/common/base/entity.base';
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
-import { TaskEntity } from './task.entity';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { AccountEntity } from './account.entity';
 import { RequestEntity } from './request.entity';
+
+export enum FeedbackRating {
+  PROBLEM_FIXED = 'PROBLEM_FIXED',
+  PROBLEM_NOT_FIXED = 'PROBLEM_NOT_FIXED',
+}
 
 @Entity({
   name: 'FEEDBACK',
 })
 export class FeedbackEntity extends BaseEntity {
-  @OneToOne(() => RequestEntity, (request) => request.id, {
-    nullable: true,
-  })
-  @JoinColumn({ name: 'request_id' })
+  @ManyToOne(() => RequestEntity, (request) => request.feedback)
   request: RequestEntity;
 
   @ManyToOne(() => AccountEntity, (account) => account.id, {
-    nullable: false,
+    nullable: true,
   })
   requester: AccountEntity;
 
@@ -24,4 +25,10 @@ export class FeedbackEntity extends BaseEntity {
     type: 'text',
   })
   content: string;
+
+  @Column({
+    type: 'text',
+    default: FeedbackRating.PROBLEM_FIXED,
+  })
+  rating: FeedbackRating;
 }

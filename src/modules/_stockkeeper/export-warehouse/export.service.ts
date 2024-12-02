@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, ILike, Repository } from "typeorm";
+import { Between, ILike, Repository } from 'typeorm';
 import {
   exportStatus,
   exportType,
@@ -13,6 +13,9 @@ import { UUID } from 'crypto';
 import { DeviceEntity } from 'src/entities/device.entity';
 import { MachineModelEntity } from 'src/entities/machine-model.entity';
 import { TaskEntity } from 'src/entities/task.entity';
+import { HeadStaffNotificationGateway } from 'src/modules/notifications/gateways/head-staff.gateway';
+import { NotificationType } from 'src/entities/notification.entity';
+import { Accounts } from 'src/common/constants';
 
 @Injectable()
 export class ExportWareHouseService extends BaseService<ExportWareHouse> {
@@ -27,6 +30,8 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
     private readonly machineModelRepository: Repository<MachineModelEntity>,
     @InjectRepository(TaskEntity)
     private readonly taskRepository: Repository<TaskEntity>,
+
+    private readonly headStaffGateway: HeadStaffNotificationGateway,
   ) {
     super(exportWarehouseRepository);
   }
@@ -34,7 +39,9 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
   async getAll(): Promise<ExportWareHouse[]> {
     return this.exportWarehouseRepository.find({
       where: {
-        status: Not(In([exportStatus.WAITING_ADMIN, exportStatus.ADMIN_REJECT])),
+        status: Not(
+          In([exportStatus.WAITING_ADMIN, exportStatus.ADMIN_REJECT]),
+        ),
       },
       relations: [
         'task',
@@ -48,13 +55,13 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
 
   async filterByStaffNameAndCreatedDate(
     staff_name: string,
-    created_date: Date
+    created_date: Date,
   ): Promise<ExportWareHouse[]> {
-    const startOfDay = new Date(created_date); 
+    const startOfDay = new Date(created_date);
     startOfDay.setHours(0, 0, 0, 0);
 
-    const endOfDay = new Date(created_date); 
-    endOfDay.setHours(23, 59, 59, 999); 
+    const endOfDay = new Date(created_date);
+    endOfDay.setHours(23, 59, 59, 999);
     return this.exportWarehouseRepository.find({
       relations: [
         'task',
@@ -122,11 +129,14 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
     });
   }
 
-  async update(id: string, data: any): Promise<ExportWareHouse> {
+  async update(
+    id: string,
+    data: any,
+  ): Promise<ExportWareHouse> {
     // find the entity
     const entity = await this.exportWarehouseRepository.findOne({
       where: { id },
-      relations: ['task', 'task.device_renew'],
+      relations: ['task', 'task.device_renew', 'task.request'],
     });
     // check status is changed
     if (data.status && entity.status !== data.status) {
@@ -200,15 +210,21 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
           entity.status = exportStatus.ACCEPTED;
           await this.exportWarehouseRepository.save(entity);
         }
+
+        this.headStaffGateway.emit(
+          NotificationType.STOCK_ACCEPT_EXPORT_WAREHOUSE,
+        )({
+          senderId: Accounts.STOCKEEPER,
+          taskName: entity.task.name,
+          taskId: entity.task.id,
+          requestId: entity.task.request.id,
+        });
       }
     }
     return super.update(id, data);
   }
 
-  async adminUpdateStatus(
-    ticketId: UUID,
-    isAccept: boolean,
-  ) : Promise<boolean> {
+  async adminUpdateStatus(ticketId: UUID, isAccept: boolean): Promise<boolean> {
     try {
       const ticket = await this.exportWarehouseRepository.findOne({
         where: { id: ticketId },
@@ -216,7 +232,9 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
       if (!ticket) {
         return false;
       }
-      ticket.status = isAccept ? exportStatus.WAITING : exportStatus.ADMIN_REJECT;
+      ticket.status = isAccept
+        ? exportStatus.WAITING
+        : exportStatus.ADMIN_REJECT;
       await this.exportWarehouseRepository.save(ticket);
       console.log(`Ticket with ID ${ticketId} updated successfully`);
       return true;
@@ -241,28 +259,55 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
   }
 
   async exportDeviceForRenewTask(ticketId: UUID): Promise<boolean> {
-    
     const ticket = await this.exportWarehouseRepository.findOne({
       where: {
         id: ticketId,
-      }
+      },
+      relations: [
+        'task'
+      ],
     });
 
-    if (ticket == null){
+    if (ticket == null) {
       return false;
     }
 
     var model = await this.machineModelRepository.findOne({
       where: {
-        id: ticket.detail
+        id: ticket.reason_delay
       }
     });
 
-    if (model == null){
+    if (model == null) {
       return false;
     }
 
     var renewDevice = await this.deviceRepository.findOne({
+      where: {
+        machineModel: model,
+        positionX: null,
+        positionY: null,
+      },
+    });
+
+    if (renewDevice == null) {
+      return false;
+    }
+
+    var task = await this.taskRepository.findOne({
+      where: {
+        id: ticket.task.id,
+      },
+    });
+
+    if (task == null) {
+      return false;
+    }
+
+    task.device_renew = renewDevice;
+
+
+    const deviceRenew = await this.deviceRepository.findOne({
       where: {
         machineModel: model,
         positionX : null,
@@ -270,23 +315,13 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
       }
     });
 
-    if (renewDevice == null){
+    if (deviceRenew == null){
       return false;
     }
 
+    ticket.task.device_renew = deviceRenew;
 
-    var task = await this.taskRepository.findOne({
-      where: {
-        id: ticket.task.id
-      }
-    });
-
-    if (task == null){
-      return false;
-    }
-
-
-    task.device_renew = renewDevice;
+    await this.exportWarehouseRepository.save(ticket);
 
     await this.taskRepository.save(task);
 

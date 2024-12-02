@@ -57,7 +57,7 @@ export class DeviceService extends BaseService<DeviceEntity> {
     return machineModels.map((mm) => ({
       ...mm,
       devices: mm.devices.filter(
-        (d) => !d.positionX && !d.positionY,
+        (d) => !d.positionX && !d.positionY && !d.area,
       ),
     }));
   }

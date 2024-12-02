@@ -9,7 +9,7 @@ class TaskNameGenerator {
     const areaName = request?.device?.area?.name ?? '';
     const randomCharacters = Math.random().toString(36).substring(2, 6);
 
-    return `${date}_BH${no_issues}_${areaName}_${machineModelName}_${randomCharacters}`;
+    return `${date}_BH${no_issues}_${areaName}_${request.code ?? machineModelName}_${randomCharacters}`;
   }
 
   static generateRenew(request: RequestEntity) {

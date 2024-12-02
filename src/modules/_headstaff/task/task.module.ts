@@ -10,6 +10,7 @@ import { TaskEntity } from 'src/entities/task.entity';
 import { AuthModule } from 'src/modules/auth/auth.module';
 import { TaskController } from './task.controller';
 import { TaskService } from './task.service';
+import { Global_NotificationsModule } from 'src/modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { TaskService } from './task.service';
       ExportWareHouse,
     ]),
     AuthModule,
-    // NotifyModule
+    Global_NotificationsModule,
   ],
   controllers: [TaskController],
   providers: [TaskService],

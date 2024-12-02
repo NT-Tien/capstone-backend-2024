@@ -5,18 +5,19 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  IsUUID
+  IsUUID,
 } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
+import { ExportWareHouse } from 'src/entities/export-warehouse.entity';
+import { MachineModelEntity } from 'src/entities/machine-model.entity';
 import { RequestStatus, RequestType } from 'src/entities/request.entity';
 
 export namespace RequestRequestDto {
-
   export class IsMultipleTypesQuery extends BaseDTO {
     @ApiPropertyOptional()
     @IsOptional()
     @Expose()
-    isMultiple?: boolean
+    isMultiple?: boolean;
   }
   export class RequestCreateDto extends BaseDTO {
     @ApiProperty()
@@ -139,6 +140,11 @@ export namespace RequestRequestDto {
     @IsNotEmpty()
     @Expose()
     note: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @Expose()
+    replacement_device_id: string
   }
 
   export class RequestApproveToRenew extends BaseDTO {
@@ -155,12 +161,49 @@ export namespace RequestRequestDto {
     note?: string;
   }
 
-  export class RequestApproveToRenewEmpty extends BaseDTO {
+  
+  export class RenewStatusResponse {
+    @ApiProperty({ example: 'Success' })
+    model: MachineModelEntity;
+    @ApiProperty({ example: 200 })
+    exportWarehouse: ExportWareHouse;
+  }
 
+  export class RequestApproveToRenewEmpty extends BaseDTO {
     @ApiPropertyOptional({ description: 'Note for renew (idk)' })
     @IsOptional()
     @IsString()
     @Expose()
     note?: string;
+
+    @ApiPropertyOptional({ description: 'Note for renew (idk)' })
+    @IsOptional()
+    @IsString()
+    @Expose()
+    machineModelId?: string;
+  }
+
+  export class RequestReject extends BaseDTO {
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    checker_note: string;
+  }
+
+  export class RequestCreateReturnWarrantyTask extends BaseDTO {
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    fixer: string; // account id
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    fixerDate: string; // account id
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    priority: boolean;
   }
 }

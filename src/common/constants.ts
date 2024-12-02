@@ -6,11 +6,11 @@ export const Warranty = {
 };
 
 export const Renew = {
-  dismantleOldDevice: "2dd17dcc-c571-4248-ac8b-3a77ef2a12bc",
-  installNewDevice: "67597aa6-2ee8-40c1-a2ac-b66b06d206e8",
+  dismantleOldDevice: '2dd17dcc-c571-4248-ac8b-3a77ef2a12bc',
+  installNewDevice: '67597aa6-2ee8-40c1-a2ac-b66b06d206e8',
 };
 
-
 export const Accounts = {
-  HEAD_MAINTENANCE: "ea051f12-3563-476d-a397-f52e77560d96",
-}
+  HEAD_MAINTENANCE: 'ea051f12-3563-476d-a397-f52e77560d96',
+  STOCKEEPER: 'eb488f7f-4c1b-4032-b5c0-8f543968bbf8',
+};

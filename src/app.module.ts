@@ -5,6 +5,11 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { redisStore } from 'cache-manager-redis-yet';
+import { AppController } from 'src/app.controller';
+import { AreaEntity } from 'src/entities/area.entity';
+import { RequestEntity } from 'src/entities/request.entity';
+import { TaskEntity } from 'src/entities/task.entity';
+import { Global_NotificationsModule } from 'src/modules/notifications/notifications.module';
 import { AllExceptionsFilter } from './common/filters/catch.filter';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { TYPE_ORM_CONFIG } from './config/orm.config';
@@ -23,11 +28,6 @@ import { PredictiveModule } from './modules/predictive-maintenance/predictive.mo
 import { FileLocalModule } from './modules/upload-local/file.module';
 import { ImageModule } from './modules/upload/image/image.module';
 import { VideoModule } from './modules/upload/video/video.module';
-import { Global_NotificationsModule } from 'src/modules/notifications/notifications.module';
-import { AppController } from 'src/app.controller';
-import { TaskEntity } from 'src/entities/task.entity';
-import { RequestEntity } from 'src/entities/request.entity';
-import { AreaEntity } from 'src/entities/area.entity';
 
 @Module({
   imports: [
@@ -55,8 +55,6 @@ import { AreaEntity } from 'src/entities/area.entity';
     HandelDataModule,
     Global_NotificationsModule,
     TypeOrmModule.forFeature([TaskEntity, RequestEntity, AreaEntity]),
-    
-    // NotifyModule,
   ],
   controllers: [AppController],
   providers: [

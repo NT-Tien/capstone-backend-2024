@@ -18,6 +18,8 @@ import {
   exportType,
   ExportWareHouse,
 } from 'src/entities/export-warehouse.entity';
+import { StaffNotificationGateway } from 'src/modules/notifications/gateways/staff.gateway';
+import { NotificationType } from 'src/entities/notification.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -36,6 +38,8 @@ export class TaskService extends BaseService<TaskEntity> {
     private readonly issueRepository: Repository<IssueEntity>,
     @InjectRepository(ExportWareHouse)
     private readonly exportWareHouseRepository: Repository<ExportWareHouse>,
+
+    private readonly staffGateway: StaffNotificationGateway,
   ) {
     super(taskRepository);
   }
@@ -285,7 +289,15 @@ export class TaskService extends BaseService<TaskEntity> {
       await this.exportWareHouseRepository.save(exportWarehouse);
     }
 
-    return await this.taskRepository.save(task);
+    
+    const returnValue = await this.taskRepository.save(task);
+    this.staffGateway.emit(NotificationType.HM_ASSIGN_TASK)({
+      receiverId: fixer.id,
+      taskType: returnValue.type,
+      fixerDate: returnValue.fixerDate,
+      taskId: returnValue.id,
+    })
+    return returnValue
   }
 
   async completeTask(id: string) {

@@ -8,11 +8,11 @@ export const TYPE_ORM_CONFIG = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  synchronize: process.env.ENV === 'main' ? true : false,
+  synchronize: process.env.ENV === 'main',
   entities: ['dist/**/*.entity.js'],
   subscribers: ['dist/**/*.subscriber.js'],
   ssl: process.env.ENV === 'production' ? { ca: process.env.DB_SSL_CA } : false,
   extra: {
-    options: '-c timezone=Asia/Ho_Chi_Minh'
-  }
+    options: '-c timezone=Asia/Ho_Chi_Minh',
+  },
 };

@@ -1,6 +1,6 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsEnum, IsOptional } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
 import { NotificationPriority } from 'src/entities/notification.entity';
 
 export namespace NotificationsRequestDto {
@@ -17,5 +17,12 @@ export namespace NotificationsRequestDto {
     @IsOptional()
     @Expose()
     hasSeen?: string;
+  }
+
+  export class TestNotification {
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    sendTo: string;
   }
 }

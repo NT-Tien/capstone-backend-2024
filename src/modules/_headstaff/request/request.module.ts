@@ -11,6 +11,9 @@ import { TypeErrorEntity } from 'src/entities/type-error.entity';
 import { AuthModule } from 'src/modules/auth/auth.module';
 import { RequestController } from './request.controller';
 import { RequestService } from './request.service';
+import { Global_NotificationsModule } from 'src/modules/notifications/notifications.module';
+import { ExportWareHouse } from 'src/entities/export-warehouse.entity';
+import { MachineModelEntity } from 'src/entities/machine-model.entity';
 
 @Module({
   imports: [
@@ -22,9 +25,12 @@ import { RequestService } from './request.service';
       TaskEntity,
       SparePartEntity,
       TypeErrorEntity,
-      IssueSparePartEntity
+      IssueSparePartEntity,
+      ExportWareHouse,
+      MachineModelEntity
     ]),
     AuthModule,
+    Global_NotificationsModule,
     // NotifyModule,
   ],
   controllers: [RequestController],
