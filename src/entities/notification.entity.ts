@@ -11,9 +11,18 @@ export enum NotificationPriority {
 export enum NotificationType {
   SYS_TEST = 'SYS_TEST',
   HD_CREATE_REQUEST = 'HD_CREATE_REQUEST',
-  HM_APPROVE_REQUEST = 'HM_APPROVE_REQUEST',
+  HD_FEEDBACK_BAD = 'HD_FEEDBACK_BAD',
+  HM_APPROVE_REQUEST_FIX = 'HM_APPROVE_REQUEST_FIX',
+  HM_APPROVE_REQUEST_WARRANTY = 'HM_APPROVE_REQUEST_WARRANTY',
+  HM_APPROVE_REQUEST_RENEW = 'HM_APPROVE_REQUEST_RENEW',
   HM_REJECT_REQUEST = 'HM_REJECT_REQUEST',
   HM_ASSIGN_TASK = 'HM_ASSIGN_TASK',
+  HM_CREATE_RETURN_WARRANTY_TASK = 'HM_CREATE_RETURN_WARRANTY_TASK',
+  STOCK_ACCEPT_EXPORT_WAREHOUSE = 'STOCK_ACCEPT_EXPORT_WAREHOUSE',
+  S_START_TASK = 'S_START_TASK',
+  S_COMPLETE_TASK_WITH_FAILED_ISSUE = 'S_COMPLETE_TASK_WITH_FAILED_ISSUE',
+  S_COMPLETE_ALL_TASKS = 'S_COMPLETE_ALL_TASKS',
+  S_COMPLETE_WARRANTY_SEND = 'S_COMPLETE_WARRANTY_SEND',
 }
 
 @Entity({ name: 'NOTIFICATION', orderBy: { createdAt: 'DESC' } })
@@ -27,6 +36,13 @@ export class NotificationEntity extends BaseEntity {
     nullable: false,
   })
   receiver: AccountEntity;
+
+  @Column({
+    name: 'subject',
+    type: 'text',
+    nullable: true,
+  })
+  subject?: string;
 
   @Column({
     name: 'title',

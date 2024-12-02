@@ -5,7 +5,7 @@ import {
   NotificationPriority,
   NotificationType,
 } from 'src/entities/notification.entity';
-import { NotificationsRequestDto } from 'src/modules/_headstaff/notifications/dto/request.dto';
+import { NotificationsRequestDto } from 'src/modules/notifications/dto/Request.dto';
 import { In, IsNull, Repository } from 'typeorm';
 
 @Injectable()
@@ -43,11 +43,21 @@ export class NotificationsService {
     return builder.getMany();
   }
 
+  async getUnseenCount(userId: string) {
+    return this.notificationsRepository.count({
+      where: {
+        receiver: {
+          id: userId,
+        },
+        seenDate: IsNull(),
+      },
+    });
+  }
+
   async seenOne(id: string, userId: string) {
     const notification = await this.notificationsRepository.findOne({
       where: {
         id,
-        seenDate: IsNull(),
         receiver: {
           id: userId,
         },
@@ -55,14 +65,14 @@ export class NotificationsService {
       relations: ['receiver'],
     });
 
-    return this.notificationsRepository.update(
-      {
-        id: notification?.id,
-      },
-      {
-        seenDate: new Date(),
-      },
-    );
+    if (!notification) {
+      return null;
+    }
+
+    return this.notificationsRepository.save({
+      ...notification,
+      seenDate: new Date(),
+    });
   }
 
   async seenAll(userId: string) {
@@ -88,14 +98,14 @@ export class NotificationsService {
     );
   }
 
-  async sendTestNotification(userId: string) {
-    return this.notificationsRepository.save({
+  async sendTestNotification(sendTo: string) {
+    return await this.notificationsRepository.save({
       title: 'Test notification',
       body: 'This is a test notification',
       priority: NotificationPriority.LOW,
       type: NotificationType.SYS_TEST,
       receiver: {
-        id: userId,
+        id: sendTo,
       },
       data: {
         content: 'Test content',

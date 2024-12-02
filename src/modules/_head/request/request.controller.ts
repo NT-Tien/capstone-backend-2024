@@ -8,11 +8,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiTags
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 // import { CacheTTL } from '@nestjs/cache-manager';
 import { UUID } from 'crypto';
 import { HeadGuard } from 'src/modules/auth/guards/head.guard';
@@ -36,8 +32,8 @@ export class RequestController {
   }
 
   @ApiOperation({
-    summary: "Get a request by ID",
-    description: "Returns a request by a given ID and a user"
+    summary: 'Get a request by ID',
+    description: 'Returns a request by a given ID and a user',
   })
   @ApiBearerAuth()
   @Get('/:id')
@@ -46,8 +42,9 @@ export class RequestController {
   }
 
   @ApiOperation({
-    summary: "Create a request",
-    description: 'Create a request with the given information. Notifies HEAD_MAINTENANCE',
+    summary: 'Create a request',
+    description:
+      'Create a request with the given information. Notifies HEAD_MAINTENANCE',
   })
   @ApiBearerAuth()
   @Post()
@@ -62,8 +59,9 @@ export class RequestController {
   }
 
   @ApiOperation({
-    summary: "Cancels a request",
-    description: "Cancels a request by a given ID. Request must be PENDING and NOT SEEN"
+    summary: 'Cancels a request',
+    description:
+      'Cancels a request by a given ID. Request must be PENDING and NOT SEEN',
   })
   @ApiBearerAuth()
   @Put('/:id/cancel')
@@ -72,8 +70,10 @@ export class RequestController {
   }
 
   @ApiOperation({
-    summary: "Close a request by giving feedback",
-    description: "Close a request by giving feedback. Request must be HEAD_CONFIRM"
+    summary: 'Close a request by giving feedback',
+    description:
+      'Close a request by giving feedback. Request must be HEAD_CONFIRM',
+    deprecated: true,
   })
   @ApiBearerAuth()
   @Put('/:id/close')
@@ -83,5 +83,20 @@ export class RequestController {
     @Headers('user') user: any,
   ) {
     return this.requestService.addFeedback(id, body, user.id);
+  }
+
+  @ApiOperation({
+    summary: 'Feedback a request',
+    description:
+      'If feedback is positive, request will be closed. If feedback is negative, request will be HM_VERIFY',
+  })
+  @ApiBearerAuth()
+  @Put('/:id/feedback')
+  async feedback(
+    @Param('id') id: UUID,
+    @Body() body: RequestRequestDto.RequestFeedbackDto,
+    @Headers('user') user: any,
+  ) {
+    return this.requestService.feedback(id, body, user.id);
   }
 }

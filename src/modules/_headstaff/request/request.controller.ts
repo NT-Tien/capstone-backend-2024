@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Headers,
   Param,
@@ -9,8 +8,7 @@ import {
   Post,
   Put,
   Query,
-  Res,
-  UseGuards,
+  UseGuards
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -19,11 +17,11 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 // import { CacheTTL } from '@nestjs/cache-manager';
-import { RequestService } from './request.service';
-import { RequestResponseDto } from './dto/response.dto';
-import { RequestRequestDto } from './dto/request.dto';
-import { HeadStaffGuard } from 'src/modules/auth/guards/headstaff.guard';
 import { RequestStatus } from 'src/entities/request.entity';
+import { HeadStaffGuard } from 'src/modules/auth/guards/headstaff.guard';
+import { RequestRequestDto } from './dto/request.dto';
+import { RequestResponseDto } from './dto/response.dto';
+import { RequestService } from './request.service';
 
 @ApiTags('head staff: request')
 @UseGuards(HeadStaffGuard)
@@ -117,7 +115,12 @@ export class RequestController {
     @Body() dto: RequestRequestDto.RequestApproveToFix,
     @Headers('user') user: any,
   ) {
-    return this.requestService.approveRequestToFix(id, dto, user.id, query.isMultiple);
+    return this.requestService.approveRequestToFix(
+      id,
+      dto,
+      user.id,
+      query.isMultiple,
+    );
   }
 
   @ApiOperation({
@@ -141,14 +144,13 @@ export class RequestController {
   }
 
   @ApiOperation({
-    summary: "Request Warranty failed",
-    description: "Sets all warranty issues in request to failed and tasks to cancelled"
+    summary: 'Request Warranty failed',
+    description:
+      'Sets all warranty issues in request to failed and tasks to cancelled',
   })
   @ApiBearerAuth()
   @Put('/warranty-failed/:id')
-  async warrantyFailed(
-    @Param('id') id: string,
-  ) {
+  async warrantyFailed(@Param('id') id: string) {
     return this.requestService.warrantyFailed(id);
   }
 
@@ -175,8 +177,7 @@ export class RequestController {
 
   @ApiOperation({
     summary: 'Approve request - renew device',
-    description:
-      'Create renew task with empty renew device ',
+    description: 'Create renew task with empty renew device ',
   })
   @ApiBearerAuth()
   @Put('/approve-renew-empty-device/:id')
@@ -192,5 +193,43 @@ export class RequestController {
       user.id,
       query.isMultiple,
     );
+  }
+
+  @ApiOperation({
+    summary: 'Reject a request (close)',
+    description: 'Close a request, notify HEAD_DEPARTMENT',
+  })
+  @ApiBearerAuth()
+  @Put('/reject/:id')
+  async rejectRequest(
+    @Param('id') id: string,
+    @Headers('user') user: any,
+    @Body() dto: RequestRequestDto.RequestReject,
+  ) {
+    return this.requestService.rejectRequest(id, dto);
+  }
+
+  @ApiOperation({
+    summary: 'Seen a request',
+    description: 'Seen a request',
+  })
+  @ApiBearerAuth()
+  @Put('/seen/:id')
+  async seenRequest(@Param('id') id: string, @Headers('user') user: any) {
+    return this.requestService.seenRequest(id, user.id);
+  }
+
+  @ApiOperation({
+    summary: "Create and assign a return-warranty task",
+    description: "Create a return-warranty task, assign to given user. Notify staff",
+  })
+  @ApiBearerAuth()
+  @Post('/create-return-warranty/:id')
+  async createReturnWarrantyTask(
+    @Param('id') id: string,
+    @Headers('user') user: any,
+    @Body() dto: RequestRequestDto.RequestCreateReturnWarrantyTask,
+  ) {
+    return this.requestService.createReturnWarrantyTask(id, user.id, dto);
   }
 }

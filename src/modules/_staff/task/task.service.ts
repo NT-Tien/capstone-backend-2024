@@ -1,19 +1,21 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from 'src/common/base/service.base';
 import { AccountEntity, Role } from 'src/entities/account.entity';
-import { IssueSparePartEntity } from 'src/entities/issue-spare-part.entity';
-import { IssueEntity, IssueStatus } from 'src/entities/issue.entity';
-import { TaskEntity, TaskStatus } from 'src/entities/task.entity';
-import { Between, In, Repository } from 'typeorm';
-import { TaskRequestDto } from './dto/request.dto';
-import { SparePartEntity } from 'src/entities/spare-part.entity';
-import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
-import { Warranty } from 'src/common/constants';
 import {
   exportStatus,
   ExportWareHouse,
 } from 'src/entities/export-warehouse.entity';
+import { IssueSparePartEntity } from 'src/entities/issue-spare-part.entity';
+import { IssueEntity, IssueStatus } from 'src/entities/issue.entity';
+import { NotificationType } from 'src/entities/notification.entity';
+import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
+import { SparePartEntity } from 'src/entities/spare-part.entity';
+import { TaskEntity, TaskStatus } from 'src/entities/task.entity';
+import { HeadStaffNotificationGateway } from 'src/modules/notifications/gateways/head-staff.gateway';
+import { HeadNotificationGateway } from 'src/modules/notifications/gateways/head.gateway';
+import { Between, Repository } from 'typeorm';
+import { TaskRequestDto } from './dto/request.dto';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -32,6 +34,9 @@ export class TaskService extends BaseService<TaskEntity> {
     private readonly exportWareHouseRepository: Repository<ExportWareHouse>,
     @InjectRepository(RequestEntity)
     private readonly requestRepository: Repository<RequestEntity>,
+
+    private readonly headStaffGateway: HeadStaffNotificationGateway,
+    private readonly headGateway: HeadNotificationGateway,
   ) {
     super(taskRepository);
   }
@@ -148,7 +153,10 @@ export class TaskService extends BaseService<TaskEntity> {
       .leftJoinAndSelect('issueSpareParts.sparePart', 'sparePart')
       .leftJoinAndSelect('task.device_renew', 'device_renew')
       .leftJoinAndSelect('device_renew.machineModel', 'renewMachineModel')
-      .leftJoinAndSelect('task.export_warehouse_ticket', 'export_warehouse_ticket')
+      .leftJoinAndSelect(
+        'task.export_warehouse_ticket',
+        'export_warehouse_ticket',
+      )
       .where('task.id = :taskId', { taskId })
       .andWhere('fixer.id = :id', { id: userId })
       .getOne();
@@ -220,7 +228,7 @@ export class TaskService extends BaseService<TaskEntity> {
       },
     });
 
-    if(export_warehouse && export_warehouse.status != exportStatus.ACCEPTED){
+    if (export_warehouse && export_warehouse.status != exportStatus.ACCEPTED) {
       throw new HttpException('Export ticket is not avaiable', 400);
     }
 
@@ -261,7 +269,12 @@ export class TaskService extends BaseService<TaskEntity> {
       ],
     });
 
-    // this.headStaffGateway.emit_task_started(response, userId);
+    this.headStaffGateway.emit(NotificationType.S_START_TASK)({
+      senderId: response.fixer.id,
+      taskName: response.name,
+      fixerName: response.fixer.username,
+      requestId: response.request.id,
+    });
 
     return save;
   }
@@ -273,31 +286,74 @@ export class TaskService extends BaseService<TaskEntity> {
     data: TaskRequestDto.TaskConfirmDoneDto,
     autoClose?: string,
   ) {
-    console.log('1st check');
-    let task = await this.taskRepository.findOne({
-      where: { id: taskId },
-      relations: ['fixer', 'issues'],
+    const task = await this.taskRepository.findOne({
+      where: { id: taskId, fixer: { id: userId } },
+      relations: [
+        'fixer',
+        'issues',
+        'issues.typeError',
+        'issues.issueSpareParts',
+        'issues.issueSpareParts.sparePart',
+        'request',
+      ],
     });
-    console.log('2nd check');
-    if (!task || task.fixer.id !== userId) {
+    if (!task) {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
     }
 
-    if (autoClose === 'true') {
-      task.status = TaskStatus.COMPLETED;
-    } else {
-      task.status = TaskStatus.HEAD_STAFF_CONFIRM;
+    const hasFailedIssue = !!task.issues.find(
+      (i) => i.status === IssueStatus.FAILED,
+    );
+
+    // if has failed issue, return to head staff for confirmation. else, go to head department to check
+    const result = await this.taskRepository.save({
+      ...task,
+      status: hasFailedIssue
+        ? TaskStatus.HEAD_STAFF_CONFIRM
+        : TaskStatus.COMPLETED,
+      last_issues_data: JSON.stringify(task.issues),
+      completedAt: new Date(),
+      ...data,
+    });
+
+    const request = await this.requestRepository.findOne({
+      where: {
+        id: task.request.id,
+      },
+      relations: ['tasks', 'requester'],
+    });
+
+    if (hasFailedIssue) {
+      // notify head maintenance and stop there
+      this.headStaffGateway.emit(
+        NotificationType.S_COMPLETE_TASK_WITH_FAILED_ISSUE,
+      )({
+        senderId: userId,
+        taskId: taskId,
+        requestId: request.id,
+      });
+
+      return;
     }
 
-    task.completedAt = new Date();
-    console.log('3rd check');
-    // let issues = await this.issueRepository.find({ where: { task: {
-    //   id:
-    // } } });
-    console.log('4th check');
-    task.last_issues_data = JSON.stringify(task.issues);
-    console.log('5th check');
-    return await this.taskRepository.save({ ...task, ...data });
+    // else if all tasks are completed in request then notify head_department to feedback request & set request status to HEAD_CONFIRM
+
+    const isAllTasksCompleted = request.tasks.every(
+      (t) => t.status === TaskStatus.COMPLETED,
+    );
+    if (isAllTasksCompleted) {
+      this.headGateway.emit(NotificationType.S_COMPLETE_ALL_TASKS)({
+        senderId: userId,
+        requestId: request.id,
+        receiverId: request.requester.id,
+      });
+      await this.requestRepository.save({
+        ...request,
+        status: RequestStatus.HEAD_CONFIRM,
+      });
+    }
+
+    return result;
   }
 
   async completeTaskWarranty(taskId: string, userId: string) {
@@ -325,27 +381,16 @@ export class TaskService extends BaseService<TaskEntity> {
     task.last_issues_data = JSON.stringify(task.issues);
     task.completedAt = new Date();
 
-    return await this.taskRepository.save(task);
+    const result = await this.taskRepository.save(task);
 
-    // update next task fixer
-    // const nextTask = task.request.tasks.find((t) =>
-    //   t.issues.find(
-    //     (i) =>
-    //       i.typeError.id === Warranty.receive ||
-    //       i.typeError.id === Warranty.assemble,
-    //   ),
-    // );
+    // notify head_maintenance
+    this.headStaffGateway.emit(NotificationType.S_COMPLETE_WARRANTY_SEND)({
+      senderId: userId,
+      requestCode: task.request.code,
+      requestId: task.request.id,
+    });
 
-    // if (!nextTask) {
-    //   throw new HttpException('Next task not found', HttpStatus.NOT_FOUND);
-    // }
-
-    // nextTask.fixer = task.fixer;
-    // nextTask.status = TaskStatus.ASSIGNED;
-
-    // await this.taskRepository.save(nextTask);
-
-    // return task;
+    return result;
   }
 
   async staffRequestCanncelTask(userId: string, taskId: string) {

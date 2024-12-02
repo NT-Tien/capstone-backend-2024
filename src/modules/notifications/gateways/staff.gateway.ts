@@ -1,4 +1,5 @@
 import { UseGuards } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -6,11 +7,18 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { format } from 'date-fns';
 import { Server, Socket } from 'socket.io';
-import { Role } from 'src/entities/account.entity';
-import { TaskEntity } from 'src/entities/task.entity';
-import { AccountService } from 'src/modules/_headstaff/account/account.service';
+import { Accounts } from 'src/common/constants';
+import { AccountEntity, Role } from 'src/entities/account.entity';
+import {
+  NotificationEntity,
+  NotificationPriority,
+  NotificationType,
+} from 'src/entities/notification.entity';
+import { TaskType } from 'src/entities/task.entity';
 import { StaffGuard } from 'src/modules/auth/guards/staff.guard';
+import { Repository } from 'typeorm';
 
 @UseGuards(StaffGuard)
 @WebSocketGateway({
@@ -25,7 +33,10 @@ export class StaffNotificationGateway
   @WebSocketServer()
   server: Server;
 
-  constructor() {}
+  constructor(
+    @InjectRepository(NotificationEntity)
+    private readonly notificationsRepository: Repository<NotificationEntity>,
+  ) {}
 
   handleConnection(client: Socket, ...args: any[]) {
     const ip =
@@ -52,5 +63,75 @@ export class StaffNotificationGateway
 
   emit_init() {
     this.server.emit('dev', 'first handshake');
+  }
+
+  async emit_test(receiver: string) {
+    const notification = await this.notificationsRepository.save({
+      type: NotificationType.HD_CREATE_REQUEST,
+      title: 'Test Notification',
+      body: `${new Date().toISOString()}`,
+      priority: NotificationPriority.MEDIUM,
+      receiver: {
+        id: receiver,
+      },
+      data: null,
+    });
+    this.server.emit(receiver, notification);
+  }
+
+  private notificationTemplates = {
+    [NotificationType.HM_ASSIGN_TASK]: async (props: {
+      receiverId: string;
+      taskType: TaskType;
+      fixerDate: Date;
+      taskId: string;
+    }) => {
+      const notification = await this.notificationsRepository.save({
+        type: NotificationType.HM_ASSIGN_TASK,
+        sender: {
+          id: Accounts.HEAD_MAINTENANCE,
+        },
+        title: `[${format(props.fixerDate, 'dd/MM/yyyy')}] Tác vụ mới`,
+        body: `Bạn đã được giao một tác vụ ${props.taskType === TaskType.FIX ? ' sửa chứa' : props.taskType === TaskType.RENEW ? ' thay máy' : ' bảo hành'} vào ${format(props.fixerDate, 'dd/MM/yyyy')}`,
+        priority: NotificationPriority.MEDIUM,
+        subject: props.taskId,
+        receiver: {
+          id: props.receiverId,
+        },
+        data: {
+          id: props.taskId,
+        },
+      });
+      this.server.emit(props.receiverId, notification);
+    },
+    [NotificationType.HM_CREATE_RETURN_WARRANTY_TASK]: async (props: {
+      receiverId: string;
+      fixerDate: Date;
+      taskType: TaskType;
+      taskId: string;
+      senderId: string;
+    }) => {
+      const notification = await this.notificationsRepository.save({
+        type: NotificationType.HM_CREATE_RETURN_WARRANTY_TASK,
+        sender: {
+          id: props.senderId,
+        },
+        title: `[${format(props.fixerDate, 'dd/MM/yyyy')}] Tác vụ mới`,
+        body: `Bạn đã được giao một tác vụ ${props.taskType === TaskType.FIX ? ' sửa chứa' : props.taskType === TaskType.RENEW ? ' thay máy' : ' bảo hành'} vào ${format(props.fixerDate, 'dd/MM/yyyy')}`,
+        priority: NotificationPriority.MEDIUM,
+        subject: props.taskId,
+        receiver: {
+          id: props.receiverId,
+        },
+        data: {
+          id: props.taskId,
+        },
+      });
+      this.server.emit(props.receiverId, notification);
+    },
+  };
+
+  emit(type: NotificationType) {
+    return this.notificationTemplates[type];
   }
 }

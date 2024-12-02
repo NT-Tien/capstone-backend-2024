@@ -10,6 +10,7 @@ import {
   IssueEntity,
   IssueStatus,
 } from 'src/entities/issue.entity';
+import { NotificationType } from 'src/entities/notification.entity';
 import {
   RequestEntity,
   RequestStatus,
@@ -18,8 +19,10 @@ import {
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { TaskEntity, TaskStatus, TaskType } from 'src/entities/task.entity';
 import { TypeErrorEntity } from 'src/entities/type-error.entity';
+import { HeadNotificationGateway } from 'src/modules/notifications/gateways/head.gateway';
+import { StaffNotificationGateway } from 'src/modules/notifications/gateways/staff.gateway';
 import TaskNameGenerator from 'src/utils/taskname-generator';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { RequestRequestDto } from './dto/request.dto';
 
 @Injectable()
@@ -41,6 +44,9 @@ export class RequestService extends BaseService<RequestEntity> {
     private readonly sparePartRepository: Repository<SparePartEntity>,
     @InjectRepository(IssueSparePartEntity)
     private readonly issueSparePartRepository: Repository<IssueSparePartEntity>,
+
+    private readonly headGateway: HeadNotificationGateway,
+    private readonly staffGateway: StaffNotificationGateway,
   ) {
     super(requestRepository);
   }
@@ -318,6 +324,11 @@ export class RequestService extends BaseService<RequestEntity> {
       request.is_multiple_types = true;
     }
 
+    this.headGateway.emit(NotificationType.HM_APPROVE_REQUEST_FIX)({
+      receiverId: request.requester.id,
+      requestId: id,
+    });
+
     return await this.requestRepository.save(request);
   }
 
@@ -334,6 +345,23 @@ export class RequestService extends BaseService<RequestEntity> {
 
     if (!request) {
       throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
+    }
+
+    let replacementDevice: DeviceEntity | null
+    
+    if (!!dto.replacement_device_id) {
+      replacementDevice = await this.deviceRepository.findOne({
+        where: {
+          id: dto.replacement_device_id,
+          positionX: IsNull(),
+          positionY: IsNull(),
+          area: IsNull(),
+        },
+      });
+
+      if(!replacementDevice) {
+        throw new HttpException('Replacement device not found', HttpStatus.NOT_FOUND);
+      }
     }
 
     const disassembleIssue = await this.issueRepository.save({
@@ -354,23 +382,23 @@ export class RequestService extends BaseService<RequestEntity> {
       description: dto.note,
     });
 
-    const receiveIssue = await this.issueRepository.save({
-      fixType: FixItemType.REPAIR,
-      request: request,
-      typeError: {
-        id: Warranty.receive,
-      },
-      description: dto.note,
-    });
+    // const receiveIssue = await this.issueRepository.save({
+    //   fixType: FixItemType.REPAIR,
+    //   request: request,
+    //   typeError: {
+    //     id: Warranty.receive,
+    //   },
+    //   description: dto.note,
+    // });
 
-    const assembleIssue = await this.issueRepository.save({
-      fixType: FixItemType.REPAIR,
-      request: request,
-      typeError: {
-        id: Warranty.assemble,
-      },
-      description: dto.note,
-    });
+    // const assembleIssue = await this.issueRepository.save({
+    //   fixType: FixItemType.REPAIR,
+    //   request: request,
+    //   typeError: {
+    //     id: Warranty.assemble,
+    //   },
+    //   description: dto.note,
+    // });
 
     request = await this.requestRepository.findOne({
       where: { id },
@@ -437,18 +465,18 @@ export class RequestService extends BaseService<RequestEntity> {
     }
 
     await this.taskRepository.save([
-      {
-        request,
-        issues: [receiveIssue, assembleIssue],
-        operator: 0,
-        device: request.device,
-        totalTime: 60,
-        priority: false,
-        status: TaskStatus.AWAITING_FIXER,
-        device_static: request.device,
-        name: TaskNameGenerator.generateWarranty(request),
-        type: TaskType.WARRANTY_SEND,
-      },
+      // {
+      //   request,
+      //   issues: [receiveIssue, assembleIssue],
+      //   operator: 0,
+      //   device: request.device,
+      //   totalTime: 60,
+      //   priority: false,
+      //   status: TaskStatus.AWAITING_FIXER,
+      //   device_static: request.device,
+      //   name: TaskNameGenerator.generateWarranty(request),
+      //   type: TaskType.WARRANTY_SEND,
+      // },
       {
         request,
         issues: [disassembleIssue, sendIssue],
@@ -466,6 +494,11 @@ export class RequestService extends BaseService<RequestEntity> {
     ]);
 
     // this.headGateway.emit_request_approved_warranty(request, userId);
+    this.headGateway.emit(NotificationType.HM_APPROVE_REQUEST_WARRANTY)({
+      receiverId: request.requester.id,
+      requestId: id,
+      sendWarrantyDate: targetDate,
+    });
 
     await this.requestRepository.save(request);
 
@@ -513,79 +546,6 @@ export class RequestService extends BaseService<RequestEntity> {
     return await this.requestRepository.save(request);
   }
 
-  // async approveRequestToRenew(
-  //   id: string,
-  //   dto: RequestRequestDto.RequestApproveToRenew,
-  //   userId: string,
-  // ) {
-  //   // update request
-  //   let request = await this.requestRepository.findOne({
-  //     where: { id },
-  //     relations: ['issues', 'issues.typeError'],
-  //   });
-
-  //   if (!request) {
-  //     throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
-  //   }
-
-  //   const newDevice = await this.deviceRepository.findOne({
-  //     where: {
-  //       id: dto.deviceId,
-  //     },
-  //   });
-
-  //   if (!newDevice) {
-  //     throw new HttpException('New device not found', HttpStatus.NOT_FOUND);
-  //   }
-
-  //   request.is_rennew = true;
-  //   request.status = RequestStatus.APPROVED;
-  //   request.type = RequestType.RENEW;
-
-  //   await this.requestRepository.save(request);
-
-  //   // create issues
-  //   const dismantleOldDeviceIssue = await this.issueRepository.save({
-  //     request,
-  //     fixType: FixItemType.REPLACE,
-  //     typeError: {
-  //       id: Renew.dismantleOldDevice,
-  //     },
-  //     description: dto.note ?? '',
-  //   });
-
-  //   const installNewDeviceIssue = await this.issueRepository.save({
-  //     request,
-  //     fixType: FixItemType.REPLACE,
-  //     typeError: {
-  //       id: Renew.installNewDevice,
-  //     },
-  //     description: dto.note ?? '',
-  //   });
-
-  //   // create task
-
-  //   request = await this.requestRepository.findOne({
-  //     where: { id },
-  //     relations: ['device', 'device.machineModel', 'issues', 'device.area'],
-  //   });
-
-  //   const task = await this.taskRepository.save({
-  //     name: TaskNameGenerator.generateRenew(request),
-  //     device: request.device,
-  //     device_renew: newDevice,
-  //     request: request,
-  //     issues: [dismantleOldDeviceIssue, installNewDeviceIssue],
-  //     operator: 0,
-  //     status: TaskStatus.AWAITING_FIXER,
-  //     totalTime: 0,
-  //     type: TaskType.RENEW,
-  //     priority: false,
-  //   });
-
-  //   return request;
-  // }
-
   async approveRequestToRenew(
     id: string,
     dto: RequestRequestDto.RequestApproveToRenew,
@@ -595,7 +555,7 @@ export class RequestService extends BaseService<RequestEntity> {
     // update request
     let request = await this.requestRepository.findOne({
       where: { id },
-      relations: ['issues', 'issues.typeError'],
+      relations: ['issues', 'issues.typeError', 'requester'],
     });
 
     if (!request) {
@@ -660,6 +620,11 @@ export class RequestService extends BaseService<RequestEntity> {
       totalTime: 0,
       type: TaskType.RENEW,
       priority: false,
+    });
+
+    this.headGateway.emit(NotificationType.HM_APPROVE_REQUEST_RENEW)({
+      receiverId: request.requester.id,
+      requestId: id,
     });
 
     return request;
@@ -732,5 +697,104 @@ export class RequestService extends BaseService<RequestEntity> {
 
     return request;
   }
-}
 
+  async rejectRequest(id: string, dto: RequestRequestDto.RequestReject) {
+    const request = await this.requestRepository.findOne({
+      where: { id },
+      relations: ['requester'],
+    });
+
+    if (!request) {
+      throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
+    }
+
+    request.status = RequestStatus.REJECTED;
+    request.checker_note = dto.checker_note;
+
+    this.headGateway.emit(NotificationType.HM_REJECT_REQUEST)({
+      receiverId: request.requester.id,
+      checker_note: dto.checker_note,
+      requestId: id,
+    });
+
+    return await this.requestRepository.save(request);
+  }
+
+  async seenRequest(id: string, userId: string) {
+    const request = await this.requestRepository.findOne({
+      where: { id },
+    });
+
+    if (!request) {
+      throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
+    }
+
+    return await this.requestRepository.save({
+      ...request,
+      is_seen: true,
+      checker: {
+        id: userId,
+      },
+      checker_date: new Date().toISOString(),
+    });
+  }
+
+  async createReturnWarrantyTask(
+    id: string,
+    userId: string,
+    dto: RequestRequestDto.RequestCreateReturnWarrantyTask,
+  ) {
+    const request = await this.requestRepository.findOne({
+      where: {
+        id,
+      },
+      relations: ['issues', 'device', 'device.machineModel', 'device.area'],
+    });
+
+    const receiveIssue = await this.issueRepository.save({
+      fixType: FixItemType.REPAIR,
+      request: request,
+      typeError: {
+        id: Warranty.receive,
+      },
+      description: request.requester_note,
+    });
+
+    const assembleIssue = await this.issueRepository.save({
+      fixType: FixItemType.REPAIR,
+      request: request,
+      typeError: {
+        id: Warranty.assemble,
+      },
+      description: request.requester_note,
+    });
+
+    const task = await this.taskRepository.save({
+      request,
+      issues: [receiveIssue, assembleIssue],
+      operator: 0,
+      device: request.device,
+      totalTime: 60,
+      priority: dto.priority ?? false,
+      status: TaskStatus.ASSIGNED,
+      device_static: request.device,
+      name: TaskNameGenerator.generateWarranty(request),
+      type: TaskType.WARRANTY_SEND,
+      fixer: {
+        id: dto.fixer,
+      },
+      fixerDate: dto.fixerDate,
+    });
+
+    // notify staff
+    this.staffGateway.emit(NotificationType.HM_CREATE_RETURN_WARRANTY_TASK)({
+      receiverId: task.fixer.id,
+      fixerDate: task.fixerDate,
+      taskType: task.type,
+      taskId: task.id,
+      senderId: userId,
+    });
+
+    return task;
+  }
+}

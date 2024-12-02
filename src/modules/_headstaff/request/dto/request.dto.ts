@@ -5,18 +5,17 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  IsUUID
+  IsUUID,
 } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
 import { RequestStatus, RequestType } from 'src/entities/request.entity';
 
 export namespace RequestRequestDto {
-
   export class IsMultipleTypesQuery extends BaseDTO {
     @ApiPropertyOptional()
     @IsOptional()
     @Expose()
-    isMultiple?: boolean
+    isMultiple?: boolean;
   }
   export class RequestCreateDto extends BaseDTO {
     @ApiProperty()
@@ -139,6 +138,11 @@ export namespace RequestRequestDto {
     @IsNotEmpty()
     @Expose()
     note: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @Expose()
+    replacement_device_id: string
   }
 
   export class RequestApproveToRenew extends BaseDTO {
@@ -156,11 +160,34 @@ export namespace RequestRequestDto {
   }
 
   export class RequestApproveToRenewEmpty extends BaseDTO {
-
     @ApiPropertyOptional({ description: 'Note for renew (idk)' })
     @IsOptional()
     @IsString()
     @Expose()
     note?: string;
+  }
+
+  export class RequestReject extends BaseDTO {
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    checker_note: string;
+  }
+
+  export class RequestCreateReturnWarrantyTask extends BaseDTO {
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    fixer: string; // account id
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    fixerDate: string; // account id
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    priority: boolean;
   }
 }

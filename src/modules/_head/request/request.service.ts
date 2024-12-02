@@ -6,15 +6,20 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { format } from 'date-fns';
 import { BaseService } from 'src/common/base/service.base';
 import { AccountEntity, Role } from 'src/entities/account.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
-import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
-import { Repository } from 'typeorm';
-import { FeedbackEntity } from '../../../entities/feedback.entity';
-import { RequestRequestDto } from './dto/request.dto';
-import { HeadStaffNotificationGateway } from 'src/modules/notifications/gateways/head-staff.gateway';
 import { NotificationType } from 'src/entities/notification.entity';
+import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
+import { HeadStaffNotificationGateway } from 'src/modules/notifications/gateways/head-staff.gateway';
+import { Repository } from 'typeorm';
+import {
+  FeedbackEntity,
+  FeedbackRating,
+} from '../../../entities/feedback.entity';
+import { RequestRequestDto } from './dto/request.dto';
+import { SequenceService } from 'src/common/sequence/sequence.service';
 
 @Injectable()
 export class RequestService extends BaseService<RequestEntity> {
@@ -27,7 +32,8 @@ export class RequestService extends BaseService<RequestEntity> {
     private readonly deviceRepository: Repository<DeviceEntity>,
     @InjectRepository(FeedbackEntity)
     private readonly feedbackRepository: Repository<FeedbackEntity>,
-    private readonly notify_HeadStaff: HeadStaffNotificationGateway,
+    private readonly headstaffGateway: HeadStaffNotificationGateway,
+    private readonly sequenceService: SequenceService,
   ) {
     super(requestRepository);
   }
@@ -123,13 +129,23 @@ export class RequestService extends BaseService<RequestEntity> {
       throw new HttpException('Request is duplicate', HttpStatus.BAD_REQUEST);
     }
 
+    const currentValue = await this.sequenceService.request_get();
+
     // create new request
     const newRequest = await this.requestRepository.save({
       requester: account,
       device: device,
       old_device: device,
       requester_note: data.requester_note,
+      code:
+        format(new Date(), 'ddMMyy') +
+        '_' +
+        device.area.name +
+        '_' +
+        String(currentValue.value).padStart(4, '0'),
     });
+
+    await this.sequenceService.request_increment();
 
     const result = await this.requestRepository.findOne({
       where: {
@@ -139,7 +155,7 @@ export class RequestService extends BaseService<RequestEntity> {
     });
 
     // notify head staff
-    await this.notify_HeadStaff.emit(NotificationType.HD_CREATE_REQUEST)({
+    await this.headstaffGateway.emit(NotificationType.HD_CREATE_REQUEST)({
       requester: account,
       areaName: device.area.name,
       requestId: newRequest.id,
@@ -186,6 +202,53 @@ export class RequestService extends BaseService<RequestEntity> {
       request: result1,
       feedback: result2,
     };
+  }
+
+  async feedback(
+    id: string,
+    dto: RequestRequestDto.RequestFeedbackDto,
+    userId: string,
+  ) {
+    const request = await this.requestRepository.findOne({
+      where: {
+        id,
+        requester: {
+          id: userId,
+        },
+        status: RequestStatus.HEAD_CONFIRM,
+      },
+      relations: ['requester'],
+    });
+
+    if (!request) {
+      throw new HttpException('Request is not valid', HttpStatus.BAD_REQUEST);
+    }
+
+    switch (dto.rating) {
+      case FeedbackRating.PROBLEM_FIXED: {
+        request.status = RequestStatus.CLOSED;
+        await this.requestRepository.save(request);
+        break;
+      }
+
+      case FeedbackRating.PROBLEM_NOT_FIXED: {
+        request.status = RequestStatus.HM_VERIFY;
+        await this.requestRepository.save(request);
+        this.headstaffGateway.emit(NotificationType.HD_FEEDBACK_BAD)({
+          requestId: id,
+          senderId: userId,
+        });
+      }
+    }
+
+    await this.feedbackRepository.save({
+      request,
+      requester: request.requester,
+      rating: dto.rating,
+      content: dto.content,
+    });
+
+    return request;
   }
 
   async cancelRequest(requestId: string, userId: string) {
