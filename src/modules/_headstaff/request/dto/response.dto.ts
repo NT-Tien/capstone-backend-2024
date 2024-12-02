@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ExportWareHouse } from 'src/entities/export-warehouse.entity';
+import { MachineModelEntity } from 'src/entities/machine-model.entity';
 
 export namespace RequestResponseDto {
   export class RequestGetAll {
@@ -122,4 +124,5 @@ export namespace RequestResponseDto {
     @ApiProperty({ example: 200 })
     statusCode: number;
   }
+
 }

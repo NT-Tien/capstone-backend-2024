@@ -263,6 +263,9 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
       where: {
         id: ticketId,
       },
+      relations: [
+        'task'
+      ],
     });
 
     if (ticket == null) {
@@ -271,8 +274,8 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
 
     var model = await this.machineModelRepository.findOne({
       where: {
-        id: ticket.detail,
-      },
+        id: ticket.reason_delay
+      }
     });
 
     if (model == null) {
@@ -302,6 +305,23 @@ export class ExportWareHouseService extends BaseService<ExportWareHouse> {
     }
 
     task.device_renew = renewDevice;
+
+
+    const deviceRenew = await this.deviceRepository.findOne({
+      where: {
+        machineModel: model,
+        positionX : null,
+        positionY: null
+      }
+    });
+
+    if (deviceRenew == null){
+      return false;
+    }
+
+    ticket.task.device_renew = deviceRenew;
+
+    await this.exportWarehouseRepository.save(ticket);
 
     await this.taskRepository.save(task);
 

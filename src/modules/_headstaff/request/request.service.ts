@@ -24,6 +24,10 @@ import { StaffNotificationGateway } from 'src/modules/notifications/gateways/sta
 import TaskNameGenerator from 'src/utils/taskname-generator';
 import { IsNull, Repository } from 'typeorm';
 import { RequestRequestDto } from './dto/request.dto';
+import { RequestResponseDto } from './dto/response.dto';
+import { ExportWareHouse, exportType, exportStatus } from 'src/entities/export-warehouse.entity';
+import { UUID } from 'typeorm/driver/mongodb/bson.typings';
+import { MachineModelEntity } from 'src/entities/machine-model.entity';
 
 @Injectable()
 export class RequestService extends BaseService<RequestEntity> {
@@ -44,6 +48,10 @@ export class RequestService extends BaseService<RequestEntity> {
     private readonly sparePartRepository: Repository<SparePartEntity>,
     @InjectRepository(IssueSparePartEntity)
     private readonly issueSparePartRepository: Repository<IssueSparePartEntity>,
+    @InjectRepository(ExportWareHouse)
+    private readonly exportWareHouseRepository: Repository<ExportWareHouse>,
+    @InjectRepository(MachineModelEntity)
+    private readonly machineModelEntityRepository: Repository<MachineModelEntity>,
 
     private readonly headGateway: HeadNotificationGateway,
     private readonly staffGateway: StaffNotificationGateway,
@@ -682,20 +690,56 @@ export class RequestService extends BaseService<RequestEntity> {
       relations: ['device', 'device.machineModel', 'issues', 'device.area'],
     });
 
-    await this.taskRepository.save({
-      name: TaskNameGenerator.generateRenew(request),
-      device: request.device,
-      request: request,
-      issues: [dismantleOldDeviceIssue, installNewDeviceIssue],
-      device_static: request.device,
-      operator: 0,
-      status: TaskStatus.AWAITING_FIXER,
-      totalTime: 0,
-      type: TaskType.RENEW,
-      priority: false,
-    });
+
+    const newTask = new TaskEntity();
+    newTask.name = TaskNameGenerator.generateRenew(request);
+    newTask.device = request.device;
+    newTask.request = request;
+    newTask.issues = [dismantleOldDeviceIssue, installNewDeviceIssue];
+    newTask.device_static = request.device;
+    newTask.operator = 0;
+    newTask.status = TaskStatus.AWAITING_FIXER;
+    newTask.totalTime = 0;
+    newTask.type = TaskType.RENEW;
+    newTask.priority = false;
+    
+    await this.taskRepository.save(newTask);
+
+    const ticket = new ExportWareHouse();
+    ticket.task = newTask;
+    ticket.reason_delay = dto.machineModelId;
+    ticket.detail = "[]";
+    ticket.export_type = exportType.DEVICE;
+    ticket.status = exportStatus.WAITING_ADMIN;
+
+    await this.exportWareHouseRepository.save(ticket);
 
     return request;
+  }
+
+
+  async RenewStatus(taskID: string)
+  : Promise<RequestRequestDto.RenewStatusResponse> {
+    
+    const existedTask = await this.taskRepository.findOne({
+      where: { id: taskID }
+    });
+    if(existedTask == null) return null;
+
+    const ticket = await this.exportWareHouseRepository.findOne({
+      where: { task: { id: taskID } },
+      relations: ['task'],
+    });
+    
+    console.log("ticket nè*--------------------------------------------------; "+ticket)
+    const model = await this.machineModelEntityRepository.findOne({
+      where: { id : ticket.reason_delay }
+    });
+    var result= new RequestRequestDto.RenewStatusResponse();
+    result.exportWarehouse = ticket;
+    result.model = model;
+    
+    return result;
   }
 
   async rejectRequest(id: string, dto: RequestRequestDto.RequestReject) {

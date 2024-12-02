@@ -8,7 +8,7 @@ import {
   Post,
   Put,
   Query,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -22,6 +22,7 @@ import { HeadStaffGuard } from 'src/modules/auth/guards/headstaff.guard';
 import { RequestRequestDto } from './dto/request.dto';
 import { RequestResponseDto } from './dto/response.dto';
 import { RequestService } from './request.service';
+import { UUID } from 'crypto';
 
 @ApiTags('head staff: request')
 @UseGuards(HeadStaffGuard)
@@ -196,6 +197,18 @@ export class RequestController {
   }
 
   @ApiOperation({
+    summary: 'Get model for empty  renew device',
+    description: 'Model and status',
+  })
+  @ApiBearerAuth()
+  @Get('/renew-status/:taskId')
+  async RenewStatus(
+    @Param('taskId') id: string, // Đổi taskId thành id để khớp
+  ) {
+    return this.requestService.RenewStatus(id); // Truyền id vào phương thức RenewStatus
+  }
+
+  @ApiOperation({
     summary: 'Reject a request (close)',
     description: 'Close a request, notify HEAD_DEPARTMENT',
   })
@@ -220,8 +233,9 @@ export class RequestController {
   }
 
   @ApiOperation({
-    summary: "Create and assign a return-warranty task",
-    description: "Create a return-warranty task, assign to given user. Notify staff",
+    summary: 'Create and assign a return-warranty task',
+    description:
+      'Create a return-warranty task, assign to given user. Notify staff',
   })
   @ApiBearerAuth()
   @Post('/create-return-warranty/:id')

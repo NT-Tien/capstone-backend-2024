@@ -8,6 +8,8 @@ import {
   IsUUID,
 } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
+import { ExportWareHouse } from 'src/entities/export-warehouse.entity';
+import { MachineModelEntity } from 'src/entities/machine-model.entity';
 import { RequestStatus, RequestType } from 'src/entities/request.entity';
 
 export namespace RequestRequestDto {
@@ -159,12 +161,26 @@ export namespace RequestRequestDto {
     note?: string;
   }
 
+  
+  export class RenewStatusResponse {
+    @ApiProperty({ example: 'Success' })
+    model: MachineModelEntity;
+    @ApiProperty({ example: 200 })
+    exportWarehouse: ExportWareHouse;
+  }
+
   export class RequestApproveToRenewEmpty extends BaseDTO {
     @ApiPropertyOptional({ description: 'Note for renew (idk)' })
     @IsOptional()
     @IsString()
     @Expose()
     note?: string;
+
+    @ApiPropertyOptional({ description: 'Note for renew (idk)' })
+    @IsOptional()
+    @IsString()
+    @Expose()
+    machineModelId?: string;
   }
 
   export class RequestReject extends BaseDTO {
