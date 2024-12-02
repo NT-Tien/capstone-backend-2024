@@ -70,4 +70,10 @@ export class DeviceEntity extends BaseEntity {
     nullable: true,
   })
   status: boolean;
+
+  @Column({
+    name: 'warranty_term',
+    nullable: true,
+  })
+  warrantyTerm: Date;
 }
