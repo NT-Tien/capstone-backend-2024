@@ -76,4 +76,74 @@ export class MachineModelEntity extends BaseEntity {
     nullable: true,
   })
   image?: string;
+
+  @Column({
+    name: 'needle-type',
+    type: 'text',
+    nullable: true,
+  })
+  needleType?: string;
+
+  @Column({
+    name: 'speed',
+    type: 'text',
+    nullable: true,
+  })
+  speed?: string;
+
+  @Column({
+    name: 'power',
+    type: 'text',
+    nullable: true,
+  })
+  power?: string;
+
+  @Column({
+    name: 'stitch',
+    type: 'text',
+    nullable: true,
+  })
+  stitch?: string;
+
+  @Column({
+    name: 'presser',
+    type: 'text',
+    nullable: true,
+  })
+  presser?: string;
+
+  @Column({
+    name: 'lubrication',
+    type: 'text',
+    nullable: true,
+  })
+  lubrication?: string;
+
+  @Column({
+    name: 'voltage',
+    type: 'text',
+    nullable: true,
+  })
+  voltage?: string;
+
+  @Column({
+    name: 'fabric',
+    type: 'text',
+    nullable: true,
+  })
+  fabric?: string;
+
+  @Column({
+    name: 'features',
+    type: 'text',
+    nullable: true,
+  })
+  features?: string;
+
+  @Column({
+    name: 'size',
+    type: 'text',
+    nullable: true,
+  })
+  size?: string;
 }
