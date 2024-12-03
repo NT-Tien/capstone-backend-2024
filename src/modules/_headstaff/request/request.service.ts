@@ -25,7 +25,11 @@ import TaskNameGenerator from 'src/utils/taskname-generator';
 import { IsNull, Repository } from 'typeorm';
 import { RequestRequestDto } from './dto/request.dto';
 import { RequestResponseDto } from './dto/response.dto';
-import { ExportWareHouse, exportType, exportStatus } from 'src/entities/export-warehouse.entity';
+import {
+  ExportWareHouse,
+  exportType,
+  exportStatus,
+} from 'src/entities/export-warehouse.entity';
 import { UUID } from 'typeorm/driver/mongodb/bson.typings';
 import { MachineModelEntity } from 'src/entities/machine-model.entity';
 
@@ -355,21 +359,49 @@ export class RequestService extends BaseService<RequestEntity> {
       throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
     }
 
-    let replacementDevice: DeviceEntity | null
-    
-    if (!!dto.replacement_device_id) {
-      replacementDevice = await this.deviceRepository.findOne({
+    let replacementDevice: DeviceEntity | null;
+    let installReplacementIssue: IssueEntity | null;
+
+    if (!!dto.replacement_machineModel_id) {
+      const machineModel = await this.machineModelEntityRepository.findOne({
         where: {
-          id: dto.replacement_device_id,
-          positionX: IsNull(),
-          positionY: IsNull(),
-          area: IsNull(),
+          id: dto.replacement_machineModel_id,
         },
+        relations: ['devices', 'devices.area'],
       });
 
-      if(!replacementDevice) {
-        throw new HttpException('Replacement device not found', HttpStatus.NOT_FOUND);
+      if (!machineModel) {
+        throw new HttpException(
+          'Machine model not found',
+          HttpStatus.NOT_FOUND,
+        );
       }
+
+      replacementDevice = machineModel.devices.find(
+        (d) =>
+          d.positionX === null &&
+          d.positionY === null &&
+          d.area === null &&
+          d.status === false,
+      );
+
+      if (!replacementDevice) {
+        throw new HttpException('Device not found', HttpStatus.NOT_FOUND);
+      }
+
+      installReplacementIssue = await this.issueRepository.save({
+        fixType: FixItemType.REPLACE,
+        request: request,
+        typeError: {
+          id: Warranty.install_replacement,
+        },
+        description: machineModel.name,
+      });
+
+      await this.deviceRepository.save({
+        ...replacementDevice,
+        status: true,
+      });
     }
 
     const disassembleIssue = await this.issueRepository.save({
@@ -465,6 +497,7 @@ export class RequestService extends BaseService<RequestEntity> {
 
     request.status = RequestStatus.APPROVED;
     request.type = RequestType.WARRANTY;
+    request.is_replacement_device = !!replacementDevice;
     request.is_fix = false;
     request.is_rennew = false;
     request.is_warranty = true;
@@ -472,34 +505,29 @@ export class RequestService extends BaseService<RequestEntity> {
       request.is_multiple_types = true;
     }
 
-    await this.taskRepository.save([
-      // {
-      //   request,
-      //   issues: [receiveIssue, assembleIssue],
-      //   operator: 0,
-      //   device: request.device,
-      //   totalTime: 60,
-      //   priority: false,
-      //   status: TaskStatus.AWAITING_FIXER,
-      //   device_static: request.device,
-      //   name: TaskNameGenerator.generateWarranty(request),
-      //   type: TaskType.WARRANTY_SEND,
-      // },
-      {
-        request,
-        issues: [disassembleIssue, sendIssue],
-        operator: 0,
-        device: request.device,
-        totalTime: 60,
-        priority: false,
-        status: TaskStatus.ASSIGNED,
-        device_static: request.device,
-        name: TaskNameGenerator.generateWarranty(request),
-        fixer: randomAccount,
-        fixerDate: targetDate,
-        type: TaskType.WARRANTY_RECEIVE,
-      },
-    ]);
+    const task = await this.taskRepository.save({
+      request,
+      issues: [disassembleIssue, installReplacementIssue, sendIssue],
+      operator: 0,
+      device: request.device,
+      device_renew: replacementDevice ?? undefined,
+      totalTime: 60,
+      priority: false,
+      status: TaskStatus.ASSIGNED,
+      device_static: request.device,
+      name: TaskNameGenerator.generateWarranty(request),
+      fixer: randomAccount,
+      fixerDate: targetDate,
+      type: TaskType.WARRANTY_RECEIVE,
+    });
+
+    // create export warehouse
+    const exportWarehouse = new ExportWareHouse();
+    exportWarehouse.task = task;
+    exportWarehouse.export_type = exportType.DEVICE;
+    exportWarehouse.detail = task.device_renew.id;
+    exportWarehouse.status = exportStatus.WAITING;
+    await this.exportWareHouseRepository.save(exportWarehouse);
 
     // this.headGateway.emit_request_approved_warranty(request, userId);
     this.headGateway.emit(NotificationType.HM_APPROVE_REQUEST_WARRANTY)({
@@ -613,10 +641,16 @@ export class RequestService extends BaseService<RequestEntity> {
     // create task
     request = await this.requestRepository.findOne({
       where: { id },
-      relations: ['device', 'device.machineModel', 'issues', 'device.area'],
+      relations: [
+        'device',
+        'device.machineModel',
+        'issues',
+        'device.area',
+        'requester',
+      ],
     });
 
-    await this.taskRepository.save({
+    const task = await this.taskRepository.save({
       name: TaskNameGenerator.generateRenew(request),
       device: request.device,
       device_renew: newDevice,
@@ -690,7 +724,6 @@ export class RequestService extends BaseService<RequestEntity> {
       relations: ['device', 'device.machineModel', 'issues', 'device.area'],
     });
 
-
     const newTask = new TaskEntity();
     newTask.name = TaskNameGenerator.generateRenew(request);
     newTask.device = request.device;
@@ -702,13 +735,13 @@ export class RequestService extends BaseService<RequestEntity> {
     newTask.totalTime = 0;
     newTask.type = TaskType.RENEW;
     newTask.priority = false;
-    
+
     await this.taskRepository.save(newTask);
 
     const ticket = new ExportWareHouse();
     ticket.task = newTask;
     ticket.reason_delay = dto.machineModelId;
-    ticket.detail = "[]";
+    ticket.detail = '[]';
     ticket.export_type = exportType.DEVICE;
     ticket.status = exportStatus.WAITING_ADMIN;
 
@@ -717,28 +750,29 @@ export class RequestService extends BaseService<RequestEntity> {
     return request;
   }
 
-
-  async RenewStatus(taskID: string)
-  : Promise<RequestRequestDto.RenewStatusResponse> {
-    
+  async RenewStatus(
+    taskID: string,
+  ): Promise<RequestRequestDto.RenewStatusResponse> {
     const existedTask = await this.taskRepository.findOne({
-      where: { id: taskID }
+      where: { id: taskID },
     });
-    if(existedTask == null) return null;
+    if (existedTask == null) return null;
 
     const ticket = await this.exportWareHouseRepository.findOne({
       where: { task: { id: taskID } },
       relations: ['task'],
     });
-    
-    console.log("ticket nè*--------------------------------------------------; "+ticket)
+
+    console.log(
+      'ticket nè*--------------------------------------------------; ' + ticket,
+    );
     const model = await this.machineModelEntityRepository.findOne({
-      where: { id : ticket.reason_delay }
+      where: { id: ticket.reason_delay },
     });
-    var result= new RequestRequestDto.RenewStatusResponse();
+    var result = new RequestRequestDto.RenewStatusResponse();
     result.exportWarehouse = ticket;
     result.model = model;
-    
+
     return result;
   }
 
@@ -795,6 +829,19 @@ export class RequestService extends BaseService<RequestEntity> {
       relations: ['issues', 'device', 'device.machineModel', 'device.area'],
     });
 
+    let dismantleReplacementIssue: IssueEntity | null;
+
+    if (request.is_replacement_device) {
+      dismantleReplacementIssue = await this.issueRepository.save({
+        fixType: FixItemType.REPLACE,
+        request: request,
+        typeError: {
+          id: Warranty.dismantle_replacement,
+        },
+        description: request.requester_note,
+      });
+    }
+
     const receiveIssue = await this.issueRepository.save({
       fixType: FixItemType.REPAIR,
       request: request,
@@ -815,7 +862,7 @@ export class RequestService extends BaseService<RequestEntity> {
 
     const task = await this.taskRepository.save({
       request,
-      issues: [receiveIssue, assembleIssue],
+      issues: [receiveIssue, dismantleReplacementIssue, assembleIssue],
       operator: 0,
       device: request.device,
       totalTime: 60,

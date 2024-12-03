@@ -144,7 +144,7 @@ export namespace RequestRequestDto {
     @ApiPropertyOptional()
     @IsOptional()
     @Expose()
-    replacement_device_id: string
+    replacement_machineModel_id: string
   }
 
   export class RequestApproveToRenew extends BaseDTO {

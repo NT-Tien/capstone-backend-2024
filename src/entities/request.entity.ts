@@ -159,6 +159,13 @@ export class RequestEntity extends BaseEntity {
     default: false,
   })
   is_rennew: boolean;
+
+  @Column({
+    name: "is_replacement_device",
+    type: "boolean",
+    default: false
+  })
+  is_replacement_device: boolean;
 }
 
 export class RequestUtil {
