@@ -17,6 +17,11 @@ export enum IssueStatus {
   CANCELLED = 'CANCELLED',
 }
 
+export class history_issue_note {
+  note: string
+  time: Date
+}
+
 @Entity({
   name: 'ISSUE',
 })
@@ -123,6 +128,14 @@ export class IssueEntity extends BaseEntity {
     type: "jsonb",
     nullable: true
   })
-  warranty_info?: any // any[]
+  warranty_info?: any // cách này field này dùng để lưu trong thi trong đơn biên nhận thì bắt user nhập vào, nếu nhập vào thì lưu vào đây, nếu không thì không lưu
+
+  @Column({
+    name: "warranty_history_note",
+    type: "jsonb",
+    nullable: true
+  })
+  warranty_history_note?: history_issue_note[] // cách này field này dùng để lưu trong thi trong đơn biên nhận thì bắt user nhập vào, nếu nhập vào thì lưu vào đây, nếu không thì không lưu
+
   
 }
