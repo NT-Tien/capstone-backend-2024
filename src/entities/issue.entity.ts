@@ -115,5 +115,14 @@ export class IssueEntity extends BaseEntity {
     type: "jsonb",
     nullable: true
   })
-  taskHistory?: any
+  taskHistory?: any // any[]
+
+
+  @Column({
+    name: "warranty_info",
+    type: "jsonb",
+    nullable: true
+  })
+  warranty_info?: any // any[]
+  
 }
