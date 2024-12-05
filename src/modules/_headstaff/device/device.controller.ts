@@ -87,13 +87,13 @@ export class DeviceController {
     return await this.deviceService.getHistoryRequest(id);
   }
 
-  @ApiBearerAuth()
-  @ApiOperation({
-    summary: 'define key position',
-    description:
-      'Get key position of area, return true / false',
+  @ApiResponse({
+    type: Boolean,
+    status: 200,
+    description: 'Get one Device',
   })
-  @Post('/:areaId/:positionX/:positionY')
+  @ApiBearerAuth()
+  @Get('checkKey/:areaId/:positionX/:positionY')
   async checkKeyPosition
   (@Param('areaId') areaId: string,
   @Param('positionX') positionX: string,
