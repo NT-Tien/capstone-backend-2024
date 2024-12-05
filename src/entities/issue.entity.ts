@@ -135,7 +135,7 @@ export class IssueEntity extends BaseEntity {
     type: "jsonb",
     nullable: true
   })
-  warranty_history_note?: history_issue_note[] // lưu vào field này theo dạng array các object {note: string, time: Date} để lưu lịch sử note của issue
+  warranty_history_note?: history_issue_note[] // cách này field này dùng để lưu trong thi trong đơn biên nhận thì bắt user nhập vào, nếu nhập vào thì lưu vào đây, nếu không thì không lưu
 
   
 }
