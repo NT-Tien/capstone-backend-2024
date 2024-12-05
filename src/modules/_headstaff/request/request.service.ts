@@ -383,9 +383,9 @@ export class RequestService extends BaseService<RequestEntity> {
       replacementDevice = machineModel.devices.find(
         (d) =>
           d.positionX === null &&
-          d.positionY === null
+          d.positionY === null &&
           // d.area === null &&
-          // d.status === false,
+          d.status === false,
       );
 
       console.log(replacementDevice);
