@@ -33,6 +33,13 @@ export class AreaEntity extends BaseEntity {
   })
   height: number;
 
+  @Column({
+    name: 'key-position',
+    type: 'text',
+    nullable: true,
+  })
+  keyPosition?: string;
+
   @OneToMany(() => DeviceEntity, (device) => device.area)
   devices: DeviceEntity[];
 }
