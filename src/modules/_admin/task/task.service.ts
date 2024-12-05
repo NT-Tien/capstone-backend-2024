@@ -400,6 +400,22 @@ export class TaskService extends BaseService<TaskEntity> {
           confirmReceipt: false,
         })
         .getCount(),
+        'uninstall-already': await query
+        .andWhere('task.status = :status', {
+          status: TaskStatus.COMPLETED,
+        })
+        .andWhere('task.confirmReceipt = :confirmReceipt', {
+          confirmReceipt: false,
+        })
+        .getCount(),
+        'install-already': await query
+        .andWhere('task.status = :status', {
+          status: TaskStatus.COMPLETED,
+        })
+        .andWhere('task.confirmReceipt = :confirmReceipt', {
+          confirmReceipt: false,
+        })
+        .getCount(),
     };
   }
 }
