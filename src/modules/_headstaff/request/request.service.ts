@@ -361,7 +361,7 @@ export class RequestService extends BaseService<RequestEntity> {
 
     let replacementDevice: DeviceEntity | null;
     let installReplacementIssue: IssueEntity | null;
-
+    
     if (!!dto.replacement_machineModel_id) {
       const machineModel = await this.machineModelEntityRepository.findOne({
         where: {
@@ -369,6 +369,9 @@ export class RequestService extends BaseService<RequestEntity> {
         },
         relations: ['devices', 'devices.area'],
       });
+
+      console.log(machineModel.devices);
+      
 
       if (!machineModel) {
         throw new HttpException(
@@ -380,394 +383,389 @@ export class RequestService extends BaseService<RequestEntity> {
       replacementDevice = machineModel.devices.find(
         (d) =>
           d.positionX === null &&
-          d.positionY === null &&
-          d.area === null &&
-          d.status === false,
+          d.positionY === null
+          // d.area === null &&
+          // d.status === false,
       );
 
-      console.log('replacementDevice', replacementDevice);
+      console.log(replacementDevice);
+      
+      if (!replacementDevice) {
+        throw new HttpException('Device not found', HttpStatus.NOT_FOUND);
+      }
 
+      installReplacementIssue = await this.issueRepository.save({
+        fixType: FixItemType.REPLACE,
+        request: request,
+        typeError: {
+          id: Warranty.install_replacement,
+        },
+        description: machineModel.name,
+      });
 
-      //   if (!replacementDevice) {
-      //     throw new HttpException('Device not found', HttpStatus.NOT_FOUND);
-      //   }
-
-      //   installReplacementIssue = await this.issueRepository.save({
-      //     fixType: FixItemType.REPLACE,
-      //     request: request,
-      //     typeError: {
-      //       id: Warranty.install_replacement,
-      //     },
-      //     description: machineModel.name,
-      //   });
-
-      //   await this.deviceRepository.save({
-      //     ...replacementDevice,
-      //     status: true,
-      //   });
-      // }
-
-      // const disassembleIssue = await this.issueRepository.save({
-      //   fixType: FixItemType.REPAIR,
-      //   request: request,
-      //   typeError: {
-      //     id: Warranty.disassemble,
-      //   },
-      //   description: dto.note,
-      // });
-
-      // const sendIssue = await this.issueRepository.save({
-      //   fixType: FixItemType.REPAIR,
-      //   request: request,
-      //   typeError: {
-      //     id: Warranty.send,
-      //   },
-      //   description: dto.note,
-      // });
-
-      // // const receiveIssue = await this.issueRepository.save({
-      // //   fixType: FixItemType.REPAIR,
-      // //   request: request,
-      // //   typeError: {
-      // //     id: Warranty.receive,
-      // //   },
-      // //   description: dto.note,
-      // // });
-
-      // // const assembleIssue = await this.issueRepository.save({
-      // //   fixType: FixItemType.REPAIR,
-      // //   request: request,
-      // //   typeError: {
-      // //     id: Warranty.assemble,
-      // //   },
-      // //   description: dto.note,
-      // // });
-
-      // request = await this.requestRepository.findOne({
-      //   where: { id },
-      //   relations: [
-      //     'device',
-      //     'device.area',
-      //     'device.machineModel',
-      //     'requester',
-      //     'issues',
-      //   ],
-      // });
-
-      // const targetDate = new Date();
-      // if (targetDate.getHours() >= 15) {
-      //   targetDate.setDate(targetDate.getDate() + 1);
-      //   targetDate.setHours(0, 0, 0, 0);
-      // }
-      // const nextDate = new Date(targetDate);
-      // nextDate.setDate(nextDate.getDate() + 1);
-
-      // const accounts = await this.accountRepository
-      //   .createQueryBuilder('account')
-      //   .leftJoinAndSelect(
-      //     'account.tasks',
-      //     'tasks',
-      //     'tasks.status in (:...statuses) AND tasks.fixerDate >= :date AND tasks.fixerDate < :nextDate',
-      //     {
-      //       statuses: [TaskStatus.ASSIGNED, TaskStatus.IN_PROGRESS],
-      //       date: targetDate.toISOString(),
-      //       nextDate: nextDate.toISOString(),
-      //     },
-      //   )
-      //   .where('account.role = :role', { role: Role.staff })
-      //   .getMany();
-
-      // const accountsWithFewestTasks = accounts.reduce(
-      //   (acc, cur) => {
-      //     if (cur.tasks.length < acc.current) {
-      //       acc.accounts = [cur];
-      //       acc.current = cur.tasks.length;
-      //     } else if (cur.tasks.length === acc.current) {
-      //       acc.accounts.push(cur);
-      //     }
-      //     return acc;
-      //   },
-      //   {
-      //     accounts: [],
-      //     current: Infinity,
-      //   },
-      // );
-
-      // const randomAccount =
-      //   accountsWithFewestTasks.accounts[
-      //     Math.floor(Math.random() * accountsWithFewestTasks.accounts.length)
-      //   ];
-
-      // request.status = RequestStatus.APPROVED;
-      // request.type = RequestType.WARRANTY;
-      // request.is_replacement_device = !!replacementDevice;
-      // request.is_fix = false;
-      // request.is_rennew = false;
-      // request.is_warranty = true;
-      // if (isMultiple) {
-      //   request.is_multiple_types = true;
-      // }
-
-      // const task = await this.taskRepository.save({
-      //   request,
-      //   issues: [disassembleIssue, installReplacementIssue, sendIssue],
-      //   operator: 0,
-      //   device: request.device,
-      //   device_renew: replacementDevice ?? undefined,
-      //   totalTime: 60,
-      //   priority: false,
-      //   status: TaskStatus.ASSIGNED,
-      //   device_static: request.device,
-      //   name: TaskNameGenerator.generateWarranty(request),
-      //   fixer: randomAccount,
-      //   fixerDate: targetDate,
-      //   type: TaskType.WARRANTY_RECEIVE,
-      // });
-
-      // console.log('task', task.device_renew);
-
-
-      // // create export warehouse
-      // const exportWarehouse = new ExportWareHouse();
-      // exportWarehouse.task = task;
-      // exportWarehouse.export_type = exportType.DEVICE;
-      // exportWarehouse.detail = task.device_renew.id;
-      // exportWarehouse.status = exportStatus.WAITING;
-      // await this.exportWareHouseRepository.save(exportWarehouse);
-
-      // // this.headGateway.emit_request_approved_warranty(request, userId);
-      // this.headGateway.emit(NotificationType.HM_APPROVE_REQUEST_WARRANTY)({
-      //   receiverId: request.requester.id,
-      //   requestId: id,
-      //   sendWarrantyDate: targetDate,
-      // });
-
-      // await this.requestRepository.save(request);
-
-      // return request;
-
-      return {} as any;
-
-
+      await this.deviceRepository.save({
+        ...replacementDevice,
+        status: true,
+      });
     }
+
+    const disassembleIssue = await this.issueRepository.save({
+      fixType: FixItemType.REPAIR,
+      request: request,
+      typeError: {
+        id: Warranty.disassemble,
+      },
+      description: dto.note,
+    });
+
+    const sendIssue = await this.issueRepository.save({
+      fixType: FixItemType.REPAIR,
+      request: request,
+      typeError: {
+        id: Warranty.send,
+      },
+      description: dto.note,
+    });
+
+    // const receiveIssue = await this.issueRepository.save({
+    //   fixType: FixItemType.REPAIR,
+    //   request: request,
+    //   typeError: {
+    //     id: Warranty.receive,
+    //   },
+    //   description: dto.note,
+    // });
+
+    // const assembleIssue = await this.issueRepository.save({
+    //   fixType: FixItemType.REPAIR,
+    //   request: request,
+    //   typeError: {
+    //     id: Warranty.assemble,
+    //   },
+    //   description: dto.note,
+    // });
+
+    request = await this.requestRepository.findOne({
+      where: { id },
+      relations: [
+        'device',
+        'device.area',
+        'device.machineModel',
+        'requester',
+        'issues',
+      ],
+    });
+
+    const targetDate = new Date();
+    if (targetDate.getHours() >= 15) {
+      targetDate.setDate(targetDate.getDate() + 1);
+      targetDate.setHours(0, 0, 0, 0);
+    }
+    const nextDate = new Date(targetDate);
+    nextDate.setDate(nextDate.getDate() + 1);
+
+    const accounts = await this.accountRepository
+      .createQueryBuilder('account')
+      .leftJoinAndSelect(
+        'account.tasks',
+        'tasks',
+        'tasks.status in (:...statuses) AND tasks.fixerDate >= :date AND tasks.fixerDate < :nextDate',
+        {
+          statuses: [TaskStatus.ASSIGNED, TaskStatus.IN_PROGRESS],
+          date: targetDate.toISOString(),
+          nextDate: nextDate.toISOString(),
+        },
+      )
+      .where('account.role = :role', { role: Role.staff })
+      .getMany();
+
+    const accountsWithFewestTasks = accounts.reduce(
+      (acc, cur) => {
+        if (cur.tasks.length < acc.current) {
+          acc.accounts = [cur];
+          acc.current = cur.tasks.length;
+        } else if (cur.tasks.length === acc.current) {
+          acc.accounts.push(cur);
+        }
+        return acc;
+      },
+      {
+        accounts: [],
+        current: Infinity,
+      },
+    );
+
+    const randomAccount =
+      accountsWithFewestTasks.accounts[
+        Math.floor(Math.random() * accountsWithFewestTasks.accounts.length)
+      ];
+
+    request.status = RequestStatus.APPROVED;
+    request.type = RequestType.WARRANTY;
+    request.is_replacement_device = !!replacementDevice;
+    request.is_fix = false;
+    request.is_rennew = false;
+    request.is_warranty = true;
+    if (isMultiple) {
+      request.is_multiple_types = true;
+    }
+
+    const task = await this.taskRepository.save({
+      request,
+      issues: [disassembleIssue, installReplacementIssue, sendIssue],
+      operator: 0,
+      device: request.device,
+      device_renew: replacementDevice ?? undefined,
+      totalTime: 60,
+      priority: false,
+      status: TaskStatus.ASSIGNED,
+      device_static: request.device,
+      name: TaskNameGenerator.generateWarranty(request),
+      fixer: randomAccount,
+      fixerDate: targetDate,
+      type: TaskType.WARRANTY_RECEIVE,
+    });
+
+    // create export warehouse
+    const exportWarehouse = new ExportWareHouse();
+    exportWarehouse.task = task;
+    exportWarehouse.export_type = exportType.DEVICE;
+    exportWarehouse.detail = task.device_renew.id;
+    exportWarehouse.status = exportStatus.WAITING;
+    await this.exportWareHouseRepository.save(exportWarehouse);
+
+    // this.headGateway.emit_request_approved_warranty(request, userId);
+    this.headGateway.emit(NotificationType.HM_APPROVE_REQUEST_WARRANTY)({
+      receiverId: request.requester.id,
+      requestId: id,
+      sendWarrantyDate: targetDate,
+    });
+
+    await this.requestRepository.save(request);
+
+    return request;
+  
+  
+  
+  
   }
 
   async warrantyFailed(id: string) {
-      const request = await this.requestRepository.findOne({
-        where: { id },
-        relations: [
-          'issues',
-          'issues.typeError',
-          'tasks',
-          'tasks.issues',
-          'tasks.issues.typeError',
-        ],
-      });
+    const request = await this.requestRepository.findOne({
+      where: { id },
+      relations: [
+        'issues',
+        'issues.typeError',
+        'tasks',
+        'tasks.issues',
+        'tasks.issues.typeError',
+      ],
+    });
 
-      if (!request) {
-        throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
-      }
-
-      request.issues.forEach((i) => {
-        if (
-          i.status === IssueStatus.PENDING &&
-          (i.typeError.id === Warranty.assemble ||
-            i.typeError.id === Warranty.receive ||
-            i.typeError.id === Warranty.send ||
-            i.typeError.id === Warranty.disassemble)
-        ) {
-          i.status = IssueStatus.CANCELLED;
-        }
-      });
-
-      request.tasks.forEach((t) => {
-        if (
-          t.status !== TaskStatus.COMPLETED &&
-          (t.type === TaskType.WARRANTY_RECEIVE ||
-            t.type === TaskType.WARRANTY_SEND)
-        ) {
-          t.status = TaskStatus.CANCELLED;
-        }
-      });
-
-      return await this.requestRepository.save(request);
+    if (!request) {
+      throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
     }
+
+    request.issues.forEach((i) => {
+      if (
+        i.status === IssueStatus.PENDING &&
+        (i.typeError.id === Warranty.assemble ||
+          i.typeError.id === Warranty.receive ||
+          i.typeError.id === Warranty.send ||
+          i.typeError.id === Warranty.disassemble)
+      ) {
+        i.status = IssueStatus.CANCELLED;
+      }
+    });
+
+    request.tasks.forEach((t) => {
+      if (
+        t.status !== TaskStatus.COMPLETED &&
+        (t.type === TaskType.WARRANTY_RECEIVE ||
+          t.type === TaskType.WARRANTY_SEND)
+      ) {
+        t.status = TaskStatus.CANCELLED;
+      }
+    });
+
+    return await this.requestRepository.save(request);
+  }
 
   async approveRequestToRenew(
-      id: string,
-      dto: RequestRequestDto.RequestApproveToRenew,
-      userId: string,
-      isMultiple ?: boolean,
-    ) {
-      // update request
-      let request = await this.requestRepository.findOne({
-        where: { id },
-        relations: ['issues', 'issues.typeError', 'requester'],
-      });
+    id: string,
+    dto: RequestRequestDto.RequestApproveToRenew,
+    userId: string,
+    isMultiple?: boolean,
+  ) {
+    // update request
+    let request = await this.requestRepository.findOne({
+      where: { id },
+      relations: ['issues', 'issues.typeError', 'requester'],
+    });
 
-      if (!request) {
-        throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
-      }
-
-      const newDevice = await this.deviceRepository.findOne({
-        where: {
-          id: dto.deviceId,
-        },
-      });
-
-      if (!newDevice) {
-        throw new HttpException('New device not found', HttpStatus.NOT_FOUND);
-      }
-
-      request.is_rennew = true;
-      request.is_warranty = false;
-      request.is_fix = false;
-      request.status = RequestStatus.APPROVED;
-      request.type = RequestType.RENEW;
-      if (isMultiple) {
-        request.is_multiple_types = true;
-      }
-
-      await this.requestRepository.save(request);
-
-      // create issues
-      const dismantleOldDeviceIssue = await this.issueRepository.save({
-        request,
-        fixType: FixItemType.REPLACE,
-        typeError: {
-          id: Renew.dismantleOldDevice,
-        },
-        description: dto.note ?? '',
-      });
-
-      const installNewDeviceIssue = await this.issueRepository.save({
-        request,
-        fixType: FixItemType.REPAIR,
-        typeError: {
-          id: Renew.installNewDevice,
-        },
-        description: dto.note ?? '',
-      });
-
-      // create task
-      request = await this.requestRepository.findOne({
-        where: { id },
-        relations: [
-          'device',
-          'device.machineModel',
-          'issues',
-          'device.area',
-          'requester',
-        ],
-      });
-
-      const task = await this.taskRepository.save({
-        name: TaskNameGenerator.generateRenew(request),
-        device: request.device,
-        device_renew: newDevice,
-        request: request,
-        issues: [dismantleOldDeviceIssue, installNewDeviceIssue],
-        device_static: request.device,
-        operator: 0,
-        status: TaskStatus.AWAITING_FIXER,
-        totalTime: 0,
-        type: TaskType.RENEW,
-        priority: false,
-      });
-
-      this.headGateway.emit(NotificationType.HM_APPROVE_REQUEST_RENEW)({
-        receiverId: request.requester.id,
-        requestId: id,
-      });
-
-      return request;
+    if (!request) {
+      throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
     }
+
+    const newDevice = await this.deviceRepository.findOne({
+      where: {
+        id: dto.deviceId,
+      },
+    });
+
+    if (!newDevice) {
+      throw new HttpException('New device not found', HttpStatus.NOT_FOUND);
+    }
+
+    request.is_rennew = true;
+    request.is_warranty = false;
+    request.is_fix = false;
+    request.status = RequestStatus.APPROVED;
+    request.type = RequestType.RENEW;
+    if (isMultiple) {
+      request.is_multiple_types = true;
+    }
+
+    await this.requestRepository.save(request);
+
+    // create issues
+    const dismantleOldDeviceIssue = await this.issueRepository.save({
+      request,
+      fixType: FixItemType.REPLACE,
+      typeError: {
+        id: Renew.dismantleOldDevice,
+      },
+      description: dto.note ?? '',
+    });
+
+    const installNewDeviceIssue = await this.issueRepository.save({
+      request,
+      fixType: FixItemType.REPAIR,
+      typeError: {
+        id: Renew.installNewDevice,
+      },
+      description: dto.note ?? '',
+    });
+
+    // create task
+    request = await this.requestRepository.findOne({
+      where: { id },
+      relations: [
+        'device',
+        'device.machineModel',
+        'issues',
+        'device.area',
+        'requester',
+      ],
+    });
+
+    const task = await this.taskRepository.save({
+      name: TaskNameGenerator.generateRenew(request),
+      device: request.device,
+      device_renew: newDevice,
+      request: request,
+      issues: [dismantleOldDeviceIssue, installNewDeviceIssue],
+      device_static: request.device,
+      operator: 0,
+      status: TaskStatus.AWAITING_FIXER,
+      totalTime: 0,
+      type: TaskType.RENEW,
+      priority: false,
+    });
+
+    this.headGateway.emit(NotificationType.HM_APPROVE_REQUEST_RENEW)({
+      receiverId: request.requester.id,
+      requestId: id,
+    });
+
+    return request;
+  }
 
   async approveRequestToRenewEmpty(
-      id: string,
-      dto: RequestRequestDto.RequestApproveToRenewEmpty,
-      userId: string,
-      isMultiple ?: boolean,
-    ) {
-      // update request
-      let request = await this.requestRepository.findOne({
-        where: { id },
-        relations: ['issues', 'issues.typeError'],
-      });
+    id: string,
+    dto: RequestRequestDto.RequestApproveToRenewEmpty,
+    userId: string,
+    isMultiple?: boolean,
+  ) {
+    // update request
+    let request = await this.requestRepository.findOne({
+      where: { id },
+      relations: ['issues', 'issues.typeError'],
+    });
 
-      if (!request) {
-        throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
-      }
-
-      request.is_rennew = true;
-      request.is_warranty = false;
-      request.is_fix = false;
-      request.status = RequestStatus.APPROVED;
-      request.type = RequestType.RENEW;
-      if (isMultiple) {
-        request.is_multiple_types = true;
-      }
-
-      await this.requestRepository.save(request);
-
-      // create issues
-      const dismantleOldDeviceIssue = await this.issueRepository.save({
-        request,
-        fixType: FixItemType.REPLACE,
-        typeError: {
-          id: Renew.dismantleOldDevice,
-        },
-        description: dto.note ?? '',
-      });
-
-      const installNewDeviceIssue = await this.issueRepository.save({
-        request,
-        fixType: FixItemType.REPAIR,
-        typeError: {
-          id: Renew.installNewDevice,
-        },
-        description: dto.note ?? '',
-      });
-
-      // create task
-      request = await this.requestRepository.findOne({
-        where: { id },
-        relations: ['device', 'device.machineModel', 'issues', 'device.area'],
-      });
-
-      const newTask = new TaskEntity();
-      newTask.name = TaskNameGenerator.generateRenew(request);
-      newTask.device = request.device;
-      newTask.request = request;
-      newTask.issues = [dismantleOldDeviceIssue, installNewDeviceIssue];
-      newTask.device_static = request.device;
-      newTask.operator = 0;
-      newTask.status = TaskStatus.AWAITING_FIXER;
-      newTask.totalTime = 0;
-      newTask.type = TaskType.RENEW;
-      newTask.priority = false;
-
-      await this.taskRepository.save(newTask);
-
-      const ticket = new ExportWareHouse();
-      ticket.task = newTask;
-      ticket.reason_delay = dto.machineModelId;
-      ticket.detail = '[]';
-      ticket.export_type = exportType.DEVICE;
-      ticket.status = exportStatus.WAITING_ADMIN;
-
-      await this.exportWareHouseRepository.save(ticket);
-
-      return request;
+    if (!request) {
+      throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
     }
 
+    request.is_rennew = true;
+    request.is_warranty = false;
+    request.is_fix = false;
+    request.status = RequestStatus.APPROVED;
+    request.type = RequestType.RENEW;
+    if (isMultiple) {
+      request.is_multiple_types = true;
+    }
+
+    await this.requestRepository.save(request);
+
+    // create issues
+    const dismantleOldDeviceIssue = await this.issueRepository.save({
+      request,
+      fixType: FixItemType.REPLACE,
+      typeError: {
+        id: Renew.dismantleOldDevice,
+      },
+      description: dto.note ?? '',
+    });
+
+    const installNewDeviceIssue = await this.issueRepository.save({
+      request,
+      fixType: FixItemType.REPAIR,
+      typeError: {
+        id: Renew.installNewDevice,
+      },
+      description: dto.note ?? '',
+    });
+
+    // create task
+    request = await this.requestRepository.findOne({
+      where: { id },
+      relations: ['device', 'device.machineModel', 'issues', 'device.area'],
+    });
+
+    const newTask = new TaskEntity();
+    newTask.name = TaskNameGenerator.generateRenew(request);
+    newTask.device = request.device;
+    newTask.request = request;
+    newTask.issues = [dismantleOldDeviceIssue, installNewDeviceIssue];
+    newTask.device_static = request.device;
+    newTask.operator = 0;
+    newTask.status = TaskStatus.AWAITING_FIXER;
+    newTask.totalTime = 0;
+    newTask.type = TaskType.RENEW;
+    newTask.priority = false;
+
+    await this.taskRepository.save(newTask);
+
+    const ticket = new ExportWareHouse();
+    ticket.task = newTask;
+    ticket.reason_delay = dto.machineModelId;
+    ticket.detail = '[]';
+    ticket.export_type = exportType.DEVICE;
+    ticket.status = exportStatus.WAITING_ADMIN;
+
+    await this.exportWareHouseRepository.save(ticket);
+
+    return request;
+  }
+
   async RenewStatus(
-      taskID: string,
-    ): Promise < RequestRequestDto.RenewStatusResponse > {
-      const existedTask = await this.taskRepository.findOne({
-        where: { id: taskID },
-      });
-      if(existedTask == null) return null;
+    taskID: string,
+  ): Promise<RequestRequestDto.RenewStatusResponse> {
+    const existedTask = await this.taskRepository.findOne({
+      where: { id: taskID },
+    });
+    if (existedTask == null) return null;
 
     const ticket = await this.exportWareHouseRepository.findOne({
       where: { task: { id: taskID } },
