@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from 'src/common/base/service.base';
+import { AreaEntity } from 'src/entities/area.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
 import { MachineModelEntity } from 'src/entities/machine-model.entity';
 import { Repository } from 'typeorm';
@@ -12,6 +13,8 @@ export class DeviceService extends BaseService<DeviceEntity> {
     private readonly deviceRepository: Repository<DeviceEntity>,
     @InjectRepository(MachineModelEntity)
     private readonly machineModelRepository: Repository<MachineModelEntity>,
+    @InjectRepository(AreaEntity)
+    private readonly areaRepository: Repository<AreaEntity>
   ) {
     super(deviceRepository);
   }
@@ -39,6 +42,29 @@ export class DeviceService extends BaseService<DeviceEntity> {
         'machineModel.typeErrors',
       ],
     });
+  }
+
+  async checkKeyPosition
+  (areaId: string, positionX: string, positionY: string,
+  ): Promise<boolean> {{
+    const isKey = false;
+      const model = await this.areaRepository.findOneOrFail({
+        where: {
+          id: areaId,
+        }
+      });
+
+      if(model.keyPosition == null ){
+        return false;
+      }
+
+      const cobineKey = positionX + "_" + positionY;
+      if (model.keyPosition && model.keyPosition.includes(cobineKey)) {
+        return true;
+      }
+
+      return isKey;
+    }
   }
 
   // get history request by device id

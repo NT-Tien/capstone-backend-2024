@@ -87,6 +87,21 @@ export class DeviceController {
     return await this.deviceService.getHistoryRequest(id);
   }
 
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'define key position',
+    description:
+      'Get key position of area, return true / false',
+  })
+  @Post('/:areaId/:positionX/:positionY')
+  async checkKeyPosition
+  (@Param('areaId') areaId: string,
+  @Param('positionX') positionX: string,
+  @Param('positionY') positionY: string,
+) {
+    return this.deviceService.checkKeyPosition(areaId, positionX, positionY);
+  }
+
   // @ApiBearerAuth()
   // @ApiResponse({
   //   type: DeviceResponseDto.DeviceCreate,
