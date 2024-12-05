@@ -400,20 +400,76 @@ export class TaskService extends BaseService<TaskEntity> {
           confirmReceipt: false,
         })
         .getCount(),
-        'uninstall-already': await query
+        'uninstall-device-old-already-and-move-to-stock': await query
         .andWhere('task.status = :status', {
           status: TaskStatus.COMPLETED,
         })
         .andWhere('task.confirmReceipt = :confirmReceipt', {
-          confirmReceipt: false,
+          confirmReceipt: true,
+        })
+        .andWhere('typeError.name = :name', {
+          // name inclue Tháo
+          name: 'Tháo gỡ và đem máy cũ xuống kho',
         })
         .getCount(),
-        'install-already': await query
+        'uninstall-device-already-and-move-to-warranty': await query
         .andWhere('task.status = :status', {
           status: TaskStatus.COMPLETED,
         })
         .andWhere('task.confirmReceipt = :confirmReceipt', {
-          confirmReceipt: false,
+          confirmReceipt: true,
+        })
+        .andWhere('typeError.name = :name', {
+          // name inclue Tháo
+          name: 'Tháo rời thiết bị',
+        })
+        .getCount(),
+        'uninstall-device-waiter-already-and-move-to-stock': await query
+        .andWhere('task.status = :status', {
+          status: TaskStatus.COMPLETED,
+        })
+        .andWhere('task.confirmReceipt = :confirmReceipt', {
+          confirmReceipt: true,
+        })
+        .andWhere('typeError.name = :name', {
+          // name inclue Tháo
+          name: 'Tháo gỡ thiết bị thay thế',
+        })
+        .getCount(),
+        'install-device-warranted-already': await query
+        .andWhere('task.status = :status', {
+          status: TaskStatus.COMPLETED,
+        })
+        .andWhere('task.confirmReceipt = :confirmReceipt', {
+          confirmReceipt: true,
+        })
+        .andWhere('typeError.name = :name', {
+          // name inclue Tháo
+          name: 'Lắp đặt thiết bị',
+        })
+        .getCount(),
+        'install-device-waiter-already': await query
+        .andWhere('task.status = :status', {
+          status: TaskStatus.COMPLETED,
+        })
+        .andWhere('task.confirmReceipt = :confirmReceipt', {
+          confirmReceipt: true,
+        })
+        .andWhere('typeError.name = :name', {
+          // name inclue Tháo
+          name: 'Lắp đặt thiết bị thay thế',
+        })
+        .getCount(),
+        'install-device-already-from-stock': await query
+        .andWhere('task.status = :status', {
+          status: TaskStatus.COMPLETED,
+        })
+        .andWhere('task.confirmReceipt = :confirmReceipt', {
+          confirmReceipt: true,
+        })
+        .andWhere('typeError.name = :name', {
+          // name inclue Tháo
+          name: 'Lắp thiết bị thay thế',
         })
         .getCount(),
     };
