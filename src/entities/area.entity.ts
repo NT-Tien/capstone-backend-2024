@@ -34,10 +34,11 @@ export class AreaEntity extends BaseEntity {
   height: number;
 
   @Column({
-    name: 'key_position',
-    type: 'jsonb',
+    name: 'key-position',
+    type: 'text',
+    nullable: true,
   })
-  keyPosition: any;
+  keyPosition?: string;
 
   @OneToMany(() => DeviceEntity, (device) => device.area)
   devices: DeviceEntity[];
