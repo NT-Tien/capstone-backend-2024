@@ -2,6 +2,7 @@ import { Repository } from 'typeorm';
 import { isUUID } from 'class-validator';
 import { HttpException } from '@nestjs/common';
 import { BaseEntity } from './entity.base';
+import { SparePartRequestDto } from 'src/modules/_admin/spare-part/dto/request.dto';
 
 export class BaseService<Entity extends BaseEntity> {
   constructor(protected repo: Repository<Entity>) {}
@@ -25,7 +26,17 @@ export class BaseService<Entity extends BaseEntity> {
 
   async update(id: string, entity: any): Promise<Entity> {
     if (!isUUID(id)) throw new HttpException('Id is incorrect', 400);
+    // find and update
     return this.repo.update(id, entity).then(() => this.getOne(id));
+  }
+
+  async addSparepartWarranty(id: string, entity: SparePartRequestDto.SparePartUpdateDto): Promise<Entity> {
+    if (!isUUID(id)) throw new HttpException('Id is incorrect', 400);
+    // find and update
+    let found = await this.getOne(id) as any;
+    if (!found) throw new HttpException('Spare part not found', 404);
+    entity.quantity = found.quantity + entity.quantity;
+    return this.repo.update(id, entity as any).then(() => this.getOne(id));
   }
 
   delete(id: string): Promise<any> {

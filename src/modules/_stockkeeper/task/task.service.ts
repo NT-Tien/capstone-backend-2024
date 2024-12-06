@@ -186,61 +186,61 @@ export class TaskService extends BaseService<TaskEntity> {
     if (!task) {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
     }
-try {
+    try {
 
-  for (let issue of task.issues) {
-    for (let issueSparePart of issue.issueSpareParts) {
-      let sparePart = await this.SparePartEntityRepository.findOne({
-        where: { id: issueSparePart.sparePart.id },
-      });
-      if (!sparePart) {
-        throw new HttpException('Spare part not found', HttpStatus.NOT_FOUND);
+      for (let issue of task.issues) {
+        for (let issueSparePart of issue.issueSpareParts) {
+          let sparePart = await this.SparePartEntityRepository.findOne({
+            where: { id: issueSparePart.sparePart.id },
+          });
+          if (!sparePart) {
+            throw new HttpException('Spare part not found', HttpStatus.NOT_FOUND);
+          }
+          sparePart.quantity -= issueSparePart.quantity;
+          await this.SparePartEntityRepository.save(sparePart);
+        }
       }
-      sparePart.quantity -= issueSparePart.quantity;
-      await this.SparePartEntityRepository.save(sparePart);
-    }
-  }
-  if (task.device_renew) {
-    if (task.export_warehouse_ticket?.[0]?.status === exportStatus.ACCEPTED) {
-      task.export_warehouse_ticket[0].status = exportStatus.EXPORTED;
-      await this.ExportWareHouseRepository.save(
-        task.export_warehouse_ticket[0],
-      );
-    }
-    else if (!task.export_warehouse_ticket?.length) {
-      console.warn(
-        'No export warehouse ticket found for this task, continuing without updating export status.',
-      );
-    } else {
-      throw new HttpException(
-        'Export warehouse not found or not accepted',
-        HttpStatus.NOT_FOUND,
-      );
-    }
-  }
+      if (task.device_renew) {
+        if (task.export_warehouse_ticket?.[0]?.status === exportStatus.ACCEPTED) {
+          task.export_warehouse_ticket[0].status = exportStatus.EXPORTED;
+          await this.ExportWareHouseRepository.save(
+            task.export_warehouse_ticket[0],
+          );
+        }
+        else if (!task.export_warehouse_ticket?.length) {
+          console.warn(
+            'No export warehouse ticket found for this task, continuing without updating export status.',
+          );
+        } else {
+          throw new HttpException(
+            'Export warehouse not found or not accepted',
+            HttpStatus.NOT_FOUND,
+          );
+        }
+      }
 
-  task.confirmReceipt = true;
-  task.confirmSendBy = userId;
-  task.confirmReceiptStockkeeperSignature = dto.stockkeeper_signature;
-  task.confirmReceiptStaffSignature = dto.staff_signature;
-  return await this.taskRepository.save(task);
-} catch (error) {
-  // Rollback spare part quantity in case of error
-  console.error('Error in confirmReceipt, rolling back:', error.message);
-  for (let issue of task.issues) {
-    for (let issueSparePart of issue.issueSpareParts) {
-      const sparePart = await this.SparePartEntityRepository.findOne({
-        where: { id: issueSparePart.sparePart.id },
-      });
-      if (sparePart) {
-        sparePart.quantity += issueSparePart.quantity;
-        await this.SparePartEntityRepository.save(sparePart);
+      task.confirmReceipt = true;
+      task.confirmSendBy = userId;
+      task.confirmReceiptStockkeeperSignature = dto.stockkeeper_signature;
+      task.confirmReceiptStaffSignature = dto.staff_signature;
+      return await this.taskRepository.save(task);
+    } catch (error) {
+      // Rollback spare part quantity in case of error
+      console.error('Error in confirmReceipt, rolling back:', error.message);
+      for (let issue of task.issues) {
+        for (let issueSparePart of issue.issueSpareParts) {
+          const sparePart = await this.SparePartEntityRepository.findOne({
+            where: { id: issueSparePart.sparePart.id },
+          });
+          if (sparePart) {
+            sparePart.quantity += issueSparePart.quantity;
+            await this.SparePartEntityRepository.save(sparePart);
+          }
+        }
       }
+      throw error; // Rethrow error after rollback
     }
   }
-  throw error; // Rethrow error after rollback
-}
-}
 
   async pendingSparePart(
     taskId: string,
