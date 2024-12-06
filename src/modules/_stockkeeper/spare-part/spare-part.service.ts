@@ -157,7 +157,7 @@ export class SparePartService extends BaseService<SparePartEntity> {
     // get all tasks with status = awaiting_spare_part
     const tasks = await this.taskRepository.find({
       where: {
-        status: TaskStatus.AWAITING_SPARE_SPART,
+        // status: TaskStatus.AWAITING_SPARE_SPART,
       },
       relations: [
         'issues',
@@ -166,6 +166,9 @@ export class SparePartService extends BaseService<SparePartEntity> {
         'issues.issueSpareParts.sparePart.machineModel',
       ],
     });
+
+    console.log('tasks', tasks);
+    
 
     const map: {
       [key: string]: {
@@ -199,6 +202,9 @@ export class SparePartService extends BaseService<SparePartEntity> {
         }
       }
     }
+
+    console.log(map);
+    
 
     const values = Object.values(map);
     for (const value of values) {
