@@ -59,4 +59,16 @@ export class NotificationController {
   ) {
     return await this.taskService.getDashboard(from,to);
   }
+
+  @ApiResponse({
+    type: NotificationResponseDto.NotificationGetOne,
+    status: 200,
+    description: 'Get noti count',
+  })
+  @ApiBearerAuth()
+  @Get('getNotiNumber"')
+  async getNotiNumber(
+  ) {
+    return await this.taskService.getNotiNumber();
+  }
 }

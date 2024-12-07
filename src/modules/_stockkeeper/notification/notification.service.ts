@@ -193,14 +193,6 @@ export class NotificationService extends BaseService<TaskEntity> {
     page: number,
     limit: number,
   ): Promise<[NotificationEntity[], number]> {
-    /*const stockeeper = await this.AccountEntityRepository.findOne(
-      {
-        where:{
-          id : 'eb488f7f-4c1b-4032-b5c0-8f543968bbf8'
-        }
-      }
-    )
-    console.log(stockeeper);*/
     return this.NotificationEntityRepository.findAndCount({
       where: {
         receiver: {
@@ -214,5 +206,18 @@ export class NotificationService extends BaseService<TaskEntity> {
       take: limit,
     });
   }
-  
+
+  async getNotiNumber(
+  ): Promise< number> {
+    const data = await this.NotificationEntityRepository.findAndCount({
+      where: {
+        receiver: {
+          id: 'eb488f7f-4c1b-4032-b5c0-8f543968bbf8'
+        }, 
+        deletedAt: null,
+        seenDate : null
+      }
+    });
+    return data.length;
+  }
 }
