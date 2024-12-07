@@ -72,7 +72,7 @@ export class NotificationEntity extends BaseEntity {
     nullable: true,
     default: null,
   })
-  seenDate: Date;
+  seenDate?: Date;
 
   @Column({
     name: 'type',
