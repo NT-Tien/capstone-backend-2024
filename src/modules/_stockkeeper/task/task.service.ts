@@ -11,7 +11,7 @@ import {
   ExportWareHouse,
 } from 'src/entities/export-warehouse.entity';
 import { AccountEntity } from 'src/entities/account.entity';
-import { NotificationEntity } from 'src/entities/notification.entity';
+import { NotificationEntity, NotificationPriority, NotificationType } from 'src/entities/notification.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -240,6 +240,8 @@ export class TaskService extends BaseService<TaskEntity> {
       noti.body = 'Bạn vừa xuất linh kiện cho tác vụ '+ task.name+', người nhận '+ task.fixer.username
       +', click để xem chi tiết.';
       noti.data = {taskId: task.id};
+      noti.priority = NotificationPriority.MEDIUM;
+      noti.type = NotificationType.STOCKKEEPER;
       await this.notificationEntityRepository.save(noti);
 
       return await this.taskRepository.save(task);

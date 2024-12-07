@@ -19,7 +19,7 @@ import {
   ExportWareHouse,
 } from 'src/entities/export-warehouse.entity';
 import { StaffNotificationGateway } from 'src/modules/notifications/gateways/staff.gateway';
-import { NotificationEntity, NotificationType } from 'src/entities/notification.entity';
+import { NotificationEntity, NotificationPriority, NotificationType } from 'src/entities/notification.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -200,6 +200,7 @@ export class TaskService extends BaseService<TaskEntity> {
       .of(newTaskResult.id)
       .add(data.issueIDs);
 
+      console.log(data.issueIDs);
       
     for (const issueId of data.issueIDs) {
       const isue = await this.issueRepository.findOne({
@@ -211,7 +212,7 @@ export class TaskService extends BaseService<TaskEntity> {
           'issueSpareParts.sparePart',
         ],
       });
-    
+    console.log("tracking issue"+isue);
       if (isue.issueSpareParts.some(sparePart => sparePart.quantity > 0 
         && sparePart.quantity < sparePart.sparePart.quantity)) {
         const noti = new NotificationEntity();
@@ -223,7 +224,10 @@ export class TaskService extends BaseService<TaskEntity> {
         noti.title = 'Tác vụ mới';
         noti.body = 'Có tác vụ mới được giao đang cần lấy thiết bị / linh kiện, click để xem chi tiết.';
         noti.data = {taskId: newTaskResult.id};
-        await this.notificationEntityRepository.save(noti);
+        noti.priority = NotificationPriority.MEDIUM;
+        noti.type = NotificationType.STOCKKEEPER;
+        const savene= await this.notificationEntityRepository.save(noti);
+        console.log("tracking savene "+savene.id);
         break; 
       }
       if (isue.issueSpareParts.some(sparePart => sparePart.quantity > 0 
@@ -237,7 +241,11 @@ export class TaskService extends BaseService<TaskEntity> {
         noti.title = 'Nhập mới linh kiện';
         noti.body = 'Có tác vụ mới đang thiếu linh kiện , click để xem chi tiết.';
         noti.data = {taskId: newTaskResult.id};
-        await this.notificationEntityRepository.save(noti);
+        noti.priority = NotificationPriority.MEDIUM;
+        noti.type = NotificationType.STOCKKEEPER;
+        const savene= await this.notificationEntityRepository.save(noti);
+        console.log("tracking savene "+savene.id);
+
         break; 
       }
     }
