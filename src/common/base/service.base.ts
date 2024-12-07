@@ -30,15 +30,6 @@ export class BaseService<Entity extends BaseEntity> {
     return this.repo.update(id, entity).then(() => this.getOne(id));
   }
 
-  async addSparepartWarranty(id: string, entity: SparePartRequestDto.SparePartUpdateDto): Promise<Entity> {
-    if (!isUUID(id)) throw new HttpException('Id is incorrect', 400);
-    // find and update
-    let found = await this.getOne(id) as any;
-    if (!found) throw new HttpException('Spare part not found', 404);
-    entity.quantity = found.quantity + entity.quantity;
-    return this.repo.update(id, entity as any).then(() => this.getOne(id));
-  }
-
   delete(id: string): Promise<any> {
     if (!isUUID(id)) throw new HttpException('Id is incorrect', 400);
     return this.repo.delete(id);

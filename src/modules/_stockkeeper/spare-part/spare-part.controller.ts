@@ -88,7 +88,7 @@ export class SparePartController {
     @Param('id') id: string,
     @Body() body: SparePartRequestDto.SparePartUpdateDto,
   ) {
-    return await this.sparePartService.update(
+    return await this.sparePartService.addSparepartWarranty(
       id,
       SparePartRequestDto.SparePartUpdateDto.plainToClass(body),
     );
