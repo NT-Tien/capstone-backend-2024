@@ -10,6 +10,8 @@ import {
   exportStatus,
   ExportWareHouse,
 } from 'src/entities/export-warehouse.entity';
+import { AccountEntity } from 'src/entities/account.entity';
+import { NotificationEntity } from 'src/entities/notification.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -22,6 +24,10 @@ export class TaskService extends BaseService<TaskEntity> {
     private readonly SparePartEntityRepository: Repository<SparePartEntity>,
     @InjectRepository(ExportWareHouse)
     private readonly ExportWareHouseRepository: Repository<ExportWareHouse>,
+    @InjectRepository(AccountEntity)
+    private readonly accountRepository: Repository<AccountEntity>,
+    @InjectRepository(NotificationEntity)
+    private readonly notificationEntityRepository: Repository<NotificationEntity>,
   ) {
     super(taskRepository);
   }
@@ -223,6 +229,19 @@ export class TaskService extends BaseService<TaskEntity> {
       task.confirmSendBy = userId;
       task.confirmReceiptStockkeeperSignature = dto.stockkeeper_signature;
       task.confirmReceiptStaffSignature = dto.staff_signature;
+
+      const noti = new NotificationEntity();
+      noti.receiver = await this.accountRepository.findOne({
+        where:{
+          id : 'eb488f7f-4c1b-4032-b5c0-8f543968bbf8'
+        }
+      }); 
+      noti.title = 'Xác nhận xuất thiết bị/ linh kiện';
+      noti.body = 'Bạn vừa xuất linh kiện cho tác vụ '+ task.name+', người nhận '+ task.fixer.username
+      +', click để xem chi tiết.';
+      noti.data = {taskId: task.id};
+      await this.notificationEntityRepository.save(noti);
+
       return await this.taskRepository.save(task);
     } catch (error) {
       // Rollback spare part quantity in case of error

@@ -19,7 +19,7 @@ import {
   ExportWareHouse,
 } from 'src/entities/export-warehouse.entity';
 import { StaffNotificationGateway } from 'src/modules/notifications/gateways/staff.gateway';
-import { NotificationType } from 'src/entities/notification.entity';
+import { NotificationEntity, NotificationType } from 'src/entities/notification.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -38,6 +38,8 @@ export class TaskService extends BaseService<TaskEntity> {
     private readonly issueRepository: Repository<IssueEntity>,
     @InjectRepository(ExportWareHouse)
     private readonly exportWareHouseRepository: Repository<ExportWareHouse>,
+    @InjectRepository(NotificationEntity)
+    private readonly notificationEntityRepository: Repository<NotificationEntity>,
 
     private readonly staffGateway: StaffNotificationGateway,
   ) {
@@ -169,6 +171,7 @@ export class TaskService extends BaseService<TaskEntity> {
     newTask.request = request;
     newTask.device = request.device;
     newTask.device_static = request.device;
+    
     // if (data.fixer) {
     //   const fixer = await this.accountRepository.findOne({
     //     where: {
@@ -196,6 +199,48 @@ export class TaskService extends BaseService<TaskEntity> {
       .relation(TaskEntity, 'issues')
       .of(newTaskResult.id)
       .add(data.issueIDs);
+
+      
+    for (const issueId of data.issueIDs) {
+      const isue = await this.issueRepository.findOne({
+        where: {
+          id: issueId
+        },
+        relations: [
+          'issueSpareParts',
+          'issueSpareParts.sparePart',
+        ],
+      });
+    
+      if (isue.issueSpareParts.some(sparePart => sparePart.quantity > 0 
+        && sparePart.quantity < sparePart.sparePart.quantity)) {
+        const noti = new NotificationEntity();
+        noti.receiver = await this.accountRepository.findOne({
+          where:{
+            id : 'eb488f7f-4c1b-4032-b5c0-8f543968bbf8'
+          }
+        }); 
+        noti.title = 'Tác vụ mới';
+        noti.body = 'Có tác vụ mới được giao đang cần lấy thiết bị / linh kiện, click để xem chi tiết.';
+        noti.data = {taskId: newTaskResult.id};
+        await this.notificationEntityRepository.save(noti);
+        break; 
+      }
+      if (isue.issueSpareParts.some(sparePart => sparePart.quantity > 0 
+        && sparePart.quantity > sparePart.sparePart.quantity )) {
+        const noti = new NotificationEntity();
+        noti.receiver = await this.accountRepository.findOne({
+          where:{
+            id : 'eb488f7f-4c1b-4032-b5c0-8f543968bbf8'
+          }
+        }); 
+        noti.title = 'Nhập mới linh kiện';
+        noti.body = 'Có tác vụ mới đang thiếu linh kiện , click để xem chi tiết.';
+        noti.data = {taskId: newTaskResult.id};
+        await this.notificationEntityRepository.save(noti);
+        break; 
+      }
+    }
 
     return { ...newTaskResult, issues: newIssuesAdded };
   }

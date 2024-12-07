@@ -9,10 +9,11 @@ import { RequestEntity } from 'src/entities/request.entity';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { IssueEntity } from 'src/entities/issue.entity';
 import { ExportWareHouse } from 'src/entities/export-warehouse.entity';
+import { NotificationEntity } from 'src/entities/notification.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([TaskEntity, SparePartEntity, IssueEntity, ExportWareHouse]),
+    TypeOrmModule.forFeature([TaskEntity, SparePartEntity, IssueEntity, ExportWareHouse,NotificationEntity, AccountEntity]),
     AuthModule,
   ],
   controllers: [TaskController],
