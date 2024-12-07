@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from 'src/common/base/service.base';
 import { FixItemType } from 'src/entities/issue.entity';
@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import { SparePartRequestDto } from './dto/request.dto';
 import { IssueSparePartEntity } from 'src/entities/issue-spare-part.entity';
 import { QueryRunner } from 'typeorm';
+import { isUUID } from 'class-validator';
 
 
 @Injectable()
@@ -19,6 +20,15 @@ export class SparePartService extends BaseService<SparePartEntity> {
     private readonly taskRepository: Repository<TaskEntity>,
   ) {
     super(sparePartRepository);
+  }
+
+  async addSparepartWarranty(id: string, entity: SparePartRequestDto.SparePartUpdateDto) {
+    if (!isUUID(id)) throw new HttpException('Id is incorrect', 400);
+    // find and update
+    let found = await this.getOne(id) as any;
+    if (!found) throw new HttpException('Spare part not found', 404);
+    entity.quantity = found.quantity + entity.quantity;
+    return this.sparePartRepository.update(id, entity as any).then(() => this.getOne(id));
   }
 
   async incrementQuantitySpareParts(
