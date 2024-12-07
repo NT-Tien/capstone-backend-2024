@@ -17,7 +17,7 @@ import { AccountEntity, Role } from 'src/entities/account.entity';
 import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
 
 @Injectable()
-export class TaskService extends BaseService<TaskEntity> {
+export class NotificationService extends BaseService<TaskEntity> {
   constructor(
     @InjectRepository(TaskEntity)
     private readonly taskRepository: Repository<TaskEntity>,
@@ -193,20 +193,23 @@ export class TaskService extends BaseService<TaskEntity> {
     page: number,
     limit: number,
   ): Promise<[NotificationEntity[], number]> {
-    const stockeeper = await this.AccountEntityRepository.findOne(
+    /*const stockeeper = await this.AccountEntityRepository.findOne(
       {
         where:{
-          role: Role.stockkeeper
+          id : 'eb488f7f-4c1b-4032-b5c0-8f543968bbf8'
         }
       }
     )
+    console.log(stockeeper);*/
     return this.NotificationEntityRepository.findAndCount({
       where: {
-        receiver: stockeeper, 
+        receiver: {
+          id: 'eb488f7f-4c1b-4032-b5c0-8f543968bbf8'
+        }, 
         deletedAt: null,
       },
       order: { createdAt: 'DESC' },
-      relations: ['machineModel','receiver'],
+      relations: ['receiver'],
       skip: (page - 1) * limit,
       take: limit,
     });

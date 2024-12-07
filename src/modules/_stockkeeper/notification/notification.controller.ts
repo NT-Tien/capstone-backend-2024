@@ -13,15 +13,15 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { UUID } from 'crypto';
 import { StockkeeperGuard } from 'src/modules/auth/guards/stockkeeper.guard';
 import { NotificationResponseDto } from './dto/response.dto';
-import { TaskService } from './notification.service';
+import { NotificationService } from './notification.service';
 import { NotificationRequestDto } from './dto/request.dto';
 import { TaskStatus } from 'src/entities/task.entity';
 
 @ApiTags('stockkeeper: task')
 @UseGuards(StockkeeperGuard)
-@Controller('stockkeeper/task')
-export class TaskController {
-  constructor(private readonly taskService: TaskService) {}
+@Controller('stockkeeper/notification')
+export class NotificationController {
+  constructor(private readonly taskService: NotificationService) {}
 
   @ApiBearerAuth()
   @Get('/search/:page/:limit')

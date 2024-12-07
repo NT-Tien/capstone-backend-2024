@@ -6,6 +6,7 @@ import { SparePartModule } from './spare-part/spare-part.module';
 import { StaffRequestChangeSparePartModule } from './staff-request-change-spare-part/staff-request-change-spare-part.module';
 import { TaskModule } from './task/task.module';
 import { DeviceModule } from 'src/modules/_stockkeeper/device/device.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { DeviceModule } from 'src/modules/_stockkeeper/device/device.module';
     IssueModule,
     ExportWareHouseModule,
     DeviceModule,
+    NotificationModule
   ],
 })
 export class StockkeeperModule {}

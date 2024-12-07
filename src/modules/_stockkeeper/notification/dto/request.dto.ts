@@ -5,7 +5,7 @@ import { BaseDTO } from 'src/common/base/dto.base';
 import { RequestStatus } from 'src/entities/request.entity';
 import { TaskStatus } from 'src/entities/task.entity';
 
-export namespace TaskRequestDto {
+export namespace NotificationRequestDto {
   export class StockkeeperReturnSparePart extends BaseDTO {
     @ApiProperty()
     @IsNotEmpty()
