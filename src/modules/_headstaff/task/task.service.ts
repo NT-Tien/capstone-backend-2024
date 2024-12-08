@@ -200,8 +200,9 @@ export class TaskService extends BaseService<TaskEntity> {
       .of(newTaskResult.id)
       .add(data.issueIDs);
 
-      console.log(data.issueIDs);
+      console.log('iussue nè--------------------------------------------'+data.issueIDs[0]);
       
+      var saveNoti = true;
     for (const issueId of data.issueIDs) {
       const isue = await this.issueRepository.findOne({
         where: {
@@ -212,8 +213,9 @@ export class TaskService extends BaseService<TaskEntity> {
           'issueSpareParts.sparePart',
         ],
       });
+
     console.log("tracking issue"+isue);
-      if (isue.issueSpareParts.some(sparePart => sparePart.quantity > 0 
+      if ( saveNoti && isue.issueSpareParts.some(sparePart => sparePart.quantity > 0 
         && sparePart.quantity < sparePart.sparePart.quantity)) {
         const noti = new NotificationEntity();
         noti.receiver = await this.accountRepository.findOne({
@@ -228,9 +230,9 @@ export class TaskService extends BaseService<TaskEntity> {
         noti.type = NotificationType.STOCKKEEPER;
         const savene= await this.notificationEntityRepository.save(noti);
         console.log("tracking savene "+savene.id);
-        break; 
+        saveNoti = false;
       }
-      if (isue.issueSpareParts.some(sparePart => sparePart.quantity > 0 
+      if (saveNoti &&isue.issueSpareParts.some(sparePart => sparePart.quantity > 0 
         && sparePart.quantity > sparePart.sparePart.quantity )) {
         const noti = new NotificationEntity();
         noti.receiver = await this.accountRepository.findOne({
@@ -244,11 +246,30 @@ export class TaskService extends BaseService<TaskEntity> {
         noti.priority = NotificationPriority.MEDIUM;
         noti.type = NotificationType.STOCKKEEPER;
         const savene= await this.notificationEntityRepository.save(noti);
-        console.log("tracking savene "+savene.id);
-
-        break; 
+        saveNoti = false;
       }
     }
+
+    // create export warehouse
+    const savedtask = await this.taskRepository.findOne({
+      where: {
+        id: newTaskResult.id,
+      },
+      relations: [
+        'issues',
+        'issues.issueSpareParts',
+        'issues.issueSpareParts.sparePart',
+      ],
+    });
+
+    // create export warehouse
+    const exportWarehouse = new ExportWareHouse();
+    exportWarehouse.task = savedtask;
+    exportWarehouse.export_type = exportType.SPARE_PART;
+    exportWarehouse.detail = savedtask.issues;
+    exportWarehouse.status = exportStatus.CANCEL;
+
+    await this.exportWareHouseRepository.save(exportWarehouse);
 
     return { ...newTaskResult, issues: newIssuesAdded };
   }
@@ -394,13 +415,15 @@ export class TaskService extends BaseService<TaskEntity> {
   }
 
   async cancelTask(id: string, user: any) {
+    console.log('----------------------------------------------'+id);
+    console.log('----------------------------------------------');
     const task = await this.taskRepository.findOne({
       where: {
         id,
       },
       relations: ['issues', 'issues.issueSpareParts'],
     });
-
+    console.log('----------------------------------------------'+task.name);
     task.status = TaskStatus.CANCELLED;
     task.cancelBy = user.id;
     task.last_issues_data = JSON.stringify(task.issues);
@@ -413,14 +436,11 @@ export class TaskService extends BaseService<TaskEntity> {
     const exportWarehouse = await this.exportWareHouseRepository.findOne({
       where: { task: task },
     });
-    // if not exported yet then cancel, else do nothing
-    if (
-      exportWarehouse.status !== exportStatus.EXPORTED &&
-      exportWarehouse.status !== exportStatus.CANCEL
-    ) {
+    if(exportWarehouse != null){
       exportWarehouse.status = exportStatus.CANCEL;
       await this.exportWareHouseRepository.save(exportWarehouse);
     }
+    
     return await this.taskRepository.save(task);
   }
 
