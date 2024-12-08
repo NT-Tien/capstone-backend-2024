@@ -203,6 +203,29 @@ export class TaskService extends BaseService<TaskEntity> {
       console.log('iussue nè--------------------------------------------'+data.issueIDs[0]);
       
       var saveNoti = true;
+
+
+      // create export warehouse
+    const savedtask = await this.taskRepository.findOne({
+      where: {
+        id: newTaskResult.id,
+      },
+      relations: [
+        'issues',
+        'issues.issueSpareParts',
+        'issues.issueSpareParts.sparePart',
+      ],
+    });
+
+    // create export warehouse
+    const exportWarehouse = new ExportWareHouse();
+    exportWarehouse.task = savedtask;
+    exportWarehouse.export_type = exportType.SPARE_PART;
+    exportWarehouse.detail = savedtask.issues;
+    exportWarehouse.status = exportStatus.WAITING;
+
+    const ticket = await this.exportWareHouseRepository.save(exportWarehouse);
+
     for (const issueId of data.issueIDs) {
       const isue = await this.issueRepository.findOne({
         where: {
@@ -225,7 +248,7 @@ export class TaskService extends BaseService<TaskEntity> {
         }); 
         noti.title = 'Tác vụ mới';
         noti.body = 'Tác vụ ' + newTaskResult.name +' được giao đang cần lấy thiết bị / linh kiện, click để xem chi tiết.';
-        noti.data = {taskId: newTaskResult.id};
+        noti.data = {taskId: newTaskResult.id, ticketId: ticket};
         noti.priority = NotificationPriority.MEDIUM;
         noti.type = NotificationType.STOCKKEEPER;
         const savene= await this.notificationEntityRepository.save(noti);
@@ -242,34 +265,13 @@ export class TaskService extends BaseService<TaskEntity> {
         }); 
         noti.title = 'Nhập mới linh kiện';
         noti.body = 'Tác vụ '+ newTaskResult.name +' đang thiếu linh kiện , click để xem chi tiết.';
-        noti.data = {taskId: newTaskResult.id};
+        noti.data = {taskId: newTaskResult.id, ticketId: ticket};
         noti.priority = NotificationPriority.MEDIUM;
         noti.type = NotificationType.STOCKKEEPER;
         const savene= await this.notificationEntityRepository.save(noti);
         saveNoti = false;
       }
     }
-
-    // create export warehouse
-    const savedtask = await this.taskRepository.findOne({
-      where: {
-        id: newTaskResult.id,
-      },
-      relations: [
-        'issues',
-        'issues.issueSpareParts',
-        'issues.issueSpareParts.sparePart',
-      ],
-    });
-
-    // create export warehouse
-    const exportWarehouse = new ExportWareHouse();
-    exportWarehouse.task = savedtask;
-    exportWarehouse.export_type = exportType.SPARE_PART;
-    exportWarehouse.detail = savedtask.issues;
-    exportWarehouse.status = exportStatus.WAITING;
-
-    await this.exportWareHouseRepository.save(exportWarehouse);
 
     return { ...newTaskResult, issues: newIssuesAdded };
   }
