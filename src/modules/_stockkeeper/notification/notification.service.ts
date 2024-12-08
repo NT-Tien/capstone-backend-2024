@@ -193,11 +193,11 @@ export class NotificationService extends BaseService<TaskEntity> {
     page: number,
     limit: number,
   ): Promise<[NotificationEntity[], number]> {
-    return this.NotificationEntityRepository.findAndCount({
+    const notifications = await this.NotificationEntityRepository.find({
       where: {
         receiver: {
-          id: 'eb488f7f-4c1b-4032-b5c0-8f543968bbf8'
-        }, 
+          id: 'eb488f7f-4c1b-4032-b5c0-8f543968bbf8',
+        },
         deletedAt: null,
       },
       order: { createdAt: 'DESC' },
@@ -205,7 +205,14 @@ export class NotificationService extends BaseService<TaskEntity> {
       skip: (page - 1) * limit,
       take: limit,
     });
+  
+    const count = notifications.filter(notification => notification.seenDate === null).length;
+
+  
+    // Trả về mảng thay vì object
+    return [notifications, count];
   }
+  
 
   async getNotiNumber(
   ): Promise< number> {

@@ -222,7 +222,7 @@ export class TaskService extends BaseService<TaskEntity> {
           }
         }); 
         noti.title = 'Tác vụ mới';
-        noti.body = 'Có tác vụ mới được giao đang cần lấy thiết bị / linh kiện, click để xem chi tiết.';
+        noti.body = 'Tác vụ ' + newTaskResult.name +' được giao đang cần lấy thiết bị / linh kiện, click để xem chi tiết.';
         noti.data = {taskId: newTaskResult.id};
         noti.priority = NotificationPriority.MEDIUM;
         noti.type = NotificationType.STOCKKEEPER;
@@ -239,7 +239,7 @@ export class TaskService extends BaseService<TaskEntity> {
           }
         }); 
         noti.title = 'Nhập mới linh kiện';
-        noti.body = 'Có tác vụ mới đang thiếu linh kiện , click để xem chi tiết.';
+        noti.body = 'Tác vụ '+ newTaskResult.name +' đang thiếu linh kiện , click để xem chi tiết.';
         noti.data = {taskId: newTaskResult.id};
         noti.priority = NotificationPriority.MEDIUM;
         noti.type = NotificationType.STOCKKEEPER;

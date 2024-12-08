@@ -9,6 +9,7 @@ import { SparePartRequestDto } from './dto/request.dto';
 import { IssueSparePartEntity } from 'src/entities/issue-spare-part.entity';
 import { QueryRunner } from 'typeorm';
 import { isUUID } from 'class-validator';
+import { NotificationEntity,NotificationType } from 'src/entities/notification.entity';
 
 
 @Injectable()
@@ -18,6 +19,8 @@ export class SparePartService extends BaseService<SparePartEntity> {
     private readonly sparePartRepository: Repository<SparePartEntity>,
     @InjectRepository(TaskEntity)
     private readonly taskRepository: Repository<TaskEntity>,
+    @InjectRepository(NotificationEntity)
+    private readonly notificationEntityRepository: Repository<NotificationEntity>,
   ) {
     super(sparePartRepository);
   }
@@ -164,6 +167,17 @@ export class SparePartService extends BaseService<SparePartEntity> {
   }
 
   async getAllSparePartNeedAddMore() {
+    const noties = await this.notificationEntityRepository.find( {
+      where :{
+        title : 'Nhập mới linh kiện',
+        seenDate: null
+      }
+    });
+    for(const noti of noties) {
+      noti.seenDate = new Date();
+      await this.notificationEntityRepository.save(noti);
+    }
+    
     // get all tasks with status = awaiting_spare_part
     const tasks = await this.taskRepository.find({
       where: {
@@ -189,7 +203,7 @@ export class SparePartService extends BaseService<SparePartEntity> {
       };
     } = {};
 
-    for (const task of tasks) {
+     for(const task of tasks) {
       for (const issue of task.issues) {
         for (const issueSparePart of issue.issueSpareParts) {
           const sparePart = issueSparePart.sparePart;

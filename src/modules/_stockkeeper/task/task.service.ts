@@ -156,6 +156,17 @@ export class TaskService extends BaseService<TaskEntity> {
   }
 
   async getOneTask(id: string) {
+    const noti = await this.notificationEntityRepository.findOne({
+      where:{
+        data:{
+          taskId: id
+        }
+      }
+    });
+    if(noti!= null){
+      noti.seenDate = new Date();
+      await this.notificationEntityRepository.save(noti);
+    }
     return await this.taskRepository.findOne({
       where: { id },
       relations: [

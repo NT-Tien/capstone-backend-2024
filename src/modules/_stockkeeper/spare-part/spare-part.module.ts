@@ -5,9 +5,10 @@ import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { SparePartService } from './spare-part.service';
 import { AuthModule } from 'src/modules/auth/auth.module';
 import { TaskEntity } from 'src/entities/task.entity';
+import { NotificationEntity } from 'src/entities/notification.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SparePartEntity, TaskEntity]), AuthModule],
+  imports: [TypeOrmModule.forFeature([SparePartEntity, TaskEntity, NotificationEntity]), AuthModule],
   controllers: [SparePartController],
   providers: [SparePartService],
 })
