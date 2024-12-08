@@ -267,7 +267,7 @@ export class TaskService extends BaseService<TaskEntity> {
     exportWarehouse.task = savedtask;
     exportWarehouse.export_type = exportType.SPARE_PART;
     exportWarehouse.detail = savedtask.issues;
-    exportWarehouse.status = exportStatus.CANCEL;
+    exportWarehouse.status = exportStatus.WAITING;
 
     await this.exportWareHouseRepository.save(exportWarehouse);
 
