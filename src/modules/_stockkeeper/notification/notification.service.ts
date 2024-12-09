@@ -208,7 +208,6 @@ export class NotificationService extends BaseService<TaskEntity> {
   
     const count = notifications.filter(notification => notification.seenDate === null).length;
 
-  
     // Trả về mảng thay vì object
     return [notifications, count];
   }
