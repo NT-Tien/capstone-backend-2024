@@ -56,14 +56,12 @@ export class NotificationService extends BaseService<TaskEntity> {
     });
 
     const taskDeviceNotYet = taskDeviceInPeriod
-    .filter(task => task.task.confirmReceiptStockkeeperSignature === 'false' 
-      && task.task.confirmReceiptStaffSignature === 'false' 
+    .filter(task =>task.status = exportStatus.ACCEPTED 
     ).length;
     result.taskDeviceNotYet = taskDeviceNotYet;
 
     const taskDeviceDone = taskDeviceInPeriod
-    .filter(task => task.task.confirmReceiptStockkeeperSignature != 'false' 
-      && task.task.confirmReceiptStaffSignature != 'false' 
+    .filter(task =>task.status = exportStatus.EXPORTED
     ).length;
     result.taskDeviceDone = taskDeviceDone;
 
@@ -76,14 +74,12 @@ export class NotificationService extends BaseService<TaskEntity> {
     });
 
     const taskSPNotYet = taskSPInPeriod
-    .filter(task => task.task.confirmReceiptStockkeeperSignature === 'false' 
-      && task.task.confirmReceiptStaffSignature === 'false' 
+    .filter(task =>task.status = exportStatus.ACCEPTED
     ).length;
     result.taskSparePartNotYet = taskSPNotYet;
 
     const taskSPeDone = taskSPInPeriod
-    .filter(task => task.task.confirmReceiptStockkeeperSignature != 'false' 
-      && task.task.confirmReceiptStaffSignature != 'false' 
+    .filter(task =>task.status = exportStatus.EXPORTED
     ).length;
     result.taskSparePartDone = taskSPeDone;
 
