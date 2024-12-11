@@ -7,9 +7,10 @@ import { TaskEntity } from 'src/entities/task.entity';
 import { ExportWareHouse } from 'src/entities/export-warehouse.entity';
 import { AccountEntity } from 'src/entities/account.entity';
 import { RequestEntity } from 'src/entities/request.entity';
+import { DeviceEntity } from 'src/entities/device.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([IssueEntity, TaskEntity, ExportWareHouse, AccountEntity, RequestEntity])],
+  imports: [TypeOrmModule.forFeature([IssueEntity, TaskEntity, ExportWareHouse, AccountEntity, RequestEntity, DeviceEntity])],
   controllers: [IssueController],
   providers: [IssueService],
 })
