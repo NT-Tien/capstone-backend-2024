@@ -80,6 +80,7 @@ export class DeviceEntity extends BaseEntity {
   @Column({
     name: 'device_code',
     nullable: true,
+    type: 'text',
   })
-  deviceCode: Date;
+  deviceCode: string;
 }
