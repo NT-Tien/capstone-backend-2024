@@ -35,6 +35,19 @@ export class DeviceController {
   }
 
   @ApiBearerAuth()
+  @ApiResponse({
+    type: DeviceResponseDto.DeviceGetAll,
+    status: 200,
+    description: 'Get all Devices not have position',
+  })
+  @Get("/all/:machine_model_id")
+  async getAllToChooseRenewDevice(
+    @Param('machine_model_id') machine_model_id: string
+  ) {
+    return await this.deviceService.getAllToChooseRenewDevice(machine_model_id);
+  }
+
+  @ApiBearerAuth()
   @ApiOperation({ summary: "Get all machine models with unused devices"})
   @Get("/all/unused")
   async getAllUnused() {

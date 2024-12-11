@@ -19,6 +19,31 @@ export class DeviceService extends BaseService<DeviceEntity> {
     super(deviceRepository);
   }
 
+    // get all with relations
+    async getAllToChooseRenewDevice(machine_model_id: string): Promise<any> {
+      const querySuggest = this.deviceRepository
+        .createQueryBuilder('device')
+        .leftJoinAndSelect('device.machineModel', 'machineModel');
+        querySuggest.where('device.positionX IS NULL');
+        querySuggest.andWhere('device.positionY IS NULL');
+        querySuggest.andWhere('device.machineModelId = :machine_model_id', { machine_model_id });
+      let result_suggest = await querySuggest.getMany();
+
+      const queryOther = this.deviceRepository
+        .createQueryBuilder('device')
+        .leftJoinAndSelect('device.machineModel', 'machineModel');
+        queryOther.where('device.positionX IS NOT NULL');
+        queryOther.andWhere('device.positionY IS NOT NULL');
+        // != machine_model_id
+        queryOther.andWhere('device.machineModelId != :machine_model_id', { machine_model_id });
+      let result_other = await queryOther.getMany();
+  
+      return {
+        result_suggest,
+        result_other
+      }
+    }
+
   // get all with relations
   async getAllWithRelationsNoPosition(): Promise<DeviceEntity[]> {
     const query = this.deviceRepository
