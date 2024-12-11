@@ -28,7 +28,7 @@ export class MachineModelService extends BaseService<MachineModelEntity> {
   async customGetOne(id: string) {
     return await this.machineModelRepository.findOne({
       where: { id },
-      relations: ['spareParts'],
+      relations: ['spareParts','devices'],
     });
   }
 
