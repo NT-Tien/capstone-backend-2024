@@ -246,4 +246,18 @@ export class RequestController {
   ) {
     return this.requestService.createReturnWarrantyTask(id, user.id, dto);
   }
+
+  @ApiOperation({
+    summary: 'Add a replacement device to a request',
+    description: "Add a replacement device after the request has been approved"
+  })
+  @ApiBearerAuth()
+  @Post('/warranty/add-replacement-device/:id')
+  async addReplacementDevice(
+    @Param('id') id: string,
+    @Headers('user') user: any,
+    @Body() dto: RequestRequestDto.AddReplacementDevice
+  ) {
+    return this.requestService.addReplacementDeviceForWarranty(id, user.id, dto);
+  }
 }

@@ -387,16 +387,6 @@ export class TaskService extends BaseService<TaskEntity> {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
     }
 
-    // update current task
-    task.status = TaskStatus.COMPLETED;
-    task.last_issues_data = JSON.stringify(task.issues);
-    task.completedAt = new Date();
-    task.issues.forEach((i) => {
-      if (i.status === IssueStatus.PENDING) {
-        i.status = IssueStatus.RESOLVED;
-      }
-    });
-
     // get current warranty card
     const warrantyCards = await this.deviceWarrantyCardRepository.find({
       where: {
@@ -418,7 +408,21 @@ export class TaskService extends BaseService<TaskEntity> {
       throw new HttpException('Warranty card not found', HttpStatus.NOT_FOUND);
     }
 
-    // create warranty card
+    // update current task
+    task.status = TaskStatus.COMPLETED;
+    task.last_issues_data = JSON.stringify(task.issues);
+    task.completedAt = new Date();
+
+    // make all task issues RESOLVED
+    const unresolvedIssues = task.issues.filter(i => i.status === IssueStatus.PENDING)
+    unresolvedIssues.forEach(async (i) => {
+      await this.issueRepository.save({
+        ...i,
+        status: IssueStatus.RESOLVED,
+      })
+    })
+
+    // update warranty card
     this.deviceWarrantyCardRepository.update(
       {
         id: currentWarrantyCard.id,

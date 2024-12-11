@@ -506,6 +506,130 @@ export class RequestService extends BaseService<RequestEntity> {
     return request;
   }
 
+  async addReplacementDeviceForWarranty(
+    id: string,
+    userId: string,
+    dto: RequestRequestDto.AddReplacementDevice,
+  ) {
+    // update replacement device in database
+    this.requestRepository.update(
+      {
+        id,
+      },
+      {
+        is_replacement_device: true,
+        temporary_replacement_device: {
+          id: dto.deviceId,
+        },
+      },
+    );
+
+    const request = await this.requestRepository.findOneOrFail({
+      where: {
+        id,
+      },
+      relations: [
+        'device',
+        'device.area',
+        'issues',
+        'tasks',
+        'issues.typeError',
+        'temporary_replacement_device',
+        'temporary_replacement_device.machineModel',
+      ],
+    });
+
+    const replacementDevice = await this.deviceRepository.findOneOrFail({
+      where: {
+        id: dto.deviceId,
+      },
+    });
+    console.log("UPDATED REQUEST")
+
+    console.log(request.device)
+
+    // if current active device hasn't been disassembled (positionX and positionY is not null), then automatically create a new task to assemble the replacement device
+    if (request.device.positionX === null && request.device.positionY === null && request.device.area === null) {
+      console.log("CREATING TASK")
+      const installIssue = await this.issueRepository.save({
+        fixType: FixItemType.REPLACE,
+        typeError: {
+          id: Warranty.install_replacement,
+        },
+        description: request.temporary_replacement_device.machineModel.name,
+        status: IssueStatus.PENDING,
+        request: {
+          id: request.id,
+        },
+      });
+
+      const targetDate = new Date();
+      const nextDate = new Date(targetDate);
+      nextDate.setDate(nextDate.getDate() + 1);
+
+      const accounts = await this.accountRepository
+        .createQueryBuilder('account')
+        .leftJoinAndSelect(
+          'account.tasks',
+          'tasks',
+          'tasks.status in (:...statuses) AND tasks.fixerDate >= :date AND tasks.fixerDate < :nextDate',
+          {
+            statuses: [TaskStatus.ASSIGNED, TaskStatus.IN_PROGRESS],
+            date: targetDate.toISOString(),
+            nextDate: nextDate.toISOString(),
+          },
+        )
+        .where('account.role = :role', { role: Role.staff })
+        .getMany();
+
+      const accountsWithFewestTasks = accounts.reduce(
+        (acc, cur) => {
+          if (cur.tasks.length < acc.current) {
+            acc.accounts = [cur];
+            acc.current = cur.tasks.length;
+          } else if (cur.tasks.length === acc.current) {
+            acc.accounts.push(cur);
+          }
+          return acc;
+        },
+        {
+          accounts: [],
+          current: Infinity,
+        },
+      );
+
+      const randomAccount =
+        accountsWithFewestTasks.accounts[
+          Math.floor(Math.random() * accountsWithFewestTasks.accounts.length)
+        ];
+
+      const installTask = await this.taskRepository.save({
+        request: request,
+        issues: [installIssue],
+        operator: 0,
+        device: request.device,
+        device_renew: request.temporary_replacement_device,
+        device_static: request.device,
+        totalTime: 60,
+        priority: false,
+        status: TaskStatus.ASSIGNED,
+        name: TaskNameGenerator.generateInstallReplacement(request),
+        fixer: randomAccount,
+        fixerDate: targetDate,
+        type: TaskType.INSTALL_REPLACEMENT,
+      });
+
+      const exportWarehouse = new ExportWareHouse();
+      exportWarehouse.task = installTask;
+      exportWarehouse.export_type = exportType.DEVICE;
+      exportWarehouse.detail = installTask.device_renew.id;
+      exportWarehouse.status = exportStatus.ACCEPTED;
+      await this.exportWareHouseRepository.save(exportWarehouse);
+    }
+
+    return request;
+  }
+
   async warrantyFailed(id: string) {
     const request = await this.requestRepository.findOne({
       where: { id },

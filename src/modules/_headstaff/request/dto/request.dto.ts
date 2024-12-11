@@ -216,4 +216,11 @@ export namespace RequestRequestDto {
     @Expose()
     priority: boolean;
   }
+
+  export class AddReplacementDevice extends BaseDTO {
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    deviceId: string
+  }
 }

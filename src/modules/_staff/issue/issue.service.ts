@@ -5,7 +5,7 @@ import {
   IssueEntity,
   IssueStatus,
 } from '../../../entities/issue.entity';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IssueRequestDto } from './dto/request.dto';
 import { TaskEntity, TaskStatus, TaskType } from 'src/entities/task.entity';
@@ -18,6 +18,7 @@ import {
 import TaskNameGenerator from 'src/utils/taskname-generator';
 import { AccountEntity, Role } from 'src/entities/account.entity';
 import { RequestEntity } from 'src/entities/request.entity';
+import { DeviceEntity } from 'src/entities/device.entity';
 
 @Injectable()
 export class IssueService extends BaseService<IssueEntity> {
@@ -32,6 +33,8 @@ export class IssueService extends BaseService<IssueEntity> {
     private readonly accountRepository: Repository<AccountEntity>,
     @InjectRepository(RequestEntity)
     private readonly requestRepository: Repository<RequestEntity>,
+    @InjectRepository(DeviceEntity)
+    private readonly deviceRepository: Repository<DeviceEntity>,
   ) {
     super(issueRepository);
   }
@@ -176,6 +179,19 @@ export class IssueService extends BaseService<IssueEntity> {
       await this.exportWareHouseRepository.save(exportWarehouse);
     }
 
+    // remove active device positionX and positionY
+    await this.deviceRepository.update(
+      {
+        id: issue.request.device.id,
+      },
+      {
+        positionX: null,
+        positionY: null,
+        area: null,
+        isWarranty: true,
+      },
+    );
+
     return this.issueRepository.update(
       {
         id: issueId,
@@ -243,7 +259,7 @@ export class IssueService extends BaseService<IssueEntity> {
     });
 
     task.completedAt = new Date();
-    task.status = TaskStatus.COMPLETED;
+    task.status = TaskStatus.HEAD_STAFF_CONFIRM;
 
     await this.taskRepository.save(task);
 
