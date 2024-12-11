@@ -16,6 +16,10 @@ import { HeadStaffNotificationGateway } from 'src/modules/notifications/gateways
 import { HeadNotificationGateway } from 'src/modules/notifications/gateways/head.gateway';
 import { Between, Repository } from 'typeorm';
 import { TaskRequestDto } from './dto/request.dto';
+import {
+  DeviceWarrantyCardEntity,
+  DeviceWarrantyCardStatus,
+} from 'src/entities/device-warranty-card.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -34,6 +38,8 @@ export class TaskService extends BaseService<TaskEntity> {
     private readonly exportWareHouseRepository: Repository<ExportWareHouse>,
     @InjectRepository(RequestEntity)
     private readonly requestRepository: Repository<RequestEntity>,
+    @InjectRepository(DeviceWarrantyCardEntity)
+    private readonly deviceWarrantyCardRepository: Repository<DeviceWarrantyCardEntity>,
 
     private readonly headStaffGateway: HeadStaffNotificationGateway,
     private readonly headGateway: HeadNotificationGateway,
@@ -356,7 +362,11 @@ export class TaskService extends BaseService<TaskEntity> {
     return result;
   }
 
-  async completeTaskWarranty(taskId: string, userId: string) {
+  async completeTaskWarranty(
+    taskId: string,
+    userId: string,
+    dto: TaskRequestDto.FinishSendWarrantyDto,
+  ) {
     const task = await this.taskRepository.findOne({
       where: {
         id: taskId,
@@ -369,6 +379,7 @@ export class TaskService extends BaseService<TaskEntity> {
         'fixer',
         'issues',
         'issues.typeError',
+        'device',
       ],
     });
 
@@ -380,6 +391,54 @@ export class TaskService extends BaseService<TaskEntity> {
     task.status = TaskStatus.COMPLETED;
     task.last_issues_data = JSON.stringify(task.issues);
     task.completedAt = new Date();
+    task.issues.forEach((i) => {
+      if (i.status === IssueStatus.PENDING) {
+        i.status = IssueStatus.RESOLVED;
+      }
+    });
+
+    // get current warranty card
+    const warrantyCards = await this.deviceWarrantyCardRepository.find({
+      where: {
+        request: {
+          id: task.request.id,
+        },
+      },
+      relations: ['device'],
+    });
+
+    const currentWarrantyCard = warrantyCards.find((wc) => {
+      return (
+        wc.device.id === task.device.id &&
+        wc.status === DeviceWarrantyCardStatus.UNSENT
+      );
+    });
+
+    if(!currentWarrantyCard) {
+      throw new HttpException('Warranty card not found', HttpStatus.NOT_FOUND);
+    }
+
+    // create warranty card
+    this.deviceWarrantyCardRepository.update(
+      {
+        id: currentWarrantyCard.id,
+      },
+      {
+        code: dto.code,
+        send_date: new Date(dto.send_date),
+        receive_date: new Date(dto.receive_date),
+        wc_receiverName: dto.wc_receiverName,
+        wc_receiverPhone: dto.wc_receiverPhone,
+        send_note: dto.send_note,
+        wc_address_1: dto.wc_address_1,
+        wc_name: dto.wc_name,
+        wc_address_2: dto.wc_address_2,
+        wc_address_city: dto.wc_address_city,
+        wc_address_district: dto.wc_address_district,
+        wc_address_ward: dto.wc_address_ward,
+        status: DeviceWarrantyCardStatus.WC_PROCESSING,
+      },
+    );
 
     const result = await this.taskRepository.save(task);
 

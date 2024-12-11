@@ -102,7 +102,7 @@ export class DeviceService extends BaseService<DeviceEntity> {
 
   async getAllUnused() {
     const machineModels = await this.machineModelRepository.find({
-      relations: ['devices', 'devices.area'],
+      relations: ['devices', 'devices.area', 'devices.machineModel', 'devices.requests'],
     });
 
     return machineModels.map((mm) => ({

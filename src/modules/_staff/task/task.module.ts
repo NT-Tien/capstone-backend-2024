@@ -11,6 +11,7 @@ import { AuthModule } from 'src/modules/auth/auth.module';
 import { TaskController } from './task.controller';
 import { TaskService } from './task.service';
 import { Global_NotificationsModule } from 'src/modules/notifications/notifications.module';
+import { DeviceWarrantyCardEntity } from 'src/entities/device-warranty-card.entity';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { Global_NotificationsModule } from 'src/modules/notifications/notificati
       AccountEntity,
       RequestEntity,
       ExportWareHouse,
+      DeviceWarrantyCardEntity,
     ]),
     AuthModule,
     Global_NotificationsModule,
