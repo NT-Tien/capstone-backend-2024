@@ -259,7 +259,7 @@ export class IssueService extends BaseService<IssueEntity> {
     });
 
     task.completedAt = new Date();
-    task.status = TaskStatus.COMPLETED;
+    task.status = TaskStatus.HEAD_STAFF_CONFIRM;
 
     await this.taskRepository.save(task);
 
@@ -300,7 +300,7 @@ export class IssueService extends BaseService<IssueEntity> {
         id: issue.task.id,
       },
       {
-        status: TaskStatus.HEAD_STAFF_CONFIRM,
+        status: TaskStatus.COMPLETED,
         completedAt: new Date(),
         last_issues_data: issue.task.issues,
         imagesVerify: dto.imagesVerify,
