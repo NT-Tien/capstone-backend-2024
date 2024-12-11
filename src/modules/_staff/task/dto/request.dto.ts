@@ -4,7 +4,6 @@ import { IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
 import { BaseDTO } from 'src/common/base/dto.base';
 
 export namespace TaskRequestDto {
-
   export class TaskAllCount extends BaseDTO {
     @ApiProperty()
     @IsNotEmpty()
@@ -55,7 +54,7 @@ export namespace TaskRequestDto {
     @ApiPropertyOptional()
     @IsOptional()
     @Expose()
-    autoClose?: string
+    autoClose?: string;
   }
 
   export class TaskUpdateDto extends BaseDTO {
@@ -95,5 +94,67 @@ export namespace TaskRequestDto {
     @IsOptional()
     @Expose()
     videosVerify: string;
+  }
+
+  export class FinishSendWarrantyDto extends BaseDTO {
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    code: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    send_date: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    receive_date: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    wc_receiverName: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    wc_receiverPhone: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @Expose()
+    send_note: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    wc_name: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    wc_address_1: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    wc_address_2: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    wc_address_ward: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    wc_address_district: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    wc_address_city: string;
   }
 }

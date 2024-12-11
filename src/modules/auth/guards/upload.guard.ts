@@ -19,7 +19,7 @@ export class UploadGuard extends JWTGuard implements CanActivate {
         user &&
         (user.role === Role.admin ||
           user.role === Role.staff ||
-          user.role === Role.stockkeeper)
+          user.role === Role.stockkeeper || user.role === Role.headstaff)
       ) {
         return true;
       } else return false;

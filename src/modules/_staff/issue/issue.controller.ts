@@ -53,6 +53,34 @@ export class IssueController {
   ) {
     return this.issueService.failIssueWarranty(user.id, issueId, dto);
   }
-  
 
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Resolve an DISASSEMBLE DEVICE issue in WARRANTY task',
+    description:
+      'Used to complete an DISASSEMBLE DEVICE issue and provide images and videos for verification.',
+  })
+  @Put('warrranty/disassemble/:issueId/resolved')
+  resolveWarrantyDisassembleIssue(
+    @Param('issueId') issueId: UUID,
+    @Body() dto: IssueRequestDto.ResolveIssue,
+    @Headers('user') user: any,
+  ) {
+    return this.issueService.resolveWarrantyDisassembleIssue(user.id, issueId, dto);
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Resolve an DISASSEMBLE DEVICE issue in WARRANTY task',
+    description:
+      'Used to complete an DISASSEMBLE DEVICE issue and provide images and videos for verification.',
+  })
+  @Put('warrranty/install-replacement/:issueId/resolved')
+  resolveWarrantyInstallReplacementIssue(
+    @Param('issueId') issueId: UUID,
+    @Body() dto: IssueRequestDto.ResolveIssue,
+    @Headers('user') user: any,
+  ) {
+    return this.issueService.resolveWarrantyInstallReplacementIssue(user.id, issueId, dto);
+  }
 }
