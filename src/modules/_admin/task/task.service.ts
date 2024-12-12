@@ -7,6 +7,7 @@ import { RequestEntity } from 'src/entities/request.entity';
 import { TaskEntity, TaskStatus } from 'src/entities/task.entity';
 import { Between, Repository } from 'typeorm';
 import { TaskRequestDto } from './dto/request.dto';
+import { Renew, Warranty } from 'src/common/constants';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -200,100 +201,11 @@ export class TaskService extends BaseService<TaskEntity> {
   }
 
   async getDashboardInfo(dto: TaskRequestDto.DashboardInfoDto) {
-    // let tasks = await this.taskRepository.find({
-    //   relations: [
-    //     'request',
-    //     'device',
-    //     'device.area',
-    //     'issues',
-    //     'issues.typeError',
-    //     'issues.issueSpareParts',
-    //   ],
-    // });
-
-    // switch (dto.type) {
-    //   case 'warranty': {
-    //     tasks = tasks.filter(
-    //       (task) => task.request.is_warranty === true,
-    //       // !!task.issues.find(
-    //       //   (issue) =>
-    //       //     issue.typeError.id === 'bc4b133f-3911-464a-a3fd-1850bd88ead9' ||
-    //       //     issue.typeError.id === '2d45b02b-f4b7-470b-815f-817628fee1fd',
-    //       // ),
-    //     );
-    //     break;
-    //   }
-    //   case 'renew': {
-    //     tasks = tasks.filter(
-    //       (task) =>
-    //         !!task.issues.find(
-    //           (issue) =>
-    //             issue.typeError.id === '2dd17dcc-c571-4248-ac8b-3a77ef2a12bc',
-    //         ),
-    //     );
-    //     break;
-    //   }
-    //   case 'fix-sp':
-    //   case 'fix-rpl-sp': {
-    //     tasks = tasks.filter((task) =>
-    //       task.issues.find(
-    //         (issue) =>
-    //           issue.typeError.id !== '2dd17dcc-c571-4248-ac8b-3a77ef2a12bc' &&
-    //           issue.typeError.id !== 'bc4b133f-3911-464a-a3fd-1850bd88ead9' &&
-    //           issue.typeError.id !== '2d45b02b-f4b7-470b-815f-817628fee1fd',
-    //       ),
-    //     );
-    //     break;
-    //   }
-    //   case 'all': {
-    //     break;
-    //   }
-    // }
-
-    // tasks = tasks.filter(
-    //   (task) =>
-    //     new Date(task.request.createdAt) >= new Date(dto.startDate) &&
-    //     new Date(task.request.createdAt) <= new Date(dto.endDate),
-    // );
-
-    // if (dto.areaId) {
-    //   tasks = tasks.filter((task) => task.device.area.id === dto.areaId);
-    // }
-
-    // console.log(dto)
-
-    // return {
-    //   [TaskStatus.AWAITING_SPARE_SPART]: tasks.filter(
-    //     (task) => task.status === TaskStatus.AWAITING_SPARE_SPART,
-    //   ).length,
-    //   [TaskStatus.AWAITING_FIXER]: tasks.filter(
-    //     (task) => task.status === TaskStatus.AWAITING_FIXER,
-    //   ).length,
-    //   [TaskStatus.ASSIGNED]: tasks.filter(
-    //     (task) => task.status === TaskStatus.ASSIGNED,
-    //   ).length,
-    //   [TaskStatus.IN_PROGRESS]: tasks.filter(
-    //     (task) => task.status === TaskStatus.IN_PROGRESS,
-    //   ).length,
-    //   [TaskStatus.HEAD_STAFF_CONFIRM]: tasks.filter(
-    //     (task) => task.status === TaskStatus.HEAD_STAFF_CONFIRM,
-    //   ).length,
-    //   [TaskStatus.COMPLETED]: tasks.filter(
-    //     (task) => task.status === TaskStatus.COMPLETED,
-    //   ).length,
-    //   [TaskStatus.CANCELLED]: tasks.filter(
-    //     (task) => task.status === TaskStatus.CANCELLED,
-    //   ).length,
-    //   'spare-part-fetched': tasks.filter(
-    //     (task) => task.status === TaskStatus.ASSIGNED && task.confirmReceipt,
-    //   ).length,
-    // };
-
     const query = this.taskRepository
       .createQueryBuilder('task')
       .leftJoinAndSelect('task.request', 'request')
       .leftJoinAndSelect('task.device', 'device')
-      .leftJoinAndSelect('device.area', 'area')
+      .leftJoinAndSelect('request.area', 'area')
       .leftJoinAndSelect('task.issues', 'issues')
       .leftJoinAndSelect('issues.typeError', 'typeError')
       .leftJoinAndSelect('issues.issueSpareParts', 'issueSpareParts');
@@ -333,7 +245,6 @@ export class TaskService extends BaseService<TaskEntity> {
         break;
       }
     }
-    console.log(dto.startDate, dto.endDate);
     query.andWhere('request.createdAt >= :startDate', {
       startDate: dto.startDate,
     });
@@ -400,31 +311,31 @@ export class TaskService extends BaseService<TaskEntity> {
           confirmReceipt: false,
         })
         .getCount(),
-        'uninstall-device-old-already-and-move-to-stock': await query
+      'uninstall-device-old-already-and-move-to-stock': await query
         .andWhere('task.status = :status', {
           status: TaskStatus.COMPLETED,
         })
         .andWhere('task.confirmReceipt = :confirmReceipt', {
           confirmReceipt: true,
         })
-        .andWhere('typeError.name = :name', {
+        .andWhere('typeError.id = :id', {
           // name inclue Tháo
-          name: 'Tháo gỡ và đem máy cũ xuống kho',
+          id: Renew.dismantleOldDevice,
         })
         .getCount(),
-        'uninstall-device-already-and-move-to-warranty': await query
+      'uninstall-device-already-and-move-to-warranty': await query
         .andWhere('task.status = :status', {
           status: TaskStatus.COMPLETED,
         })
         .andWhere('task.confirmReceipt = :confirmReceipt', {
           confirmReceipt: true,
         })
-        .andWhere('typeError.name = :name', {
+        .andWhere('typeError.id = :id', {
           // name inclue Tháo
-          name: 'Tháo rời thiết bị',
+          id: Warranty.disassemble
         })
         .getCount(),
-        'uninstall-device-waiter-already-and-move-to-stock': await query
+      'uninstall-device-waiter-already-and-move-to-stock': await query
         .andWhere('task.status = :status', {
           status: TaskStatus.COMPLETED,
         })
@@ -436,7 +347,7 @@ export class TaskService extends BaseService<TaskEntity> {
           name: 'Tháo gỡ thiết bị thay thế',
         })
         .getCount(),
-        'install-device-warranted-already': await query
+      'install-device-warranted-already': await query
         .andWhere('task.status = :status', {
           status: TaskStatus.COMPLETED,
         })
@@ -448,7 +359,7 @@ export class TaskService extends BaseService<TaskEntity> {
           name: 'Lắp đặt thiết bị',
         })
         .getCount(),
-        'install-device-waiter-already': await query
+      'install-device-waiter-already': await query
         .andWhere('task.status = :status', {
           status: TaskStatus.COMPLETED,
         })
@@ -460,7 +371,7 @@ export class TaskService extends BaseService<TaskEntity> {
           name: 'Lắp đặt thiết bị thay thế',
         })
         .getCount(),
-        'install-device-already-from-stock': await query
+      'install-device-already-from-stock': await query
         .andWhere('task.status = :status', {
           status: TaskStatus.COMPLETED,
         })

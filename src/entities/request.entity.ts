@@ -13,6 +13,7 @@ import { FeedbackEntity } from './feedback.entity';
 import { IssueEntity } from './issue.entity';
 import { TaskEntity } from './task.entity';
 import { DeviceWarrantyCardEntity } from 'src/entities/device-warranty-card.entity';
+import { AreaEntity } from 'src/entities/area.entity';
 
 export enum RequestStatus {
   PENDING = 'PENDING', // use for request renew
@@ -63,12 +64,20 @@ export class RequestEntity extends BaseEntity {
   })
   device: DeviceEntity;
 
+  @ManyToOne(() => AreaEntity, (area) => area.id, {
+    nullable: true,
+  })
+  area?: AreaEntity;
+
   @ManyToOne(() => DeviceEntity, (device) => device.id, {
     nullable: true,
   })
   temporary_replacement_device?: DeviceEntity;
 
-  @OneToMany(() => DeviceWarrantyCardEntity, (deviceWarrantyCard) => deviceWarrantyCard.request)
+  @OneToMany(
+    () => DeviceWarrantyCardEntity,
+    (deviceWarrantyCard) => deviceWarrantyCard.request,
+  )
   deviceWarrantyCards?: DeviceWarrantyCardEntity[];
 
   @Column({

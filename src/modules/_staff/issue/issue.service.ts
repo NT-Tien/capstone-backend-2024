@@ -320,6 +320,33 @@ export class IssueService extends BaseService<IssueEntity> {
     const save = await this.issueRepository.save(issue);
 
     if (
+      issue.task.type === TaskType.WARRANTY_RECEIVE &&
+      dto.failReason.includes('Đổi ngày nhận máy')
+    ) {
+      // close the current task and release all issues
+      await this.taskRepository.update(
+        {
+          id: issue.task.id,
+        },
+        {
+          status: TaskStatus.COMPLETED,
+          completedAt: new Date(),
+        },
+      );
+
+      issue.task.issues.forEach(async (issue) => {
+        await this.issueRepository.update(
+          {
+            id: issue.id,
+          },
+          {
+            status: IssueStatus.CANCELLED,
+          },
+        );
+      });
+    }
+
+    if (
       issue.task.type === TaskType.WARRANTY_SEND &&
       dto.failReason.includes('Trung tâm bảo hành từ chối nhận')
     ) {
