@@ -302,16 +302,18 @@ export class IssueService extends BaseService<IssueEntity> {
       return_spare_part_data = [];
     }
     // flat array issue.issueSpareParts
-    let newIssueSpareParts = issue.issueSpareParts.flat();
+    let newIssueSpareParts = issue.issueSpareParts;
+    
     // push new return spare part data
     return_spare_part_data.push(newIssueSpareParts);
+
     // update task
     await this.taskRepository.update(
       {
         id: issue.task.id,
       },
       {
-        return_spare_part_data: return_spare_part_data,
+        return_spare_part_data: return_spare_part_data.flat(),
       },
     );
     issue.status = IssueStatus.FAILED;
