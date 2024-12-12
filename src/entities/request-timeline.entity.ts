@@ -1,5 +1,5 @@
 import { BaseEntity } from 'src/common/base/entity.base';
-import { AccountEntity } from 'src/entities/account.entity';
+import { AccountEntity, Role } from 'src/entities/account.entity';
 import { RequestEntity } from 'src/entities/request.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
@@ -24,9 +24,12 @@ export class RequestTimeline extends BaseEntity {
   action: string;
 
   @Column({
-    type: 'boolean',
+    type: "enum",
+    array: true,
+    enum: Role,
+    default: [],
     nullable: false,
-    default: false,
+    name: 'visible_roles'
   })
-  visibleToUser: boolean;
+  visible_roles: Role[];
 }

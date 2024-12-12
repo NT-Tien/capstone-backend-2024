@@ -137,6 +137,7 @@ export class RequestService extends BaseService<RequestEntity> {
       device: device,
       old_device: device,
       requester_note: data.requester_note,
+      area: device.area,
       code:
         format(new Date(), 'ddMMyy') +
         '_' +

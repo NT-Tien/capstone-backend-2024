@@ -25,17 +25,27 @@ export class AppController {
     const requests = await this.requestRepository.find();
 
     requests.forEach((req) => {
-      if (req.old_device.area === null) return;
-      console.log(req.old_device.area.id);
-
-      this.requestRepository.update(
-        {
-          id: req.id,
-        },
-        {
-          area: req.old_device.area,
-        },
-      );
+      if (req.old_device.area === null) {
+        this.requestRepository.update(
+          {
+            id: req.id,
+          },
+          {
+            area: {
+              id: '4727b5ec-87a9-4aec-9aef-c56f06258426',
+            },
+          },
+        );
+      } else {
+        this.requestRepository.update(
+          {
+            id: req.id,
+          },
+          {
+            area: req.old_device.area,
+          },
+        );
+      }
     });
   }
 
