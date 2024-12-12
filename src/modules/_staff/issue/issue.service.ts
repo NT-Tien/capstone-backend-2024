@@ -292,7 +292,26 @@ export class IssueService extends BaseService<IssueEntity> {
     if (!issue || issue?.task?.fixer.id !== userId) {
       throw new HttpException('Issue not found', HttpStatus.NOT_FOUND);
     }
-
+    let task = await this.taskRepository.findOne({ where: { id: issue.task.id } });
+    if (!task) {
+      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+    }
+    let return_spare_part_data = task.return_spare_part_data;
+    // if null convert to empty array
+    if (!return_spare_part_data) {
+      return_spare_part_data = [];
+    }
+    // push new return spare part data
+    return_spare_part_data.push(issue.issueSpareParts);
+    // update task
+    await this.taskRepository.update(
+      {
+        id: issue.task.id,
+      },
+      {
+        return_spare_part_data: return_spare_part_data,
+      },
+    );
     issue.status = IssueStatus.FAILED;
     issue.failReason = dto.failReason;
     return this.issueRepository.save(issue);
