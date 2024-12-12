@@ -403,6 +403,11 @@ export class RequestService extends BaseService<RequestEntity> {
       relations: ['device', 'device.area', 'device.machineModel', 'requester'],
     });
 
+    // if request.status == RequestStatus.APPROVED then return
+    if (request.status == RequestStatus.APPROVED){
+      return request;
+    }
+
     if (request != null ){
       const timeline = new RequestTimeline();
       timeline.visible_roles = [Role.admin, Role.head];
