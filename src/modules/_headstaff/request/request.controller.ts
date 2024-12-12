@@ -246,4 +246,41 @@ export class RequestController {
   ) {
     return this.requestService.createReturnWarrantyTask(id, user.id, dto);
   }
+
+  @ApiOperation({
+    summary: 'Add a replacement device to a request',
+    description: "Add a replacement device after the request has been approved"
+  })
+  @ApiBearerAuth()
+  @Post('/warranty/add-replacement-device/:id')
+  async addReplacementDevice(
+    @Param('id') id: string,
+    @Headers('user') user: any,
+    @Body() dto: RequestRequestDto.AddReplacementDevice
+  ) {
+    return this.requestService.addReplacementDeviceForWarranty(id, user.id, dto);
+  }
+
+  @ApiOperation({
+    summary: "Update warranty receival date",
+    description: "Update warranty receival date"
+  })
+  @ApiBearerAuth()
+  @Put('/warranty/update-receival-date/:id')
+  async updateWarrantyReceivalDate(
+    @Param('id') id: string,
+    @Headers('user') user: any,
+    @Body() dto: RequestRequestDto.UpdateWarrantyReceivalDate
+  ) {
+    return this.requestService.updateWarrantyReceivalDate(id, user.id, dto);
+  }
+
+  @Put("/close/:id")
+  async requestClose(
+    @Param('id') id: string,
+    @Headers('user') user: any,
+    @Body() dto: RequestRequestDto.RequestClose
+  ) {
+    return this.requestService.requestClose(id, user.id, dto);
+  }
 }

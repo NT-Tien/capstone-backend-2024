@@ -20,6 +20,25 @@ export class AppController {
     private readonly areaRepository: Repository<AreaEntity>,
   ) {}
 
+  @Get('/update-area-request')
+  async requestUpdateArea() {
+    const requests = await this.requestRepository.find();
+
+    requests.forEach((req) => {
+      if (req.old_device.area === null) return;
+      console.log(req.old_device.area.id);
+
+      this.requestRepository.update(
+        {
+          id: req.id,
+        },
+        {
+          area: req.old_device.area,
+        },
+      );
+    });
+  }
+
   @Get()
   async addDeviceStaticToTask() {
     const query = this.taskRepository.createQueryBuilder('task');
@@ -49,7 +68,7 @@ export class AppController {
 
     const area = await this.areaRepository.find({});
     const current = area[0];
-    console.log(current)
+    console.log(current);
 
     for (const request of bad) {
       const device = request.device;
@@ -66,23 +85,23 @@ export class AppController {
 
   @Get('/test')
   async idk() {
-    const all = await this.requestRepository.find({})
+    const all = await this.requestRepository.find({});
 
-    const bad = all.filter((req) => req.old_device.area === null)
+    const bad = all.filter((req) => req.old_device.area === null);
 
     const area = await this.areaRepository.find({});
     const current = area[0];
-    
-    for(const request of bad) {
-        const device = request.old_device;
-        if (!device.positionX) device.positionX = Math.floor(Math.random() * 100);
-        if (!device.positionY) device.positionY = Math.floor(Math.random() * 100);
-        if (!device.area) device.area = current;
 
-        this.requestRepository.save({
-            ...request,
-            old_device: device,
-        });
+    for (const request of bad) {
+      const device = request.old_device;
+      if (!device.positionX) device.positionX = Math.floor(Math.random() * 100);
+      if (!device.positionY) device.positionY = Math.floor(Math.random() * 100);
+      if (!device.area) device.area = current;
+
+      this.requestRepository.save({
+        ...request,
+        old_device: device,
+      });
     }
   }
 }

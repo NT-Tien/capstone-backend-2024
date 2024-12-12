@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from 'src/common/base/service.base';
 import { FixItemType } from 'src/entities/issue.entity';
@@ -8,6 +8,8 @@ import { Repository } from 'typeorm';
 import { SparePartRequestDto } from './dto/request.dto';
 import { IssueSparePartEntity } from 'src/entities/issue-spare-part.entity';
 import { QueryRunner } from 'typeorm';
+import { isUUID } from 'class-validator';
+import { NotificationEntity,NotificationType } from 'src/entities/notification.entity';
 
 
 @Injectable()
@@ -17,8 +19,19 @@ export class SparePartService extends BaseService<SparePartEntity> {
     private readonly sparePartRepository: Repository<SparePartEntity>,
     @InjectRepository(TaskEntity)
     private readonly taskRepository: Repository<TaskEntity>,
+    @InjectRepository(NotificationEntity)
+    private readonly notificationEntityRepository: Repository<NotificationEntity>,
   ) {
     super(sparePartRepository);
+  }
+
+  async addSparepartWarranty(id: string, entity: SparePartRequestDto.SparePartUpdateDto) {
+    if (!isUUID(id)) throw new HttpException('Id is incorrect', 400);
+    // find and update
+    let found = await this.getOne(id) as any;
+    if (!found) throw new HttpException('Spare part not found', 404);
+    entity.quantity = found.quantity + entity.quantity;
+    return this.sparePartRepository.update(id, entity as any).then(() => this.getOne(id));
   }
 
   async incrementQuantitySpareParts(
@@ -154,10 +167,21 @@ export class SparePartService extends BaseService<SparePartEntity> {
   }
 
   async getAllSparePartNeedAddMore() {
+    const noties = await this.notificationEntityRepository.find( {
+      where :{
+        title : 'Nhập mới linh kiện',
+        seenDate: null
+      }
+    });
+    for(const noti of noties) {
+      noti.seenDate = new Date();
+      await this.notificationEntityRepository.save(noti);
+    }
+    
     // get all tasks with status = awaiting_spare_part
     const tasks = await this.taskRepository.find({
       where: {
-        status: TaskStatus.AWAITING_SPARE_SPART,
+        // status: TaskStatus.AWAITING_SPARE_SPART,
       },
       relations: [
         'issues',
@@ -166,6 +190,9 @@ export class SparePartService extends BaseService<SparePartEntity> {
         'issues.issueSpareParts.sparePart.machineModel',
       ],
     });
+
+    console.log('tasks', tasks);
+    
 
     const map: {
       [key: string]: {
@@ -176,7 +203,7 @@ export class SparePartService extends BaseService<SparePartEntity> {
       };
     } = {};
 
-    for (const task of tasks) {
+     for(const task of tasks) {
       for (const issue of task.issues) {
         for (const issueSparePart of issue.issueSpareParts) {
           const sparePart = issueSparePart.sparePart;
@@ -199,6 +226,9 @@ export class SparePartService extends BaseService<SparePartEntity> {
         }
       }
     }
+
+    console.log(map);
+    
 
     const values = Object.values(map);
     for (const value of values) {

@@ -287,7 +287,7 @@ export class RequestService extends BaseService<RequestEntity> {
     const query = this.requestRepository
       .createQueryBuilder('request')
       .leftJoinAndSelect('request.device', 'device')
-      .leftJoinAndSelect('device.area', 'area');
+      .leftJoinAndSelect('request.area', 'area')
 
     switch (dto.type) {
       case 'warranty': {
@@ -316,6 +316,8 @@ export class RequestService extends BaseService<RequestEntity> {
       }
     }
 
+    query.andWhere('request.deletedAt is null');
+
     query.andWhere('request.createdAt >= :startDate', {
       startDate: dto.startDate,
     });
@@ -328,6 +330,8 @@ export class RequestService extends BaseService<RequestEntity> {
       query.andWhere('area.id = :areaId', {
         areaId: dto.areaId,
       });
+    } else {
+      query.andWhere('area.id is not null')
     }
 
     return {

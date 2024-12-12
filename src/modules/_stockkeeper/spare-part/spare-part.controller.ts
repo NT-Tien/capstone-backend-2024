@@ -78,6 +78,23 @@ export class SparePartController {
   }
 
   @ApiBearerAuth()
+  @ApiResponse({
+    type: SparePartResponseDto.SparePartUpdate,
+    status: 200,
+    description: 'Update a SparePart',
+  })
+  @Put('addQuantity/:id')
+  async addQuantity(
+    @Param('id') id: string,
+    @Body() body: SparePartRequestDto.SparePartUpdateDto,
+  ) {
+    return await this.sparePartService.addSparepartWarranty(
+      id,
+      SparePartRequestDto.SparePartUpdateDto.plainToClass(body),
+    );
+  }
+
+  @ApiBearerAuth()
   @Get("/today")
   async getToday() {
     return await this.sparePartService.getToday();

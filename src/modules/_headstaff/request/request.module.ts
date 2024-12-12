@@ -14,6 +14,7 @@ import { RequestService } from './request.service';
 import { Global_NotificationsModule } from 'src/modules/notifications/notifications.module';
 import { ExportWareHouse } from 'src/entities/export-warehouse.entity';
 import { MachineModelEntity } from 'src/entities/machine-model.entity';
+import { DeviceWarrantyCardEntity } from 'src/entities/device-warranty-card.entity';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { MachineModelEntity } from 'src/entities/machine-model.entity';
       TypeErrorEntity,
       IssueSparePartEntity,
       ExportWareHouse,
-      MachineModelEntity
+      MachineModelEntity,
+      DeviceWarrantyCardEntity,
     ]),
     AuthModule,
     Global_NotificationsModule,

@@ -32,6 +32,10 @@ import {
 } from 'src/entities/export-warehouse.entity';
 import { UUID } from 'typeorm/driver/mongodb/bson.typings';
 import { MachineModelEntity } from 'src/entities/machine-model.entity';
+import {
+  DeviceWarrantyCardEntity,
+  DeviceWarrantyCardStatus,
+} from 'src/entities/device-warranty-card.entity';
 
 @Injectable()
 export class RequestService extends BaseService<RequestEntity> {
@@ -56,6 +60,8 @@ export class RequestService extends BaseService<RequestEntity> {
     private readonly exportWareHouseRepository: Repository<ExportWareHouse>,
     @InjectRepository(MachineModelEntity)
     private readonly machineModelEntityRepository: Repository<MachineModelEntity>,
+    @InjectRepository(DeviceWarrantyCardEntity)
+    private readonly deviceWarrantyCardRepository: Repository<DeviceWarrantyCardEntity>,
 
     private readonly headGateway: HeadNotificationGateway,
     private readonly staffGateway: StaffNotificationGateway,
@@ -106,6 +112,7 @@ export class RequestService extends BaseService<RequestEntity> {
         'requester',
         'issues',
         'feedback',
+        'deviceWarrantyCards',
       ],
       order: { createdAt: status === RequestStatus.PENDING ? 'ASC' : 'DESC' },
       skip: (page - 1) * limit,
@@ -146,6 +153,9 @@ export class RequestService extends BaseService<RequestEntity> {
         'issues.issueSpareParts',
         'issues.issueSpareParts.sparePart',
         'feedback',
+        'temporary_replacement_device',
+        'temporary_replacement_device.machineModel',
+        'deviceWarrantyCards',
       ],
     });
   }
@@ -350,6 +360,7 @@ export class RequestService extends BaseService<RequestEntity> {
     userId: string,
     isMultiple?: boolean,
   ) {
+    // fetch request
     let request = await this.requestRepository.findOne({
       where: { id },
       relations: ['device', 'device.area', 'device.machineModel', 'requester'],
@@ -359,51 +370,7 @@ export class RequestService extends BaseService<RequestEntity> {
       throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
     }
 
-    let replacementDevice: DeviceEntity | null;
-    let installReplacementIssue: IssueEntity | null;
-
-    if (!!dto.replacement_machineModel_id) {
-      const machineModel = await this.machineModelEntityRepository.findOne({
-        where: {
-          id: dto.replacement_machineModel_id,
-        },
-        relations: ['devices', 'devices.area'],
-      });
-
-      if (!machineModel) {
-        throw new HttpException(
-          'Machine model not found',
-          HttpStatus.NOT_FOUND,
-        );
-      }
-
-      replacementDevice = machineModel.devices.find(
-        (d) =>
-          d.positionX === null &&
-          d.positionY === null &&
-          d.area === null &&
-          d.status === false,
-      );
-
-      if (!replacementDevice) {
-        throw new HttpException('Device not found', HttpStatus.NOT_FOUND);
-      }
-
-      installReplacementIssue = await this.issueRepository.save({
-        fixType: FixItemType.REPLACE,
-        request: request,
-        typeError: {
-          id: Warranty.install_replacement,
-        },
-        description: machineModel.name,
-      });
-
-      await this.deviceRepository.save({
-        ...replacementDevice,
-        status: true,
-      });
-    }
-
+    // create issues
     const disassembleIssue = await this.issueRepository.save({
       fixType: FixItemType.REPAIR,
       request: request,
@@ -422,24 +389,6 @@ export class RequestService extends BaseService<RequestEntity> {
       description: dto.note,
     });
 
-    // const receiveIssue = await this.issueRepository.save({
-    //   fixType: FixItemType.REPAIR,
-    //   request: request,
-    //   typeError: {
-    //     id: Warranty.receive,
-    //   },
-    //   description: dto.note,
-    // });
-
-    // const assembleIssue = await this.issueRepository.save({
-    //   fixType: FixItemType.REPAIR,
-    //   request: request,
-    //   typeError: {
-    //     id: Warranty.assemble,
-    //   },
-    //   description: dto.note,
-    // });
-
     request = await this.requestRepository.findOne({
       where: { id },
       relations: [
@@ -451,6 +400,7 @@ export class RequestService extends BaseService<RequestEntity> {
       ],
     });
 
+    // find fixer and fixerDate
     const targetDate = new Date();
     if (targetDate.getHours() >= 15) {
       targetDate.setDate(targetDate.getDate() + 1);
@@ -497,20 +447,30 @@ export class RequestService extends BaseService<RequestEntity> {
 
     request.status = RequestStatus.APPROVED;
     request.type = RequestType.WARRANTY;
-    request.is_replacement_device = !!replacementDevice;
     request.is_fix = false;
     request.is_rennew = false;
     request.is_warranty = true;
+
+    if (!!dto.replacement_device_id) {
+      const replacement_device = await this.deviceRepository.findOneOrFail({
+        where: {
+          id: dto.replacement_device_id,
+        },
+      });
+
+      request.is_replacement_device = true;
+      request.temporary_replacement_device = replacement_device;
+    }
+
     if (isMultiple) {
       request.is_multiple_types = true;
     }
 
     const task = await this.taskRepository.save({
       request,
-      issues: [disassembleIssue, installReplacementIssue, sendIssue],
+      issues: [disassembleIssue, sendIssue],
       operator: 0,
       device: request.device,
-      device_renew: replacementDevice ?? undefined,
       totalTime: 60,
       priority: false,
       status: TaskStatus.ASSIGNED,
@@ -518,16 +478,22 @@ export class RequestService extends BaseService<RequestEntity> {
       name: TaskNameGenerator.generateWarranty(request),
       fixer: randomAccount,
       fixerDate: targetDate,
-      type: TaskType.WARRANTY_RECEIVE,
+      type: TaskType.WARRANTY_SEND,
     });
 
-    // create export warehouse
-    const exportWarehouse = new ExportWareHouse();
-    exportWarehouse.task = task;
-    exportWarehouse.export_type = exportType.DEVICE;
-    exportWarehouse.detail = task.device_renew.id;
-    exportWarehouse.status = exportStatus.WAITING;
-    await this.exportWareHouseRepository.save(exportWarehouse);
+    // create device warranty card
+    this.deviceWarrantyCardRepository.save({
+      device: {
+        id: request.device.id,
+      },
+      request: {
+        id: request.id,
+      },
+      initial_images: dto.initial_images,
+      initial_video: dto.initial_video,
+      initial_note: dto.note,
+      status: DeviceWarrantyCardStatus.UNSENT,
+    });
 
     // this.headGateway.emit_request_approved_warranty(request, userId);
     this.headGateway.emit(NotificationType.HM_APPROVE_REQUEST_WARRANTY)({
@@ -537,6 +503,165 @@ export class RequestService extends BaseService<RequestEntity> {
     });
 
     await this.requestRepository.save(request);
+
+    return request;
+  }
+
+  async addReplacementDeviceForWarranty(
+    id: string,
+    userId: string,
+    dto: RequestRequestDto.AddReplacementDevice,
+  ) {
+    // update replacement device in database
+    this.requestRepository.update(
+      {
+        id,
+      },
+      {
+        is_replacement_device: true,
+        temporary_replacement_device: {
+          id: dto.deviceId,
+        },
+      },
+    );
+
+    const request = await this.requestRepository.findOneOrFail({
+      where: {
+        id,
+      },
+      relations: [
+        'device',
+        'device.area',
+        'issues',
+        'tasks',
+        'issues.typeError',
+        'temporary_replacement_device',
+        'temporary_replacement_device.machineModel',
+      ],
+    });
+
+    const replacementDevice = await this.deviceRepository.findOneOrFail({
+      where: {
+        id: dto.deviceId,
+      },
+    });
+    console.log('UPDATED REQUEST');
+
+    console.log(request.device);
+
+    // if current active device hasn't been disassembled (positionX and positionY is not null), then automatically create a new task to assemble the replacement device
+    if (
+      request.device.positionX === null &&
+      request.device.positionY === null &&
+      request.device.area === null
+    ) {
+      console.log('CREATING TASK');
+      const installIssue = await this.issueRepository.save({
+        fixType: FixItemType.REPLACE,
+        typeError: {
+          id: Warranty.install_replacement,
+        },
+        description: request.temporary_replacement_device.machineModel.name,
+        status: IssueStatus.PENDING,
+        request: {
+          id: request.id,
+        },
+      });
+
+      const targetDate = new Date();
+      const nextDate = new Date(targetDate);
+      nextDate.setDate(nextDate.getDate() + 1);
+
+      const accounts = await this.accountRepository
+        .createQueryBuilder('account')
+        .leftJoinAndSelect(
+          'account.tasks',
+          'tasks',
+          'tasks.status in (:...statuses) AND tasks.fixerDate >= :date AND tasks.fixerDate < :nextDate',
+          {
+            statuses: [TaskStatus.ASSIGNED, TaskStatus.IN_PROGRESS],
+            date: targetDate.toISOString(),
+            nextDate: nextDate.toISOString(),
+          },
+        )
+        .where('account.role = :role', { role: Role.staff })
+        .getMany();
+
+      const accountsWithFewestTasks = accounts.reduce(
+        (acc, cur) => {
+          if (cur.tasks.length < acc.current) {
+            acc.accounts = [cur];
+            acc.current = cur.tasks.length;
+          } else if (cur.tasks.length === acc.current) {
+            acc.accounts.push(cur);
+          }
+          return acc;
+        },
+        {
+          accounts: [],
+          current: Infinity,
+        },
+      );
+
+      const randomAccount =
+        accountsWithFewestTasks.accounts[
+          Math.floor(Math.random() * accountsWithFewestTasks.accounts.length)
+        ];
+
+      const installTask = await this.taskRepository.save({
+        request: request,
+        issues: [installIssue],
+        operator: 0,
+        device: request.device,
+        device_renew: request.temporary_replacement_device,
+        device_static: request.device,
+        totalTime: 60,
+        priority: false,
+        status: TaskStatus.ASSIGNED,
+        name: TaskNameGenerator.generateInstallReplacement(request),
+        fixer: randomAccount,
+        fixerDate: targetDate,
+        type: TaskType.INSTALL_REPLACEMENT,
+      });
+
+      const exportWarehouse = new ExportWareHouse();
+      exportWarehouse.task = installTask;
+      exportWarehouse.export_type = exportType.DEVICE;
+      exportWarehouse.detail = installTask.device_renew.id;
+      exportWarehouse.status = exportStatus.ACCEPTED;
+      await this.exportWareHouseRepository.save(exportWarehouse);
+    }
+
+    return request;
+  }
+
+  async updateWarrantyReceivalDate(
+    id: string,
+    userId: string,
+    dto: RequestRequestDto.UpdateWarrantyReceivalDate,
+  ) {
+    const request = await this.requestRepository.findOneOrFail({
+      where: {
+        id,
+      },
+      relations: ['deviceWarrantyCards'],
+    });
+
+    const deviceWarrantyCards = request.deviceWarrantyCards;
+    const activeDeviceWarrantyCard = deviceWarrantyCards.find(
+      (d) => d.status === DeviceWarrantyCardStatus.WC_PROCESSING,
+    );
+
+    if (!activeDeviceWarrantyCard) {
+      throw new HttpException(
+        'No active warranty card found',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    activeDeviceWarrantyCard.receive_date = new Date(dto.receivalDate);
+
+    await this.deviceWarrantyCardRepository.save(activeDeviceWarrantyCard);
 
     return request;
   }
@@ -860,6 +985,51 @@ export class RequestService extends BaseService<RequestEntity> {
       description: request.requester_note,
     });
 
+    // find fixer and fixerDate
+    const targetDate = new Date();
+    if (targetDate.getHours() >= 15) {
+      targetDate.setDate(targetDate.getDate() + 1);
+      targetDate.setHours(0, 0, 0, 0);
+    }
+    const nextDate = new Date(targetDate);
+    nextDate.setDate(nextDate.getDate() + 1);
+
+    const accounts = await this.accountRepository
+      .createQueryBuilder('account')
+      .leftJoinAndSelect(
+        'account.tasks',
+        'tasks',
+        'tasks.status in (:...statuses) AND tasks.fixerDate >= :date AND tasks.fixerDate < :nextDate',
+        {
+          statuses: [TaskStatus.ASSIGNED, TaskStatus.IN_PROGRESS],
+          date: targetDate.toISOString(),
+          nextDate: nextDate.toISOString(),
+        },
+      )
+      .where('account.role = :role', { role: Role.staff })
+      .getMany();
+
+    const accountsWithFewestTasks = accounts.reduce(
+      (acc, cur) => {
+        if (cur.tasks.length < acc.current) {
+          acc.accounts = [cur];
+          acc.current = cur.tasks.length;
+        } else if (cur.tasks.length === acc.current) {
+          acc.accounts.push(cur);
+        }
+        return acc;
+      },
+      {
+        accounts: [],
+        current: Infinity,
+      },
+    );
+
+    const randomAccount =
+      accountsWithFewestTasks.accounts[
+        Math.floor(Math.random() * accountsWithFewestTasks.accounts.length)
+      ];
+
     const task = await this.taskRepository.save({
       request,
       issues: [receiveIssue, dismantleReplacementIssue, assembleIssue],
@@ -869,10 +1039,10 @@ export class RequestService extends BaseService<RequestEntity> {
       priority: dto.priority ?? false,
       status: TaskStatus.ASSIGNED,
       device_static: request.device,
-      name: TaskNameGenerator.generateWarranty(request),
-      type: TaskType.WARRANTY_SEND,
+      name: dto.taskName ?? TaskNameGenerator.generateWarranty(request),
+      type: TaskType.WARRANTY_RECEIVE,
       fixer: {
-        id: dto.fixer,
+        id: randomAccount.id,
       },
       fixerDate: dto.fixerDate,
     });
@@ -887,5 +1057,25 @@ export class RequestService extends BaseService<RequestEntity> {
     });
 
     return task;
+  }
+
+  async requestClose(
+    id: string,
+    userId: string,
+    dto: RequestRequestDto.RequestClose,
+  ) {
+    const request = await this.requestRepository.findOne({
+      where: { id },
+      relations: ['device', 'device.area', 'device.machineModel'],
+    });
+
+    if (!request) {
+      throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
+    }
+
+    request.status = RequestStatus.CLOSED;
+    request.checker_note = dto.note;
+
+    return await this.requestRepository.save(request);
   }
 }

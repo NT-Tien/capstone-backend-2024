@@ -23,6 +23,7 @@ export enum NotificationType {
   S_COMPLETE_TASK_WITH_FAILED_ISSUE = 'S_COMPLETE_TASK_WITH_FAILED_ISSUE',
   S_COMPLETE_ALL_TASKS = 'S_COMPLETE_ALL_TASKS',
   S_COMPLETE_WARRANTY_SEND = 'S_COMPLETE_WARRANTY_SEND',
+  STOCKKEEPER = 'STOCKKEEPER',
 }
 
 @Entity({ name: 'NOTIFICATION', orderBy: { createdAt: 'DESC' } })
@@ -72,7 +73,7 @@ export class NotificationEntity extends BaseEntity {
     nullable: true,
     default: null,
   })
-  seenDate: Date;
+  seenDate?: Date;
 
   @Column({
     name: 'type',

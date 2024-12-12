@@ -144,7 +144,17 @@ export namespace RequestRequestDto {
     @ApiPropertyOptional()
     @IsOptional()
     @Expose()
-    replacement_machineModel_id: string
+    initial_images?: string[];
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @Expose()
+    initial_video?: string
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @Expose()
+    replacement_device_id?: string
   }
 
   export class RequestApproveToRenew extends BaseDTO {
@@ -191,10 +201,10 @@ export namespace RequestRequestDto {
   }
 
   export class RequestCreateReturnWarrantyTask extends BaseDTO {
-    @ApiProperty()
-    @IsNotEmpty()
+    @ApiPropertyOptional()
+    @IsOptional()
     @Expose()
-    fixer: string; // account id
+    taskName?: string
 
     @ApiProperty()
     @IsNotEmpty()
@@ -205,5 +215,26 @@ export namespace RequestRequestDto {
     @IsNotEmpty()
     @Expose()
     priority: boolean;
+  }
+
+  export class AddReplacementDevice extends BaseDTO {
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    deviceId: string
+  }
+
+  export class UpdateWarrantyReceivalDate extends BaseDTO {
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    receivalDate: string
+  }
+
+  export class RequestClose extends BaseDTO {
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    note: string
   }
 }

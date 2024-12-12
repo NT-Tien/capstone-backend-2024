@@ -35,6 +35,19 @@ export class DeviceController {
   }
 
   @ApiBearerAuth()
+  @ApiResponse({
+    type: DeviceResponseDto.DeviceGetAll,
+    status: 200,
+    description: 'Get all Devices not have position',
+  })
+  @Get("/all/:machine_model_id")
+  async getAllToChooseRenewDevice(
+    @Param('machine_model_id') machine_model_id: string
+  ) {
+    return await this.deviceService.getAllToChooseRenewDevice(machine_model_id);
+  }
+
+  @ApiBearerAuth()
   @ApiOperation({ summary: "Get all machine models with unused devices"})
   @Get("/all/unused")
   async getAllUnused() {
@@ -85,6 +98,21 @@ export class DeviceController {
   @Get('history-request/:id')
   async getHistoryRequest(@Param('id') id: string) {
     return await this.deviceService.getHistoryRequest(id);
+  }
+
+  @ApiResponse({
+    type: Boolean,
+    status: 200,
+    description: 'Get one Device',
+  })
+  @ApiBearerAuth()
+  @Get('checkKey/:areaId/:positionX/:positionY')
+  async checkKeyPosition
+  (@Param('areaId') areaId: string,
+  @Param('positionX') positionX: string,
+  @Param('positionY') positionY: string,
+) {
+    return this.deviceService.checkKeyPosition(areaId, positionX, positionY);
   }
 
   // @ApiBearerAuth()

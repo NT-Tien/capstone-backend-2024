@@ -19,7 +19,7 @@ import {
   ExportWareHouse,
 } from 'src/entities/export-warehouse.entity';
 import { StaffNotificationGateway } from 'src/modules/notifications/gateways/staff.gateway';
-import { NotificationType } from 'src/entities/notification.entity';
+import { NotificationEntity, NotificationPriority, NotificationType } from 'src/entities/notification.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -38,6 +38,8 @@ export class TaskService extends BaseService<TaskEntity> {
     private readonly issueRepository: Repository<IssueEntity>,
     @InjectRepository(ExportWareHouse)
     private readonly exportWareHouseRepository: Repository<ExportWareHouse>,
+    @InjectRepository(NotificationEntity)
+    private readonly notificationEntityRepository: Repository<NotificationEntity>,
 
     private readonly staffGateway: StaffNotificationGateway,
   ) {
@@ -169,6 +171,7 @@ export class TaskService extends BaseService<TaskEntity> {
     newTask.request = request;
     newTask.device = request.device;
     newTask.device_static = request.device;
+
     // if (data.fixer) {
     //   const fixer = await this.accountRepository.findOne({
     //     where: {
@@ -196,6 +199,79 @@ export class TaskService extends BaseService<TaskEntity> {
       .relation(TaskEntity, 'issues')
       .of(newTaskResult.id)
       .add(data.issueIDs);
+
+    console.log('iussue nè--------------------------------------------' + data.issueIDs[0]);
+
+    var saveNoti = true;
+
+
+    // create export warehouse
+    const savedtask = await this.taskRepository.findOne({
+      where: {
+        id: newTaskResult.id,
+      },
+      relations: [
+        'issues',
+        'issues.issueSpareParts',
+        'issues.issueSpareParts.sparePart',
+      ],
+    });
+
+    // create export warehouse
+    const exportWarehouse = new ExportWareHouse();
+    exportWarehouse.task = savedtask;
+    exportWarehouse.export_type = exportType.SPARE_PART;
+    exportWarehouse.detail = savedtask.issues;
+    exportWarehouse.status = exportStatus.WAITING;
+
+    const ticket = await this.exportWareHouseRepository.save(exportWarehouse);
+
+    for (const issueId of data.issueIDs) {
+      const isue = await this.issueRepository.findOne({
+        where: {
+          id: issueId
+        },
+        relations: [
+          'issueSpareParts',
+          'issueSpareParts.sparePart',
+        ],
+      });
+
+      console.log("tracking issue" + isue);
+      if (saveNoti && isue.issueSpareParts.some(sparePart => sparePart.quantity > 0
+        && sparePart.quantity < sparePart.sparePart.quantity)) {
+        const noti = new NotificationEntity();
+        noti.receiver = await this.accountRepository.findOne({
+          where: {
+            id: 'eb488f7f-4c1b-4032-b5c0-8f543968bbf8'
+          }
+        });
+        noti.title = 'Tác vụ mới';
+        noti.body = 'Tác vụ ' + newTaskResult.name + ' được giao đang cần lấy thiết bị / linh kiện, click để xem chi tiết.';
+        noti.data = { taskId: newTaskResult.id, ticketId: ticket };
+        noti.priority = NotificationPriority.MEDIUM;
+        noti.type = NotificationType.STOCKKEEPER;
+        const savene = await this.notificationEntityRepository.save(noti);
+        console.log("tracking savene " + savene.id);
+        saveNoti = false;
+      }
+      if (saveNoti && isue.issueSpareParts.some(sparePart => sparePart.quantity > 0
+        && sparePart.quantity > sparePart.sparePart.quantity)) {
+        const noti = new NotificationEntity();
+        noti.receiver = await this.accountRepository.findOne({
+          where: {
+            id: 'eb488f7f-4c1b-4032-b5c0-8f543968bbf8'
+          }
+        });
+        noti.title = 'Nhập mới linh kiện';
+        noti.body = 'Tác vụ ' + newTaskResult.name + ' đang thiếu linh kiện , click để xem chi tiết.';
+        noti.data = { taskId: newTaskResult.id, ticketId: ticket };
+        noti.priority = NotificationPriority.MEDIUM;
+        noti.type = NotificationType.STOCKKEEPER;
+        const savene = await this.notificationEntityRepository.save(noti);
+        saveNoti = false;
+      }
+    }
 
     return { ...newTaskResult, issues: newIssuesAdded };
   }
@@ -289,7 +365,7 @@ export class TaskService extends BaseService<TaskEntity> {
       await this.exportWareHouseRepository.save(exportWarehouse);
     }
 
-    
+
     const returnValue = await this.taskRepository.save(task);
     this.staffGateway.emit(NotificationType.HM_ASSIGN_TASK)({
       receiverId: fixer.id,
@@ -300,54 +376,56 @@ export class TaskService extends BaseService<TaskEntity> {
     return returnValue
   }
 
-  async completeTask(id: string) {
-    const task = await this.taskRepository.findOne({
-      where: {
-        id,
-      },
-      relations: ['request'],
-    });
+  // async completeTask(id: string) {
+  //   const task = await this.taskRepository.findOne({
+  //     where: {
+  //       id,
+  //     },
+  //     relations: ['request'],
+  //   });
 
-    task.status = TaskStatus.COMPLETED;
-    const result = await this.taskRepository.save(task);
+  //   task.status = TaskStatus.COMPLETED;
+  //   const result = await this.taskRepository.save(task);
 
-    // const request = await this.requestRepository.findOne({
-    //   where: { id: task.request.id },
-    // relations: ['issues', 'tasks'],
-    // select: {
-    //   issues: {
-    //     id: true,
-    //     status: true,
-    //   },
-    //   tasks: {
-    //     id: true,
-    //     status: true
-    //   }
-    // },
-    // });
+  //   // const request = await this.requestRepository.findOne({
+  //   //   where: { id: task.request.id },
+  //   // relations: ['issues', 'tasks'],
+  //   // select: {
+  //   //   issues: {
+  //   //     id: true,
+  //   //     status: true,
+  //   //   },
+  //   //   tasks: {
+  //   //     id: true,
+  //   //     status: true
+  //   //   }
+  //   // },
+  //   // });
 
-    // const hasUncompletedIssue = request.issues.find((issue) => {
-    //   return issue.status === IssueStatus.PENDING;
-    // });
-    // const hasUncompletedTask = request.tasks.find((task) => {
-    //   return task.status !== TaskStatus.COMPLETED;
-    // })
-    // if (!hasUncompletedIssue && !hasUncompletedTask) {
-    //   request.status = RequestStatus.HEAD_CONFIRM;
-    //   await this.requestRepository.save(request);
-    // }
+  //   // const hasUncompletedIssue = request.issues.find((issue) => {
+  //   //   return issue.status === IssueStatus.PENDING;
+  //   // });
+  //   // const hasUncompletedTask = request.tasks.find((task) => {
+  //   //   return task.status !== TaskStatus.COMPLETED;
+  //   // })
+  //   // if (!hasUncompletedIssue && !hasUncompletedTask) {
+  //   //   request.status = RequestStatus.HEAD_CONFIRM;
+  //   //   await this.requestRepository.save(request);
+  //   // }
 
-    return result;
-  }
+  //   return result;
+  // }
 
   async cancelTask(id: string, user: any) {
+    console.log('----------------------------------------------' + id);
+    console.log('----------------------------------------------');
     const task = await this.taskRepository.findOne({
       where: {
         id,
       },
       relations: ['issues', 'issues.issueSpareParts'],
     });
-
+    console.log('----------------------------------------------' + task.name);
     task.status = TaskStatus.CANCELLED;
     task.cancelBy = user.id;
     task.last_issues_data = JSON.stringify(task.issues);
@@ -360,14 +438,11 @@ export class TaskService extends BaseService<TaskEntity> {
     const exportWarehouse = await this.exportWareHouseRepository.findOne({
       where: { task: task },
     });
-    // if not exported yet then cancel, else do nothing
-    if (
-      exportWarehouse.status !== exportStatus.EXPORTED &&
-      exportWarehouse.status !== exportStatus.CANCEL
-    ) {
+    if (exportWarehouse != null) {
       exportWarehouse.status = exportStatus.CANCEL;
       await this.exportWareHouseRepository.save(exportWarehouse);
     }
+
     return await this.taskRepository.save(task);
   }
 
@@ -425,5 +500,45 @@ export class TaskService extends BaseService<TaskEntity> {
     exportWarehouse.status = exportStatus.WAITING;
 
     return await this.exportWareHouseRepository.save(exportWarehouse);
+  }
+
+  async completeTask(id: string) {
+    const task = await this.taskRepository.findOne({
+      where: {
+        id,
+      },
+      relations: ['request'],
+    });
+
+    task.status = TaskStatus.COMPLETED;
+    const result = await this.taskRepository.save(task);
+
+    // const request = await this.requestRepository.findOne({
+    //   where: { id: task.request.id },
+    // relations: ['issues', 'tasks'],
+    // select: {
+    //   issues: {
+    //     id: true,
+    //     status: true,
+    //   },
+    //   tasks: {
+    //     id: true,
+    //     status: true
+    //   }
+    // },
+    // });
+
+    // const hasUncompletedIssue = request.issues.find((issue) => {
+    //   return issue.status === IssueStatus.PENDING;
+    // });
+    // const hasUncompletedTask = request.tasks.find((task) => {
+    //   return task.status !== TaskStatus.COMPLETED;
+    // })
+    // if (!hasUncompletedIssue && !hasUncompletedTask) {
+    //   request.status = RequestStatus.HEAD_CONFIRM;
+    //   await this.requestRepository.save(request);
+    // }
+
+    return result;
   }
 }

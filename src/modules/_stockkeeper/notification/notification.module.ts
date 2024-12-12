@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TaskController } from './task.controller';
+import { NotificationController } from './notification.controller';
 import { AuthModule } from 'src/modules/auth/auth.module';
-import { TaskService } from './task.service';
+import { NotificationService } from './notification.service';
 import { TaskEntity } from 'src/entities/task.entity';
 import { AccountEntity } from 'src/entities/account.entity';
 import { RequestEntity } from 'src/entities/request.entity';
@@ -13,10 +13,10 @@ import { NotificationEntity } from 'src/entities/notification.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([TaskEntity, SparePartEntity, IssueEntity, ExportWareHouse,NotificationEntity, AccountEntity]),
+    TypeOrmModule.forFeature([TaskEntity, SparePartEntity, IssueEntity, ExportWareHouse,NotificationEntity, AccountEntity,RequestEntity]),
     AuthModule,
   ],
-  controllers: [TaskController],
-  providers: [TaskService],
+  controllers: [NotificationController],
+  providers: [NotificationService],
 })
-export class TaskModule {}
+export class NotificationModule {}

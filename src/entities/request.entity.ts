@@ -1,10 +1,19 @@
 import { BaseEntity } from 'src/common/base/entity.base';
-import { BeforeInsert, Column, Entity, getRepository, ManyToOne, OneToMany } from 'typeorm';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  getRepository,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { AccountEntity } from './account.entity';
 import { DeviceEntity } from './device.entity';
 import { FeedbackEntity } from './feedback.entity';
 import { IssueEntity } from './issue.entity';
 import { TaskEntity } from './task.entity';
+import { DeviceWarrantyCardEntity } from 'src/entities/device-warranty-card.entity';
+import { AreaEntity } from 'src/entities/area.entity';
 
 export enum RequestStatus {
   PENDING = 'PENDING', // use for request renew
@@ -13,7 +22,7 @@ export enum RequestStatus {
   IN_PROGRESS = 'IN_PROGRESS', // use for request renew
   CLOSED = 'CLOSED', // use for request renew
   HEAD_CONFIRM = 'HEAD_CONFIRM',
-  HM_VERIFY = 'HM_VERIFY', // use for checking 
+  HM_VERIFY = 'HM_VERIFY', // use for checking
   REJECTED = 'REJECTED', // use for request renew
 }
 
@@ -37,10 +46,10 @@ export enum RequestLevel { // only for MAINTENANCE type
 })
 export class RequestEntity extends BaseEntity {
   @Column({
-    name: "code",
-    type: "text",
+    name: 'code',
+    type: 'text',
     nullable: false,
-    default: "OLD_CODE",
+    default: 'OLD_CODE',
   })
   code: string;
 
@@ -54,6 +63,22 @@ export class RequestEntity extends BaseEntity {
     nullable: false,
   })
   device: DeviceEntity;
+
+  @ManyToOne(() => AreaEntity, (area) => area.id, {
+    nullable: true,
+  })
+  area?: AreaEntity;
+
+  @ManyToOne(() => DeviceEntity, (device) => device.id, {
+    nullable: true,
+  })
+  temporary_replacement_device?: DeviceEntity;
+
+  @OneToMany(
+    () => DeviceWarrantyCardEntity,
+    (deviceWarrantyCard) => deviceWarrantyCard.request,
+  )
+  deviceWarrantyCards?: DeviceWarrantyCardEntity[];
 
   @Column({
     name: 'old_device',
@@ -141,8 +166,8 @@ export class RequestEntity extends BaseEntity {
   is_fix: boolean;
 
   @Column({
-    name: "is_multiple_types",
-    type: "boolean",
+    name: 'is_multiple_types',
+    type: 'boolean',
     default: false,
   })
   is_multiple_types: boolean;
@@ -161,9 +186,9 @@ export class RequestEntity extends BaseEntity {
   is_rennew: boolean;
 
   @Column({
-    name: "is_replacement_device",
-    type: "boolean",
-    default: false
+    name: 'is_replacement_device',
+    type: 'boolean',
+    default: false,
   })
   is_replacement_device: boolean;
 }
@@ -171,6 +196,10 @@ export class RequestEntity extends BaseEntity {
 export class RequestUtil {
   static isRunning(request?: RequestEntity): boolean | undefined {
     if (!request) return undefined;
-    return request.status === RequestStatus.PENDING || request.status === RequestStatus.APPROVED || request.status === RequestStatus.IN_PROGRESS;
+    return (
+      request.status === RequestStatus.PENDING ||
+      request.status === RequestStatus.APPROVED ||
+      request.status === RequestStatus.IN_PROGRESS
+    );
   }
 }

@@ -146,4 +146,11 @@ export class MachineModelEntity extends BaseEntity {
     nullable: true,
   })
   size?: string;
+
+  @Column({
+    name: 'set-up',
+    type: 'text',
+    nullable: true,
+  })
+  setUp?: string;
 }
