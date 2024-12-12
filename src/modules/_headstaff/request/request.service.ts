@@ -36,6 +36,8 @@ import {
   DeviceWarrantyCardEntity,
   DeviceWarrantyCardStatus,
 } from 'src/entities/device-warranty-card.entity';
+import { RequestTimeline } from 'src/entities/request-timeline.entity';
+import { time } from 'console';
 
 @Injectable()
 export class RequestService extends BaseService<RequestEntity> {
@@ -62,6 +64,8 @@ export class RequestService extends BaseService<RequestEntity> {
     private readonly machineModelEntityRepository: Repository<MachineModelEntity>,
     @InjectRepository(DeviceWarrantyCardEntity)
     private readonly deviceWarrantyCardRepository: Repository<DeviceWarrantyCardEntity>,
+    @InjectRepository(RequestTimeline)
+    private readonly requestTimelineRepository: Repository<RequestTimeline>,
 
     private readonly headGateway: HeadNotificationGateway,
     private readonly staffGateway: StaffNotificationGateway,
@@ -130,7 +134,7 @@ export class RequestService extends BaseService<RequestEntity> {
     if (!account || account.deletedAt || account.role !== Role.headstaff) {
       throw new HttpException('Account is not valid', HttpStatus.BAD_REQUEST);
     }
-    return this.requestRepository.findOne({
+    var request= await this.requestRepository.findOne({
       where: { id },
       relations: [
         'device',
@@ -158,6 +162,27 @@ export class RequestService extends BaseService<RequestEntity> {
         'deviceWarrantyCards',
       ],
     });
+
+    if (request.status == RequestStatus.PENDING ){
+      const timelineExisted = await this.requestTimelineRepository.findOne({
+        where :{
+          action : "Tổ trưởng bảo trì đã xem qua yêu cầu",
+          request: {
+            id: request.id
+          }
+        }
+      }
+      );
+      if(timelineExisted == null){
+        const timeline = new RequestTimeline();
+        timeline.visible_roles = [Role.admin, Role.head];
+        timeline.action = "Tổ trưởng bảo trì đã xem qua yêu cầu";
+        timeline.request = request;
+        await this.requestTimelineRepository.save(timeline);
+      }
+      
+    }
+    return request;
   }
 
   async customHeadCreateRequest(
@@ -293,6 +318,18 @@ export class RequestService extends BaseService<RequestEntity> {
       relations: ['device', 'device.area', 'device.machineModel', 'requester'],
     });
 
+    if (request != null ){
+        const timeline = new RequestTimeline();
+        timeline.visible_roles = [Role.admin, Role.head];
+        if(request.device?.machineModel.warrantyTerm > new Date){
+          timeline.action = "Máy còn thời hạn bảo hành, nhưng tổ bảo trì quyết định tiến hành sửa chữa/thay thế linh kiện.";
+        }else{
+          timeline.action = "Yêu cầu của bạn sẽ được tổ bảo trì tiến hành sửa chữa/thay thế linh kiện.";
+        }
+        timeline.request = request;
+        await this.requestTimelineRepository.save(timeline);
+    }
+
     if (!request) {
       throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
     }
@@ -365,6 +402,14 @@ export class RequestService extends BaseService<RequestEntity> {
       where: { id },
       relations: ['device', 'device.area', 'device.machineModel', 'requester'],
     });
+
+    if (request != null ){
+      const timeline = new RequestTimeline();
+      timeline.visible_roles = [Role.admin, Role.head];
+      timeline.action = "Yêu cầu của bạn sẽ được tổ bảo trì đem bảo hành tại trung tâm";
+      timeline.request = request;
+      await this.requestTimelineRepository.save(timeline);
+  }
 
     if (!request) {
       throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
@@ -719,6 +764,14 @@ export class RequestService extends BaseService<RequestEntity> {
       relations: ['issues', 'issues.typeError', 'requester'],
     });
 
+    if (request != null ){
+      const timeline = new RequestTimeline();
+      timeline.visible_roles = [Role.admin, Role.head];
+      timeline.action = "Máy hư quá nặng, Thiết bị của bạn sẽ được tổ bảo trì thay thế máy mới";
+      timeline.request = request;
+      await this.requestTimelineRepository.save(timeline);
+  }
+
     if (!request) {
       throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
     }
@@ -909,7 +962,12 @@ export class RequestService extends BaseService<RequestEntity> {
 
     if (!request) {
       throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
-    }
+    }   
+    const timeline = new RequestTimeline();
+        timeline.visible_roles = [Role.admin, Role.head, Role.headstaff];
+        timeline.action = "Yêu cầu được hoàn tất ngay với nội dung: " + dto.checker_note;
+        timeline.request = request;
+        await this.requestTimelineRepository.save(timeline);   
 
     request.status = RequestStatus.REJECTED;
     request.checker_note = dto.checker_note;

@@ -9,6 +9,7 @@ import { FeedbackEntity } from '../../../entities/feedback.entity';
 import { RequestController } from './request.controller';
 import { RequestService } from './request.service';
 import { SequenceModule } from 'src/common/sequence/sequence.module';
+import { RequestTimeline } from 'src/entities/request-timeline.entity';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { SequenceModule } from 'src/common/sequence/sequence.module';
       AccountEntity,
       DeviceEntity,
       FeedbackEntity,
+      RequestTimeline
     ]),
     AuthModule,
     Global_NotificationsModule,
