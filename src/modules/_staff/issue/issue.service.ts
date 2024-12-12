@@ -287,7 +287,7 @@ export class IssueService extends BaseService<IssueEntity> {
       where: {
         id: issueId,
       },
-      relations: ['task', 'task.fixer', 'issueSpareParts', 'issueSpareParts.sparePart'],
+      relations: ['task', 'task.fixer', 'issueSpareParts', 'issueSpareParts.sparePart', 'issueSpareParts.issue'],
     });
     if (!issue || issue?.task?.fixer.id !== userId) {
       throw new HttpException('Issue not found', HttpStatus.NOT_FOUND);

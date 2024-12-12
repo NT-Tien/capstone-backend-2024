@@ -131,6 +131,10 @@ export class RequestService extends BaseService<RequestEntity> {
 
     const currentValue = await this.sequenceService.request_get();
 
+    // check device.area is not null
+    if (!device.area) {
+      throw new BadRequestException('Device area is not valid');
+    }
     // create new request
     const newRequest = await this.requestRepository.save({
       requester: account,
