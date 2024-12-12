@@ -335,6 +335,11 @@ export class RequestService extends BaseService<RequestEntity> {
     }
 
     return {
+      [RequestStatus.HM_VERIFY]: await query
+      .andWhere('request.status = :status', {
+        status: RequestStatus.HM_VERIFY,
+      })
+      .getCount(),
       [RequestStatus.PENDING]: await query
         .andWhere('request.status = :status', {
           status: RequestStatus.PENDING,
