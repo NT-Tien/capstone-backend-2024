@@ -287,7 +287,7 @@ export class IssueService extends BaseService<IssueEntity> {
       where: {
         id: issueId,
       },
-      relations: ['task', 'task.fixer'],
+      relations: ['task', 'task.fixer', 'issueSpareParts', 'issueSpareParts.sparePart'],
     });
     if (!issue || issue?.task?.fixer.id !== userId) {
       throw new HttpException('Issue not found', HttpStatus.NOT_FOUND);
@@ -301,8 +301,10 @@ export class IssueService extends BaseService<IssueEntity> {
     if (!return_spare_part_data) {
       return_spare_part_data = [];
     }
+    // flat array issue.issueSpareParts
+    let newIssueSpareParts = issue.issueSpareParts.flat();
     // push new return spare part data
-    return_spare_part_data.push(issue.issueSpareParts);
+    return_spare_part_data.push(newIssueSpareParts);
     // update task
     await this.taskRepository.update(
       {

@@ -83,13 +83,15 @@ export class SparePartController {
     status: 200,
     description: 'Update a SparePart',
   })
-  @Put('addQuantity/:id')
+  @Put('addQuantity/:spare_part_id/:issue_id')
   async addQuantity(
-    @Param('id') id: string,
+    @Param('spare_part_id') spare_part_id: string,
+    @Param('issue_id') issue_id: string,
     @Body() body: SparePartRequestDto.SparePartUpdateDto,
   ) {
     return await this.sparePartService.addSparepartWarranty(
-      id,
+      spare_part_id,
+      issue_id,
       SparePartRequestDto.SparePartUpdateDto.plainToClass(body),
     );
   }
