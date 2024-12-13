@@ -6,6 +6,7 @@ import { Column, Entity, ManyToOne } from 'typeorm';
 
 export enum DeviceWarrantyCardStatus {
   UNSENT = 'UNSENT',
+  WC_REJECTED_ON_ARRIVAL = 'WC_REJECTED_ON_ARRIVAL',
   WC_PROCESSING = 'WC_PROCESSING',
   SUCCESS = 'SUCCESS',
   FAIL = 'FAIL',

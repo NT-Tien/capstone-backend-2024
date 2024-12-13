@@ -1,11 +1,11 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from 'src/common/base/service.base';
 import { AccountEntity, Role } from 'src/entities/account.entity';
 import { TaskEntity, TaskStatus, TaskType } from 'src/entities/task.entity';
 import { Repository } from 'typeorm';
 import { TaskRequestDto } from './dto/request.dto';
-import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
+import { RequestEntity, RequestStatus, RequestUtil } from 'src/entities/request.entity';
 import {
   FixItemType,
   IssueEntity,
@@ -19,7 +19,14 @@ import {
   ExportWareHouse,
 } from 'src/entities/export-warehouse.entity';
 import { StaffNotificationGateway } from 'src/modules/notifications/gateways/staff.gateway';
-import { NotificationEntity, NotificationPriority, NotificationType } from 'src/entities/notification.entity';
+import {
+  NotificationEntity,
+  NotificationPriority,
+  NotificationType,
+} from 'src/entities/notification.entity';
+import { HeadNotificationGateway } from 'src/modules/notifications/gateways/head.gateway';
+import { Accounts } from 'src/common/constants';
+import { DeviceWarrantyCardStatus } from 'src/entities/device-warranty-card.entity';
 
 @Injectable()
 export class TaskService extends BaseService<TaskEntity> {
@@ -42,6 +49,7 @@ export class TaskService extends BaseService<TaskEntity> {
     private readonly notificationEntityRepository: Repository<NotificationEntity>,
 
     private readonly staffGateway: StaffNotificationGateway,
+    private readonly headGateway: HeadNotificationGateway
   ) {
     super(taskRepository);
   }
@@ -200,10 +208,12 @@ export class TaskService extends BaseService<TaskEntity> {
       .of(newTaskResult.id)
       .add(data.issueIDs);
 
-    console.log('iussue nè--------------------------------------------' + data.issueIDs[0]);
+    console.log(
+      'iussue nè--------------------------------------------' +
+        data.issueIDs[0],
+    );
 
     var saveNoti = true;
-
 
     // create export warehouse
     const savedtask = await this.taskRepository.findOne({
@@ -229,42 +239,57 @@ export class TaskService extends BaseService<TaskEntity> {
     for (const issueId of data.issueIDs) {
       const isue = await this.issueRepository.findOne({
         where: {
-          id: issueId
+          id: issueId,
         },
-        relations: [
-          'issueSpareParts',
-          'issueSpareParts.sparePart',
-        ],
+        relations: ['issueSpareParts', 'issueSpareParts.sparePart'],
       });
 
-      console.log("tracking issue" + isue);
-      if (saveNoti && isue.issueSpareParts.some(sparePart => sparePart.quantity > 0
-        && sparePart.quantity < sparePart.sparePart.quantity)) {
+      console.log('tracking issue' + isue);
+      if (
+        saveNoti &&
+        isue.issueSpareParts.some(
+          (sparePart) =>
+            sparePart.quantity > 0 &&
+            sparePart.quantity < sparePart.sparePart.quantity,
+        )
+      ) {
         const noti = new NotificationEntity();
         noti.receiver = await this.accountRepository.findOne({
           where: {
-            id: 'eb488f7f-4c1b-4032-b5c0-8f543968bbf8'
-          }
+            id: 'eb488f7f-4c1b-4032-b5c0-8f543968bbf8',
+          },
         });
         noti.title = 'Tác vụ mới';
-        noti.body = 'Tác vụ ' + newTaskResult.name + ' được giao đang cần lấy thiết bị / linh kiện, click để xem chi tiết.';
+        noti.body =
+          'Tác vụ ' +
+          newTaskResult.name +
+          ' được giao đang cần lấy thiết bị / linh kiện, click để xem chi tiết.';
         noti.data = { taskId: newTaskResult.id, ticketId: ticket };
         noti.priority = NotificationPriority.MEDIUM;
         noti.type = NotificationType.STOCKKEEPER;
         const savene = await this.notificationEntityRepository.save(noti);
-        console.log("tracking savene " + savene.id);
+        console.log('tracking savene ' + savene.id);
         saveNoti = false;
       }
-      if (saveNoti && isue.issueSpareParts.some(sparePart => sparePart.quantity > 0
-        && sparePart.quantity > sparePart.sparePart.quantity)) {
+      if (
+        saveNoti &&
+        isue.issueSpareParts.some(
+          (sparePart) =>
+            sparePart.quantity > 0 &&
+            sparePart.quantity > sparePart.sparePart.quantity,
+        )
+      ) {
         const noti = new NotificationEntity();
         noti.receiver = await this.accountRepository.findOne({
           where: {
-            id: 'eb488f7f-4c1b-4032-b5c0-8f543968bbf8'
-          }
+            id: 'eb488f7f-4c1b-4032-b5c0-8f543968bbf8',
+          },
         });
         noti.title = 'Nhập mới linh kiện';
-        noti.body = 'Tác vụ ' + newTaskResult.name + ' đang thiếu linh kiện , click để xem chi tiết.';
+        noti.body =
+          'Tác vụ ' +
+          newTaskResult.name +
+          ' đang thiếu linh kiện , click để xem chi tiết.';
         noti.data = { taskId: newTaskResult.id, ticketId: ticket };
         noti.priority = NotificationPriority.MEDIUM;
         noti.type = NotificationType.STOCKKEEPER;
@@ -365,15 +390,14 @@ export class TaskService extends BaseService<TaskEntity> {
       await this.exportWareHouseRepository.save(exportWarehouse);
     }
 
-
     const returnValue = await this.taskRepository.save(task);
     this.staffGateway.emit(NotificationType.HM_ASSIGN_TASK)({
       receiverId: fixer.id,
       taskType: returnValue.type,
       fixerDate: returnValue.fixerDate,
       taskId: returnValue.id,
-    })
-    return returnValue
+    });
+    return returnValue;
   }
 
   // async completeTask(id: string) {
@@ -504,40 +528,55 @@ export class TaskService extends BaseService<TaskEntity> {
 
   async completeTask(id: string) {
     const task = await this.taskRepository.findOne({
-      where: {
-        id,
-      },
-      relations: ['request'],
+      where: { id },
+      relations: [
+        'fixer',
+        'issues',
+        'issues.typeError',
+        'issues.issueSpareParts',
+        'issues.issueSpareParts.sparePart',
+        'request',
+        'request.deviceWarrantyCards',
+        'request.deviceWarrantyCards.device'
+      ],
+    });
+    if (!task) {
+      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+    }
+
+    // if has failed issue, return to head staff for confirmation. else, go to head department to check
+    const result = await this.taskRepository.save({
+      ...task,
+      status: TaskStatus.COMPLETED,
+      last_issues_data: JSON.stringify(task.issues),
     });
 
-    task.status = TaskStatus.COMPLETED;
-    const result = await this.taskRepository.save(task);
+    const request = await this.requestRepository.findOne({
+      where: {
+        id: task.request.id,
+      },
+      relations: ['tasks', 'requester', 'deviceWarrantyCards', 'deviceWarrantyCards.device'],
+    });
 
-    // const request = await this.requestRepository.findOne({
-    //   where: { id: task.request.id },
-    // relations: ['issues', 'tasks'],
-    // select: {
-    //   issues: {
-    //     id: true,
-    //     status: true,
-    //   },
-    //   tasks: {
-    //     id: true,
-    //     status: true
-    //   }
-    // },
-    // });
+    // else if all tasks are completed in request then notify head_department to feedback request & set request status to HEAD_CONFIRM
 
-    // const hasUncompletedIssue = request.issues.find((issue) => {
-    //   return issue.status === IssueStatus.PENDING;
-    // });
-    // const hasUncompletedTask = request.tasks.find((task) => {
-    //   return task.status !== TaskStatus.COMPLETED;
-    // })
-    // if (!hasUncompletedIssue && !hasUncompletedTask) {
-    //   request.status = RequestStatus.HEAD_CONFIRM;
-    //   await this.requestRepository.save(request);
-    // }
+    const isAllTasksCompleted = request.tasks.every(
+      (t) => t.status === TaskStatus.COMPLETED,
+    );
+    const completedSet = new Set([DeviceWarrantyCardStatus.FAIL, DeviceWarrantyCardStatus.SUCCESS, DeviceWarrantyCardStatus.WC_REJECTED_ON_ARRIVAL])
+    const isWarrantyCompleted = completedSet.has(RequestUtil.getCurrentWarrantyCard(request)?.status)
+
+    if (isAllTasksCompleted && isWarrantyCompleted) {
+      this.headGateway.emit(NotificationType.S_COMPLETE_ALL_TASKS)({
+        senderId: Accounts.HEAD_MAINTENANCE,
+        requestId: request.id,
+        receiverId: request.requester.id,
+      });
+      await this.requestRepository.save({
+        ...request,
+        status: RequestStatus.HEAD_CONFIRM,
+      });
+    }
 
     return result;
   }

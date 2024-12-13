@@ -121,7 +121,12 @@ export class DeviceService extends BaseService<DeviceEntity> {
       ...mm,
       devices: mm.devices.filter(
         (d) =>
-          !d.positionX && !d.positionY && !d.area && !d.isWarranty,
+          !d.positionX &&
+          !d.positionY &&
+          !d.area &&
+          !d.isWarranty &&
+          d.status === false &&
+          d.isHeld === false,
       ),
     }));
   }

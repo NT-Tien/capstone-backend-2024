@@ -4,6 +4,7 @@ import {
   FixItemType,
   IssueEntity,
   IssueStatus,
+  WarrantyFailedReasonsList,
 } from '../../../entities/issue.entity';
 import { IsNull, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -17,12 +18,18 @@ import {
 } from 'src/entities/export-warehouse.entity';
 import TaskNameGenerator from 'src/utils/taskname-generator';
 import { AccountEntity, Role } from 'src/entities/account.entity';
-import { RequestEntity } from 'src/entities/request.entity';
+import {
+  RequestEntity,
+  RequestStatus,
+  RequestUtil,
+} from 'src/entities/request.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
 import {
   DeviceWarrantyCardEntity,
   DeviceWarrantyCardStatus,
 } from 'src/entities/device-warranty-card.entity';
+import { NotificationType } from 'src/entities/notification.entity';
+import { HeadNotificationGateway } from 'src/modules/notifications/gateways/head.gateway';
 
 @Injectable()
 export class IssueService extends BaseService<IssueEntity> {
@@ -41,6 +48,8 @@ export class IssueService extends BaseService<IssueEntity> {
     private readonly deviceRepository: Repository<DeviceEntity>,
     @InjectRepository(DeviceWarrantyCardEntity)
     private readonly deviceWarrantyCardRepository: Repository<DeviceWarrantyCardEntity>,
+
+    private readonly headGateway: HeadNotificationGateway,
   ) {
     super(issueRepository);
   }
@@ -287,12 +296,20 @@ export class IssueService extends BaseService<IssueEntity> {
       where: {
         id: issueId,
       },
-      relations: ['task', 'task.fixer', 'issueSpareParts', 'issueSpareParts.sparePart', 'issueSpareParts.issue'],
+      relations: [
+        'task',
+        'task.fixer',
+        'issueSpareParts',
+        'issueSpareParts.sparePart',
+        'issueSpareParts.issue',
+      ],
     });
     if (!issue || issue?.task?.fixer.id !== userId) {
       throw new HttpException('Issue not found', HttpStatus.NOT_FOUND);
     }
-    let task = await this.taskRepository.findOne({ where: { id: issue.task.id } });
+    let task = await this.taskRepository.findOne({
+      where: { id: issue.task.id },
+    });
     if (!task) {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
     }
@@ -303,7 +320,7 @@ export class IssueService extends BaseService<IssueEntity> {
     }
     // flat array issue.issueSpareParts
     let newIssueSpareParts = issue.issueSpareParts;
-    
+
     // push new return spare part data
     return_spare_part_data.push(newIssueSpareParts);
 
@@ -331,10 +348,24 @@ export class IssueService extends BaseService<IssueEntity> {
       where: {
         id: issueId,
       },
-      relations: ['task', 'task.fixer', 'request'],
+      relations: [
+        'task',
+        'task.fixer',
+        'task.issues',
+        'request',
+        'request.deviceWarrantyCards',
+        'request.deviceWarrantyCards.device',
+      ],
     });
     if (!issue || issue?.task?.fixer.id !== userId) {
       throw new HttpException('Issue not found', HttpStatus.NOT_FOUND);
+    }
+
+    // get current warranty card
+    const warrantyCard = RequestUtil.getCurrentWarrantyCard(issue.request);
+
+    if (!warrantyCard) {
+      throw new HttpException('Warranty card not found', HttpStatus.NOT_FOUND);
     }
 
     issue.status = IssueStatus.FAILED;
@@ -344,7 +375,7 @@ export class IssueService extends BaseService<IssueEntity> {
 
     if (
       issue.task.type === TaskType.WARRANTY_RECEIVE &&
-      dto.failReason.includes('Đổi ngày nhận máy')
+      dto.failReason.includes(WarrantyFailedReasonsList.CHANGE_RECEIVE_DATE)
     ) {
       // close the current task and release all issues
       await this.taskRepository.update(
@@ -352,8 +383,7 @@ export class IssueService extends BaseService<IssueEntity> {
           id: issue.task.id,
         },
         {
-          status: TaskStatus.COMPLETED,
-          completedAt: new Date(),
+          status: TaskStatus.CANCELLED,
         },
       );
 
@@ -367,11 +397,26 @@ export class IssueService extends BaseService<IssueEntity> {
           },
         );
       });
+
+      console.log(dto.failReason)
+      const newDate = dto.failReason.split(":")[1].trim();
+      const [day, month, year] = newDate.split("/");
+      const dateObj = new Date(`${year}-${month}-${day}`);
+      await this.deviceWarrantyCardRepository.update(
+        {
+          id: warrantyCard.id,
+        },
+        {
+          receive_date: dateObj,
+        },
+      );
     }
 
     if (
       issue.task.type === TaskType.WARRANTY_SEND &&
-      dto.failReason.includes('Trung tâm bảo hành từ chối nhận')
+      dto.failReason.includes(
+        WarrantyFailedReasonsList.WARRANTY_REJECTED_ON_ARRIVAL,
+      )
     ) {
       // add issues: bring device to warehouse
       const bringDeviceToWarehouseIssue = await this.issueRepository.save({
@@ -388,6 +433,20 @@ export class IssueService extends BaseService<IssueEntity> {
           id: issue.task.id,
         },
       });
+
+      await this.deviceWarrantyCardRepository.update(
+        {
+          id: warrantyCard.id,
+        },
+        {
+          status: DeviceWarrantyCardStatus.WC_REJECTED_ON_ARRIVAL,
+          send_date: new Date(),
+          send_note: dto.failReason,
+          send_bill_image: dto.imagesVerify,
+        },
+      );
+
+      return save;
     }
 
     // update task -> closed
@@ -426,12 +485,16 @@ export class IssueService extends BaseService<IssueEntity> {
         'task.issues.typeError',
         'task.device_renew',
         'request',
+        'request.requester',
         'request.temporary_replacement_device',
         'request.temporary_replacement_device.machineModel',
         'request.device',
         'request.device.area',
         'request.device.machineModel',
         'request.issues',
+        'request.tasks',
+        'request.deviceWarrantyCards',
+        'request.deviceWarrantyCards.device',
       ],
     });
     if (!issue || issue.task.fixer.id !== userId) {
@@ -465,6 +528,34 @@ export class IssueService extends BaseService<IssueEntity> {
       },
     );
 
+    const isAllTasksCompleted = issue.request.tasks.every(
+      (t) => t.status === TaskStatus.COMPLETED,
+    );
+    const completedSet = new Set([
+      DeviceWarrantyCardStatus.FAIL,
+      DeviceWarrantyCardStatus.SUCCESS,
+      DeviceWarrantyCardStatus.WC_REJECTED_ON_ARRIVAL,
+    ]);
+    const isWarrantyCompleted = completedSet.has(
+      RequestUtil.getCurrentWarrantyCard(issue.request)?.status,
+    );
+
+    if (isAllTasksCompleted && isWarrantyCompleted) {
+      this.headGateway.emit(NotificationType.S_COMPLETE_ALL_TASKS)({
+        senderId: userId,
+        requestId: issue.request.id,
+        receiverId: issue.request.requester.id,
+      });
+      await this.requestRepository.update(
+        {
+          id: issue.request.id,
+        },
+        {
+          status: RequestStatus.HEAD_CONFIRM,
+        },
+      );
+    }
+
     // update device positionX and Y and area
     await this.deviceRepository.update(
       {
@@ -476,6 +567,8 @@ export class IssueService extends BaseService<IssueEntity> {
         area: {
           id: issue.request.old_device.area.id,
         },
+        isHeld: false,
+        status: true,
       },
     );
 

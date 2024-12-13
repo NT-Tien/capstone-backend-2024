@@ -71,9 +71,9 @@ export class IssueController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    summary: 'Resolve an DISASSEMBLE DEVICE issue in WARRANTY task',
+    summary: 'Resolve an INSTALL REPLACEMENT DEVICE issue in WARRANTY task',
     description:
-      'Used to complete an DISASSEMBLE DEVICE issue and provide images and videos for verification.',
+      'Used to complete an INSTALL REPLACEMENT DEVICE issue and provide images and videos for verification.',
   })
   @Put('warrranty/install-replacement/:issueId/resolved')
   resolveWarrantyInstallReplacementIssue(

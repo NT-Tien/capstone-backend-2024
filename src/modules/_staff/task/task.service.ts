@@ -9,7 +9,11 @@ import {
 import { IssueSparePartEntity } from 'src/entities/issue-spare-part.entity';
 import { IssueEntity, IssueStatus } from 'src/entities/issue.entity';
 import { NotificationType } from 'src/entities/notification.entity';
-import { RequestEntity, RequestStatus } from 'src/entities/request.entity';
+import {
+  RequestEntity,
+  RequestStatus,
+  RequestUtil,
+} from 'src/entities/request.entity';
 import { SparePartEntity } from 'src/entities/spare-part.entity';
 import { TaskEntity, TaskStatus } from 'src/entities/task.entity';
 import { HeadStaffNotificationGateway } from 'src/modules/notifications/gateways/head-staff.gateway';
@@ -140,6 +144,42 @@ export class TaskService extends BaseService<TaskEntity> {
     if (!account || account.deletedAt || account.role !== Role.staff) {
       throw new HttpException('Account is not valid', HttpStatus.BAD_REQUEST);
     }
+
+    return this.taskRepository.findOne({
+      where: {
+        id: taskId,
+        fixer: {
+          id: userId,
+        },
+      },
+      relations: [
+        'device',
+        'device.area',
+        'device.machineModel',
+        'fixer',
+        'issues',
+        'issues.typeError',
+        'issues.issueSpareParts',
+        'issues.issueSpareParts.sparePart',
+        'export_warehouse_ticket',
+        'request',
+        'request.requester',
+        'request.tasks',
+        'request.area',
+        'request.deviceWarrantyCards',
+        'request.deviceWarrantyCards.device',
+        'request.deviceWarrantyCards.device.machineModel',
+        'request.temporary_replacement_device',
+        'request.temporary_replacement_device.machineModel',
+        'request.tasks.issues',
+        'request.tasks.issues.typeError',
+        'request.tasks.issues.issueSpareParts',
+        'request.tasks.issues.issueSpareParts.sparePart',
+        'request.tasks.export_warehouse_ticket',
+        'device_renew',
+        'device_renew.machineModel',
+      ],
+    });
     return this.taskRepository
       .createQueryBuilder('task')
       .leftJoinAndSelect('task.device', 'device')
@@ -153,6 +193,9 @@ export class TaskService extends BaseService<TaskEntity> {
       .leftJoin('request.requester', 'requester')
       .addSelect(['requester.id', 'requester.username', 'requester.phone'])
       .leftJoinAndSelect('request.tasks', 'tasks') // so that staff can find the "send to warranty" request
+      .leftJoinAndSelect('request.area', 'area')
+      .leftJoinAndSelect('request.deviceWarrantyCards', 'deviceWarrantyCards')
+      .leftJoinAndSelect('deviceWarrantyCards', 'device')
       .leftJoinAndSelect('tasks.issues', 'taskIssues')
       .leftJoinAndSelect('taskIssues.typeError', 'taskIssueTypeError')
       .leftJoinAndSelect('issues.typeError', 'typeError')
@@ -326,7 +369,7 @@ export class TaskService extends BaseService<TaskEntity> {
       where: {
         id: task.request.id,
       },
-      relations: ['tasks', 'requester'],
+      relations: ['tasks', 'requester', 'deviceWarrantyCards', 'deviceWarrantyCards.device'],
     });
 
     if (hasFailedIssue) {
@@ -339,16 +382,26 @@ export class TaskService extends BaseService<TaskEntity> {
         requestId: request.id,
       });
 
-      return result
+      return result;
     }
-    
 
     // else if all tasks are completed in request then notify head_department to feedback request & set request status to HEAD_CONFIRM
 
     const isAllTasksCompleted = request.tasks.every(
-      (t) => t.status === TaskStatus.COMPLETED,
+      (t) => t.status === TaskStatus.COMPLETED || t.status === TaskStatus.CANCELLED,
     );
-    if (isAllTasksCompleted) {
+    const completedSet = new Set([
+      DeviceWarrantyCardStatus.FAIL,
+      DeviceWarrantyCardStatus.SUCCESS,
+      DeviceWarrantyCardStatus.WC_REJECTED_ON_ARRIVAL,
+    ]);
+    const isWarrantyCompleted = completedSet.has(
+      RequestUtil.getCurrentWarrantyCard(request)?.status,
+    );
+
+    console.log(isAllTasksCompleted, isWarrantyCompleted, RequestUtil.getCurrentWarrantyCard(request), request.deviceWarrantyCards);
+
+    if (isAllTasksCompleted && isWarrantyCompleted) {
       this.headGateway.emit(NotificationType.S_COMPLETE_ALL_TASKS)({
         senderId: userId,
         requestId: request.id,
@@ -363,7 +416,7 @@ export class TaskService extends BaseService<TaskEntity> {
     return result;
   }
 
-  async completeTaskWarranty(
+  async completeTaskSendWarranty(
     taskId: string,
     userId: string,
     dto: TaskRequestDto.FinishSendWarrantyDto,
@@ -405,7 +458,7 @@ export class TaskService extends BaseService<TaskEntity> {
       );
     });
 
-    if(!currentWarrantyCard) {
+    if (!currentWarrantyCard) {
       throw new HttpException('Warranty card not found', HttpStatus.NOT_FOUND);
     }
 
@@ -415,13 +468,15 @@ export class TaskService extends BaseService<TaskEntity> {
     task.completedAt = new Date();
 
     // make all task issues RESOLVED
-    const unresolvedIssues = task.issues.filter(i => i.status === IssueStatus.PENDING)
+    const unresolvedIssues = task.issues.filter(
+      (i) => i.status === IssueStatus.PENDING,
+    );
     unresolvedIssues.forEach(async (i) => {
       await this.issueRepository.save({
         ...i,
         status: IssueStatus.RESOLVED,
-      })
-    })
+      });
+    });
 
     // update warranty card
     this.deviceWarrantyCardRepository.update(
