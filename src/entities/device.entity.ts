@@ -83,4 +83,11 @@ export class DeviceEntity extends BaseEntity {
     type: 'text',
   })
   deviceCode: string;
+
+  @Column({
+    name: 'is_held',
+    type: 'boolean',
+    default: false,
+  })
+  isHeld: boolean
 }

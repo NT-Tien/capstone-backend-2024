@@ -20,6 +20,7 @@ import {
 } from '../../../entities/feedback.entity';
 import { RequestRequestDto } from './dto/request.dto';
 import { SequenceService } from 'src/common/sequence/sequence.service';
+import { RequestTimeline } from 'src/entities/request-timeline.entity';
 
 @Injectable()
 export class RequestService extends BaseService<RequestEntity> {
@@ -32,6 +33,8 @@ export class RequestService extends BaseService<RequestEntity> {
     private readonly deviceRepository: Repository<DeviceEntity>,
     @InjectRepository(FeedbackEntity)
     private readonly feedbackRepository: Repository<FeedbackEntity>,
+    @InjectRepository(RequestTimeline)
+    private readonly requestTimelineRepository: Repository<RequestTimeline>,
     private readonly headstaffGateway: HeadStaffNotificationGateway,
     private readonly sequenceService: SequenceService,
   ) {
@@ -137,6 +140,7 @@ export class RequestService extends BaseService<RequestEntity> {
       device: device,
       old_device: device,
       requester_note: data.requester_note,
+      area: device.area,
       code:
         format(new Date(), 'ddMMyy') +
         '_' +
@@ -224,16 +228,22 @@ export class RequestService extends BaseService<RequestEntity> {
       throw new HttpException('Request is not valid', HttpStatus.BAD_REQUEST);
     }
 
+    const timeline = new RequestTimeline();
+        timeline.visible_roles = [Role.admin, Role.head, Role.headstaff];        
+        timeline.request = request;
+
     switch (dto.rating) {
       case FeedbackRating.PROBLEM_FIXED: {
         request.status = RequestStatus.CLOSED;
         await this.requestRepository.save(request);
+        timeline.action = "Máy đã chạy, hoàn tất yêu cầu: " + dto.content;
         break;
       }
 
       case FeedbackRating.PROBLEM_NOT_FIXED: {
         request.status = RequestStatus.HM_VERIFY;
         await this.requestRepository.save(request);
+        timeline.action = "Máy chưa chạy, yêu cầu đội bảo trì kiểm tra lại với nội dung: " + dto.content;
         this.headstaffGateway.emit(NotificationType.HD_FEEDBACK_BAD)({
           requestId: id,
           senderId: userId,
@@ -241,6 +251,7 @@ export class RequestService extends BaseService<RequestEntity> {
       }
     }
 
+    await this.requestTimelineRepository.save(timeline);   
     await this.feedbackRepository.save({
       request,
       requester: request.requester,

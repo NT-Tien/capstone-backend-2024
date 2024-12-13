@@ -202,4 +202,13 @@ export class RequestUtil {
       request.status === RequestStatus.IN_PROGRESS
     );
   }
+
+  static getCurrentWarrantyCard(request?: RequestEntity): DeviceWarrantyCardEntity | undefined {
+    if (!request) return undefined
+
+    const deviceWarrantyCards = request.deviceWarrantyCards
+    deviceWarrantyCards?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    return deviceWarrantyCards?.[0] ?? undefined
+ }
 }
+

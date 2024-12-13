@@ -138,7 +138,7 @@ export class TaskController {
     @Headers('user') user: any,
     @Body() body: TaskRequestDto.FinishSendWarrantyDto,
   ) {
-    return this.taskService.completeTaskWarranty(taskId, user.id, body);
+    return this.taskService.completeTaskSendWarranty(taskId, user.id, body);
   }
 
   @ApiBearerAuth()

@@ -15,11 +15,14 @@ export class DeviceController {
   @ApiOperation({
     summary: 'Dismantle device',
     description:
-      'Dismantle device by removing positionX, positionY, area, and set status to false',
+      'Dismantle device by removing positionX, positionY, area, and set status to false, task.renewed = true',
   })
-  @Post('/:id/dismantle')
-  async dismantle(@Param('id') id: string) {
-    return this.deviceService.dismantle(id);
+  @Post('/:id/dismantle/:task_id')
+  async dismantle(
+    @Param('id') id: string,
+    @Param('task_id') task_id: string,
+  ) {
+    return this.deviceService.dismantle(id, task_id);
   }
 
   @ApiBearerAuth()

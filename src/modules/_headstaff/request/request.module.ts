@@ -15,6 +15,7 @@ import { Global_NotificationsModule } from 'src/modules/notifications/notificati
 import { ExportWareHouse } from 'src/entities/export-warehouse.entity';
 import { MachineModelEntity } from 'src/entities/machine-model.entity';
 import { DeviceWarrantyCardEntity } from 'src/entities/device-warranty-card.entity';
+import { RequestTimeline } from 'src/entities/request-timeline.entity';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { DeviceWarrantyCardEntity } from 'src/entities/device-warranty-card.enti
       ExportWareHouse,
       MachineModelEntity,
       DeviceWarrantyCardEntity,
+      RequestTimeline
     ]),
     AuthModule,
     Global_NotificationsModule,

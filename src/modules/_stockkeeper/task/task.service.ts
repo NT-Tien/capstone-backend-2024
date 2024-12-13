@@ -238,6 +238,7 @@ export class TaskService extends BaseService<TaskEntity> {
 
       task.confirmReceipt = true;
       task.confirmSendBy = userId;
+      task.status = TaskStatus.IN_PROGRESS
       task.confirmReceiptStockkeeperSignature = dto.stockkeeper_signature;
       task.confirmReceiptStaffSignature = dto.staff_signature;
 

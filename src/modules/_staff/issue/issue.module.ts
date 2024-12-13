@@ -9,6 +9,7 @@ import { AccountEntity } from 'src/entities/account.entity';
 import { RequestEntity } from 'src/entities/request.entity';
 import { DeviceEntity } from 'src/entities/device.entity';
 import { DeviceWarrantyCardEntity } from 'src/entities/device-warranty-card.entity';
+import { Global_NotificationsModule } from 'src/modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { DeviceWarrantyCardEntity } from 'src/entities/device-warranty-card.enti
       DeviceEntity,
       DeviceWarrantyCardEntity,
     ]),
+    Global_NotificationsModule,
   ],
   controllers: [IssueController],
   providers: [IssueService],

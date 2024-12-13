@@ -125,6 +125,14 @@ export class TaskEntity extends BaseEntity {
   type: TaskType;
 
   @Column({
+    name: 'renewed',
+    type: 'boolean',
+    default: false,
+    nullable: true,
+  })
+  renewed: boolean;
+
+  @Column({
     name: 'status',
     type: 'enum',
     enum: TaskStatus,

@@ -5,6 +5,15 @@ import { TypeErrorEntity } from './type-error.entity';
 import { IssueSparePartEntity } from './issue-spare-part.entity';
 import { RequestEntity } from './request.entity';
 
+export enum WarrantyFailedReasonsList {
+  CANNOT_DISASSEMBLE = "Không thể tháo rời",
+  SERVICE_CENTER_CLOSED = "Trung tâm bảo hành đóng cửa",
+  WARRANTY_REJECTED_ON_ARRIVAL = "Trung tâm bảo hành từ chối nhận thiết bị",
+  WARRANTY_REJECTED_AFTER_PROCESS = "Từ chối bảo hành",
+  CHANGE_RECEIVE_DATE = "Đổi ngày nhận máy",
+  OTHER = "Khác",
+}
+
 export enum FixItemType {
   REPLACE = 'REPLACE',
   REPAIR = 'REPAIR',
