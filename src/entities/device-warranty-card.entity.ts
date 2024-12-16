@@ -132,4 +132,22 @@ export class DeviceWarrantyCardEntity extends BaseEntity {
     nullable: true,
   })
   wc_address_city: string;
+
+  @Column({
+    name: 'send_bill_image',
+    type: 'text',
+    array: true,
+    nullable: true,
+    default: [],
+  })
+  send_bill_image: string[]
+
+  @Column({
+    name: 'receive_bill_image',
+    type: 'text',
+    array: true,
+    nullable: true,
+    default: [],
+  })
+  receive_bill_image: string[]
 }

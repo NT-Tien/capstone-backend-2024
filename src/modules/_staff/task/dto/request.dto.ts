@@ -156,5 +156,10 @@ export namespace TaskRequestDto {
     @IsNotEmpty()
     @Expose()
     wc_address_city: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    send_bill_image: string[];
   }
 }

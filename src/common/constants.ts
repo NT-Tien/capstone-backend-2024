@@ -4,7 +4,8 @@ export const Warranty = {
   assemble: 'A235E96C-86B5-4BD4-A1F6-FCF4BBCE0E6E',
   receive: '2d45b02b-f4b7-470b-815f-817628fee1fd',
   install_replacement: '09ef1061-33f2-431f-ac11-62419896d979',
-  dismantle_replacement: 'adb5908e-3212-44a5-b663-911cda778ee9'
+  dismantle_replacement: 'adb5908e-3212-44a5-b663-911cda778ee9',
+  return_to_warehouse: 'c101b5d5-2bc7-4e97-a82d-c4522bfa31a9',
 };
 
 export const Renew = {

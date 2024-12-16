@@ -339,8 +339,9 @@ export class TaskService extends BaseService<TaskEntity> {
         requestId: request.id,
       });
 
-      return;
+      return result
     }
+    
 
     // else if all tasks are completed in request then notify head_department to feedback request & set request status to HEAD_CONFIRM
 
@@ -441,6 +442,7 @@ export class TaskService extends BaseService<TaskEntity> {
         wc_address_district: dto.wc_address_district,
         wc_address_ward: dto.wc_address_ward,
         status: DeviceWarrantyCardStatus.WC_PROCESSING,
+        send_bill_image: dto.send_bill_image,
       },
     );
 

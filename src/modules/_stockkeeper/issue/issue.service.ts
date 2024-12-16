@@ -27,4 +27,20 @@ export class IssueService {
     await this.issueRepository.save(issue);
     return issue;
   }
+
+  async completeReturn(issueId: string) {
+    const issue = await this.issueRepository.findOne({
+      where: {
+        id: issueId,
+      },
+    });
+
+    if (!issue) {
+      throw new Error('Issue not found');
+    }
+
+    issue.status = IssueStatus.RESOLVED;
+
+    return await this.issueRepository.save(issue);
+  }
 }

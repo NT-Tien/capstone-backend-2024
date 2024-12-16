@@ -83,4 +83,19 @@ export class IssueController {
   ) {
     return this.issueService.resolveWarrantyInstallReplacementIssue(user.id, issueId, dto);
   }
+
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Resolve an RECEIVE issue in WARRANTY task',
+    description:
+      'Used to complete an RECEIVE issue and provide images and videos for verification.',
+  })
+  @Put("warranty/receive/:issueId/resolved")
+  resolveWarrantyReceiveIssue(
+    @Param('issueId') issueId: UUID,
+    @Body() dto: IssueRequestDto.ResolveReceiveIssue,
+    @Headers('user') user: any,
+  ) {
+    return this.issueService.resolveWarrantyReceiveIssue(user.id, issueId, dto);
+  }
 }

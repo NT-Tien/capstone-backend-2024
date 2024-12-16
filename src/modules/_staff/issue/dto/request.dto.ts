@@ -48,4 +48,21 @@ export namespace IssueRequestDto {
     @Expose()
     shouldSkipUpdateTask?: boolean;
   }
+
+  export class ResolveReceiveIssue extends BaseDTO {
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    receive_bill_images: string[];
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    note: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Expose()
+    warranty_status: "success" | "fail"
+  }
 }

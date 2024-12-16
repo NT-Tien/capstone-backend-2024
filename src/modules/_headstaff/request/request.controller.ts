@@ -260,4 +260,27 @@ export class RequestController {
   ) {
     return this.requestService.addReplacementDeviceForWarranty(id, user.id, dto);
   }
+
+  @ApiOperation({
+    summary: "Update warranty receival date",
+    description: "Update warranty receival date"
+  })
+  @ApiBearerAuth()
+  @Put('/warranty/update-receival-date/:id')
+  async updateWarrantyReceivalDate(
+    @Param('id') id: string,
+    @Headers('user') user: any,
+    @Body() dto: RequestRequestDto.UpdateWarrantyReceivalDate
+  ) {
+    return this.requestService.updateWarrantyReceivalDate(id, user.id, dto);
+  }
+
+  @Put("/close/:id")
+  async requestClose(
+    @Param('id') id: string,
+    @Headers('user') user: any,
+    @Body() dto: RequestRequestDto.RequestClose
+  ) {
+    return this.requestService.requestClose(id, user.id, dto);
+  }
 }
